@@ -111,6 +111,31 @@ class StringArray2D(private val strings: List<String>) {
             }
         }
 
+    val diagonalsRightNoCollectionAllocation: List<List<Char>> =
+        //        0 1 ... w-1
+        //       +-----------
+        //       |a b ... c
+        //     w |m n ... o
+        //   w+1 |p q ... r
+        //       |...
+        // w+h-2 |x y ... z
+        //
+        // There are w+h-1 "right" diagonals.
+        //     0: a, n, ...
+        //     1: b, ...
+        //   w-1: c
+        //     w: m, q, ...
+        // w+h-2: x
+        //
+        object : AbstractList<List<Char>>() {
+            override val size = width + height - 1
+            override fun get(index: Int): List<Char> =
+                object : AbstractList<Char>() {
+                    override val size = min(width, height) + TODO() as Int
+                    override fun get(index: Int): Char = TODO()
+                }
+        }
+
     val diagonalsLeft: List<List<Char>>
         get() = buildList {
             for (j in 0 ..< width+height-1) {
