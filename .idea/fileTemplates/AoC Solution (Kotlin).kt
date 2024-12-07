@@ -11,9 +11,8 @@ import utils.*
 // Task description:
 //   https://adventofcode.com/$YearUrl/day/$DayUrl
 
-fun main() = test(
-    ::solve,
-)
-
-private fun solve(input: List<String>): Long =
-    0
+fun main() = runAoc {
+    solution1 {
+        0L
+    }
+}
