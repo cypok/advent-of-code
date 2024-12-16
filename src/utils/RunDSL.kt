@@ -123,6 +123,8 @@ fun runAoc(content: AocContext.() -> Unit) {
         if (!ctx.ignoreRealInput) {
             runOne("real", realInput.readText(), null)
         }
+        // TODO: Download html page, parse answers and check them.
+        //       If there are no answers, try to submit them.
     }
 }
 
