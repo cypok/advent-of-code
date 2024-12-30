@@ -100,9 +100,14 @@ private fun solve2(input: List<String>): Long {
     })
     val output = Files.createTempFile("aoc", ".txt")
 
-    val pb = ProcessBuilder("/opt/homebrew/bin/python3", z3PythonScript.pathString).redirectOutput(output.toFile())
+    val pb = ProcessBuilder("/opt/homebrew/bin/python3", z3PythonScript.pathString).redirectOutput(output.toFile()).redirectErrorStream(true)
     val p = pb.start().waitFor(5, TimeUnit.SECONDS)
-    return output.readText().trim().toLong()
+    val result = output.readText().trim()
+    return try {
+        result.toLong()
+    } catch (_: NumberFormatException) {
+        error(result)
+    }
 }
 
 private fun parse(input: List<String>): List<Stone> {
