@@ -33,7 +33,6 @@ private fun countVariants(
     pattern: LList<Char>?, curGroupRemaining: Int?, groups: LList<Int>?
 ): Long =
     memoize(cache, Triple(pattern, curGroupRemaining, groups)) {
-        assert(skipSpaces(pattern) == pattern)
         if (pattern == null) {
             // recursion termination case
             if (groups == null && (curGroupRemaining == null || curGroupRemaining == 0)) {
