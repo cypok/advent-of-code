@@ -47,6 +47,8 @@ private data class Example(val description: String?,
                            val input: String,
                            val answers: Map<Int, Pair<String, Any?>>)
 
+var IS_BATCH_RUN = false
+
 fun runAoc(content: AocContext.() -> Unit) {
     val ctx = object : AocContext {
         var ignoreRealInput = false
@@ -135,7 +137,7 @@ fun runAoc(content: AocContext.() -> Unit) {
             if (timed) {
                 var totalTime = time
                 print(" (took ${time.inWholeMilliseconds}")
-                if (time.inWholeSeconds <= 5) {
+                if (!IS_BATCH_RUN && time.inWholeSeconds <= 5) {
                     for (i in 0 until 10) {
                         if (totalTime.inWholeSeconds > 10) {
                             break
@@ -150,16 +152,22 @@ fun runAoc(content: AocContext.() -> Unit) {
                 print(" ms)")
             }
             println()
-            solutionCtx.extraPrints.forEach { println(it) }
+            if (!IS_BATCH_RUN) {
+                solutionCtx.extraPrints.forEach { println(it) }
+            }
         }
 
-        for (example in ctx.examples) {
-            val desc = example.description ?: "at ${example.codeLocation}"
-            val input = example.input
-            val (answer, param) = example.answers[partNum] ?: continue
-            runOne("example $desc", input,
-                { answer },
-                param)
+        if (!IS_BATCH_RUN) {
+            for (example in ctx.examples) {
+                val desc = example.description ?: "at ${example.codeLocation}"
+                val input = example.input
+                val (answer, param) = example.answers[partNum] ?: continue
+                runOne(
+                    "example $desc", input,
+                    { answer },
+                    param
+                )
+            }
         }
 
         if (!ctx.ignoreRealInput) {

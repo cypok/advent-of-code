@@ -31,7 +31,9 @@ dependencies {
 
 application {
     mainClass.set(
-        if (hasProperty("year") && hasProperty("day")) {
+        if (hasProperty("allDays")) {
+            "AllKt"
+        } else if (hasProperty("year") && hasProperty("day")) {
             "year${property("year")}.Day${property("day")}Kt"
         } else {
             "-Pyear=YYYY and -Pday=DD should be set"
