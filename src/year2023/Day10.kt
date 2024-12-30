@@ -5,7 +5,8 @@ import year2023.AreaState.*
 import kotlin.IllegalStateException
 
 fun main() = test(
-    ::solve,
+    { solve(it).first },
+    { solve(it).second },
 )
 
 private fun solve(input: List<String>): Pair<Long, Long> {

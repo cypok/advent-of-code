@@ -2,13 +2,13 @@ package year2023
 
 import utils.*
 
-fun main() = test(
-    ::solve1,
-    ::solve2,
-)
+fun main() = runAoc {
+    solution1 { solve1() }
+    solution2 { solve2() }
+}
 
-private fun solve1(input: List<String>): Long {
-    return StringArray2D(input).cols.sumOf { col ->
+private fun SolutionContext.solve1(): Long {
+    return StringArray2D(lines).cols.sumOf { col ->
         col.withIndex().fold(Pair(0, 0L)) { acc, (i, ch) ->
             if (ch != 'O') return@fold acc
 
@@ -23,8 +23,8 @@ private fun solve1(input: List<String>): Long {
     }
 }
 
-private fun solve2(input: List<String>): Pair<Int, Long> {
-    val originalMap = StringArray2D(input)
+private fun SolutionContext.solve2(): Long {
+    val originalMap = StringArray2D(lines)
     val height = originalMap.height
     val width = originalMap.width
 
@@ -84,5 +84,6 @@ private fun solve2(input: List<String>): Pair<Int, Long> {
     val cycle = loads.detectCycle() ?: error("cycle not found")
     val realLastLoad = loads.extrapolateUntil(1_000_000_000)
 
-    return Pair(cycle, realLastLoad)
+    printExtra("cycle = $cycle")
+    return realLastLoad
 }

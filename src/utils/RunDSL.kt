@@ -36,6 +36,8 @@ interface SolutionContext {
     val isPart2: Boolean
 
     val exampleParam: Any?
+
+    fun printExtra(arg: Any)
 }
 
 typealias Solution = SolutionContext.() -> Any
@@ -87,7 +89,7 @@ fun runAoc(content: AocContext.() -> Unit) {
             param: Any? = null,
             timed: Boolean = false,
         ) {
-            val solutionCtx = object : SolutionContext {
+            open class SilentCtx : SolutionContext {
                 override val lines = input.trimEnd('\n').lines()
                 override val map by lazy { StringArray2D(lines) }
 
@@ -95,7 +97,14 @@ fun runAoc(content: AocContext.() -> Unit) {
                 override val isPart2 get() = partNum == 2
 
                 override val exampleParam = param
+
+                override fun printExtra(arg: Any) { /* nop */ }
             }
+            class VerboseCtx : SilentCtx() {
+                val extraPrints = mutableListOf<Any>()
+                override fun printExtra(arg: Any) { extraPrints += arg }
+            }
+            val solutionCtx = VerboseCtx()
             print("part$partNum, $runDesc: ")
             val (result, time) = measureTimedValue { runCatching { solutionCtx.solution() } }
             if (result.isFailure) {
@@ -131,7 +140,7 @@ fun runAoc(content: AocContext.() -> Unit) {
                         if (totalTime.inWholeSeconds > 10) {
                             break
                         }
-                        val (newResult, newTime) = measureTimedValue { runCatching { solutionCtx.solution() } }
+                        val (newResult, newTime) = measureTimedValue { runCatching { SilentCtx().solution() } }
                         assert(newResult == result)
                         print(", ${newTime.inWholeMilliseconds}")
                         System.out.flush()
@@ -141,6 +150,7 @@ fun runAoc(content: AocContext.() -> Unit) {
                 print(" ms)")
             }
             println()
+            solutionCtx.extraPrints.forEach { println(it) }
         }
 
         for (example in ctx.examples) {

@@ -38,11 +38,12 @@ fun main() = runAoc {
             if (isPart2 &&
                 robots.map { it.px x it.py }.toSet().size == robots.size
             ) {
-                return@solution i to run {
+                printExtra(run {
                     val canvas = Array(height) { Array(width) { ' ' } }
                     robots.forEach { canvas[it.py][it.px] = '*' }
                     canvas.joinToString("\n") { it.joinToString("") }
-                }
+                })
+                return@solution i
             }
             for (r in robots) {
                 r.px = (r.px + r.vx).mod(width)
