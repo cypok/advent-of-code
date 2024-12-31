@@ -1,25 +1,50 @@
-# advent-of-code
+# Advent of Code 🎄
 
-Welcome to the Advent of Code[^aoc] Kotlin project created by [cypok][github] using the [Advent of Code Kotlin Template][template] delivered by JetBrains.
+Solutions for [Advent of Code](https://adventofcode.com)
+in [Kotlin](https://kotlinlang.org).
 
-In this repository, cypok is about to provide solutions for the puzzles using [Kotlin][kotlin] language.
+Got 50 ⭐️ every year since 2023.
 
-If you're stuck with Kotlin-specific questions or anything related to this template, check out the following resources:
-
-- [Kotlin docs][docs]
-- [Kotlin Slack][slack]
-- Template [issue tracker][issues]
-
-
-[^aoc]:
-    [Advent of Code][aoc] – An annual event of Christmas-oriented programming challenges started December 2015.
-    Every year since then, beginning on the first day of December, a programming puzzle is published every day for twenty-five days.
-    You can solve the puzzle and provide an answer using the language of your choice.
-
-[aoc]: https://adventofcode.com
-[docs]: https://kotlinlang.org/docs/home.html
-[github]: https://github.com/cypok
-[issues]: https://github.com/kotlin-hands-on/advent-of-code-kotlin-template/issues
-[kotlin]: https://kotlinlang.org
-[slack]: https://surveys.jetbrains.com/s3/kotlin-slack-sign-up
-[template]: https://github.com/kotlin-hands-on/advent-of-code-kotlin-template
+Features:
+*   automatic input file downloading
+*   ability to automatically submit an answer right after getting it
+    ```
+    part1, real: 737 ⭕ (unchecked)
+    Submit? [yes/no]
+    yes
+    > That's the right answer!
+    > You are one gold star closer to saving your vacation.
+    ```
+*   comparison of answers with the already submitted ones
+    ```
+    part1, real: 1737647416 🔴 (expected 14622549304)
+    part2, real: 1735 🟢
+    ```
+*   declaration of examples with expected answers
+    ```kotlin
+    example("tiny") {
+        answer1(4)
+        answer2(13)
+        """
+            ..90..9
+            ...1.98
+            ...2..7
+            6543456
+            765.987
+            876....
+            987....
+        """
+    }
+    ```
+    ```
+    part1, example tiny: 4 🟢
+    part1, real: 746 🟢
+    part2, example tiny: 13 🟢
+    part2, real: 1541 
+    ```
+*   silly performance measurements
+    ```
+    part1, real: 14622549304 🟢 (took 28, 20, 18, 18, 15, 19, 15, 18, 34, 19, 21 ms)
+    part2, real: 1735 🟢 (took 716, 694, 701, 651, 617, 618, 618, 654, 588, 609, 611 ms)
+    ```
+*   IDEA file template for new solutions
