@@ -1,4 +1,5 @@
 import utils.IS_BATCH_RUN
+import utils.TOTAL_FAILS
 import utils.cartesianProduct
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
@@ -54,5 +55,6 @@ fun main() {
     if (lastWasShort) {
         println()
     }
-    println("Total: $totalDays days in ${totalTime.inWholeSeconds} s")
+    val status = if (TOTAL_FAILS == 0) "🟢" else "🔴 ($TOTAL_FAILS failed)"
+    println("Total: $totalDays days in ${totalTime.inWholeSeconds} s $status")
 }

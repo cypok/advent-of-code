@@ -40,14 +40,16 @@ interface SolutionContext {
     fun printExtra(arg: Any)
 }
 
-typealias Solution = SolutionContext.() -> Any
+private typealias Solution = SolutionContext.() -> Any
 
 private data class Example(val description: String?,
                            val codeLocation: String,
                            val input: String,
                            val answers: Map<Int, Pair<String, Any?>>)
 
+// TODO: somehow rework these dirty hacks for running all days
 var IS_BATCH_RUN = false
+var TOTAL_FAILS = 0
 
 fun runAoc(content: AocContext.() -> Unit) {
     val ctx = object : AocContext {
@@ -123,6 +125,7 @@ fun runAoc(content: AocContext.() -> Unit) {
             } else if (expected == actual) {
                 "🟢"
             } else {
+                TOTAL_FAILS++
                 "🔴 (expected $expected)"
             })
             if (expected == null) {
