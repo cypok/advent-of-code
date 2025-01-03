@@ -2,90 +2,114 @@ package year2023
 
 import utils.*
 import utils.Dir.*
-import kotlin.math.max
 
-fun main() = test(
-    { solve(it, true) },
-    { solve(it, false) },
-)
+fun main() = runAoc {
+    solution {
+        val respectSlopes = isPart1
 
-private val SLOPES = mapOf(
-    '^' to UP,
-    '<' to LEFT,
-    'v' to DOWN,
-    '>' to RIGHT,
-)
+        val slopes = mapOf(
+            '^' to UP,
+            '<' to LEFT,
+            'v' to DOWN,
+            '>' to RIGHT,
+        )
 
-private fun solve(input: List<String>, respectSlopes: Boolean): Long {
-    val map = StringArray2D(input)
-
-    val start = 0 x 1
-    val finish = (map.height - 1) x (map.width - 2)
-    check(map[start] == '.')
-    check(map[finish] == '.')
-
-    tailrec fun traverse(pos: Point, dir: Dir, len: Long, visited: MutableSet<Point>, alternativeLen: Long): Long {
-        if (pos == finish) return max(len, alternativeLen)
+        val start = 0 x 1
+        val finish = (map.height - 1) x (map.width - 2)
+        check(map[start] == '.')
+        check(map[finish] == '.')
 
         fun canGoTo(nextPos: Point, dir: Dir): Boolean {
-            val ch = map[nextPos]
-
+            val ch = map.getOrNull(nextPos) ?: return false
             if (ch == '#') return false
-            if (nextPos in visited) return false
 
             if (respectSlopes) {
-                for ((slCh, slDir) in SLOPES) {
-                    if (ch == slCh && slDir == dir.opposite) return false
+                slopes[ch]?.let { slopeDir ->
+                    if (slopeDir != dir) {
+                        return false
+                    }
                 }
             }
 
             return true
         }
 
-        val slopedDir = if (respectSlopes) SLOPES[map[pos]] else null
-        val nextDirs =
-            if (slopedDir != null) {
-                listOf(slopedDir)
-            } else {
-                listOf(dir, dir.left, dir.right)
-                    .filter { canGoTo(pos.moveInDir(it), it) }
-            }
+        fun possibleDirs(pos: Point) =
+            Dir.entries.filter { canGoTo(pos.moveInDir(it), it) }.toSet()
 
-        if (nextDirs.isEmpty()) return alternativeLen
-
-        val firstDir = nextDirs.first()
-        val forkedLen =
-            if (nextDirs.size == 1) {
-                // Single track case.
-                alternativeLen
-            } else {
-                val forkedDirs = nextDirs.drop(1)
-
-                // We can skip this step if we are on a single track.
-                visited += pos
-
-                val forkedLen = forkedDirs
-                    // We must prepare a new set for every fork, except the first one.
-                    .map { Pair(it, visited.toMutableSet()) }
-                    .maxOf { (nextDir, nextVisited) ->
-                        @Suppress("NON_TAIL_RECURSIVE_CALL")
-                        traverse(
-                            pos.moveInDir(nextDir), nextDir,
-                            len + 1,
-                            nextVisited,
-                            alternativeLen
-                        )
+        val forkPointDirections = mutableMapOf<Point, List<Pair<Point, Int>>>().also { res ->
+            fun buildGraph(forkPos: Point) {
+                tailrec fun buildEdge(nextPos: Point, dir: Dir, curLen: Int): Pair<Point, Int>? {
+                    val outDirs = (possibleDirs(nextPos) - dir.opposite)
+                    if (outDirs.size > 1 || nextPos == finish) {
+                        return nextPos to curLen
                     }
-                assert(forkedLen >= alternativeLen)
-                forkedLen
-            }
+                    if (outDirs.isEmpty()) {
+                        return null
+                    }
 
-        return traverse(pos.moveInDir(firstDir), firstDir,
-            len + 1,
-            // We can reuse this mutable set if we are going by single track.
-            visited,
-            forkedLen)
+                    val nextDir = outDirs.single()
+                    return buildEdge(nextPos.moveInDir(nextDir), nextDir, curLen + 1)
+                }
+
+                if (forkPos in res || forkPos == finish) return
+
+                val dirs = possibleDirs(forkPos)
+                val edges = dirs.mapNotNull { dir -> buildEdge(forkPos.moveInDir(dir), dir, 1) }
+                res[forkPos] = edges
+                edges.forEach { (nextForkPos, _) -> buildGraph(nextForkPos) }
+            }
+            buildGraph(start)
+        }
+
+        fun findLongest(forkPos: Point, curLen: Int, visited: MutableSet<Point>): Int {
+            if (forkPos in visited) return -1
+            if (forkPos == finish) return curLen
+
+            val nextEdges = forkPointDirections[forkPos]!!.filter { it.first !in visited }
+            if (nextEdges.isEmpty()) return -1
+
+            visited += forkPos
+            try {
+                return nextEdges.maxOf { (nextPos, len) ->
+                    findLongest(nextPos, curLen + len, visited)
+                }
+            } finally {
+                visited -= forkPos
+            }
+        }
+
+        findLongest(start, 0, mutableSetOf())
     }
 
-    return traverse(start, DOWN, 0, mutableSetOf(), Long.MIN_VALUE)
+    example {
+        answer1(94)
+        answer2(154)
+
+        """
+            #.#####################
+            #.......#########...###
+            #######.#########.#.###
+            ###.....#.>.>.###.#.###
+            ###v#####.#v#.###.#.###
+            ###.>...#.#.#.....#...#
+            ###v###.#.#.#########.#
+            ###...#.#.#.......#...#
+            #####.#.#.#######.#.###
+            #.....#.#.#.......#...#
+            #.#####.#.#.#########v#
+            #.#...#...#...###...>.#
+            #.#.#v#######v###.###v#
+            #...#.>.#...>.>.#.###.#
+            #####v#.#.###v#.#.###.#
+            #.....#...#...#.#.#...#
+            #.#########.###.#.#.###
+            #...###...#...#...#.###
+            ###.###.#.###v#####v###
+            #...#...#.#.>.>.#.>.###
+            #.###.###.#.###.#.#v###
+            #.....###...###...#...#
+            #####################.#
+        """
+    }
 }
