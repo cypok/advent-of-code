@@ -120,11 +120,17 @@ fun runAoc(content: AocContext.() -> Unit) {
                 return
             }
 
+            // Heuristics around 100% or potentially wrong answer.
+            val trivialAnswers = setOf("0", "-1", "1", "")
+            val wrong: Boolean
+
             val expected = answerProvider()
             val actualRaw = result.getOrNull()!!
             if (actualRaw is VisualAnswerWrapper) {
                 println()
-                println(actualRaw.value)
+                val answer = actualRaw.value
+                println(answer)
+                wrong = answer.isBlank()
                 print("⭕ (")
                 if (expected == null) {
                     print("unchecked")
@@ -137,16 +143,20 @@ fun runAoc(content: AocContext.() -> Unit) {
                 print("$actual ")
                 print(
                     if (expected == null) {
+                        wrong = actual in trivialAnswers
                         "⭕ (unchecked)"
                     } else if (expected == actual) {
+                        check(actual !in trivialAnswers)
+                        wrong = false
                         "🟢"
                     } else {
                         TOTAL_FAILS++
+                        wrong = true
                         "🔴 (expected $expected)"
                     }
                 )
             }
-            if (expected == null) {
+            if (expected == null && !wrong) {
                 // Try to submit the answer for the real input.
                 // Note that an example always has a non-null expected answer.
                 println()
@@ -167,7 +177,7 @@ fun runAoc(content: AocContext.() -> Unit) {
                 val maxExtraMeasurements = 10
                 var totalTime = time
                 print(" (took ${time.inWholeMilliseconds}")
-                if (!IS_BATCH_RUN && time.inWholeSeconds <= maxTimeSec/2) {
+                if (!IS_BATCH_RUN && time.inWholeSeconds <= maxTimeSec/2 && !wrong) {
                     run measurements@ {
                         repeat(maxExtraMeasurements) {
                             if (totalTime.inWholeSeconds > maxTimeSec) {
