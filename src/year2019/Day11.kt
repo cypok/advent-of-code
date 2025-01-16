@@ -9,13 +9,14 @@ import utils.*
 //   https://adventofcode.com/2019/day/11
 
 fun main() = runAoc {
+    @Suppress("LocalVariableName")
     solution { runBlocking {
         val camera = Channel<Long>()
         val instructions = Channel<Long>()
         val robot = IntCodeComputer(intCode)
         launch {
             robot.run(camera, instructions)
-            camera.halt()
+            camera.close()
         }
 
         val B = ' '
@@ -46,7 +47,7 @@ fun main() = runAoc {
 
         val touched = mutableSetOf<Point>()
         while (true) {
-            camera.sendOrOnHalted(c2l(canvas[curPos])) { break }
+            camera.sendCatchingClosed(c2l(canvas[curPos])).onFailure { break }
             val color = l2c(instructions.receive())
             curDir = when (val dirCmd = instructions.receive()) {
                 0L -> curDir.left

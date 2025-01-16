@@ -1,14 +1,10 @@
 package year2019
 
-import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.runBlocking
 import year2019.IntCodeComputer.State.*
-import java.io.Serial
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 
 class IntCodeComputer(program: List<Long>) {
     private enum class State {
@@ -155,22 +151,10 @@ class IntCodeComputer(program: List<Long>) {
 
 }
 
-private object HaltedException : CancellationException() {
-    @Serial private fun readResolve(): Any = HaltedException
-}
-
-fun <E> ReceiveChannel<E>.halt() {
-    cancel(HaltedException)
-}
-
-@OptIn(ExperimentalContracts::class)
-suspend inline fun <E> SendChannel<E>.sendOrOnHalted(element: E, onHalted: () -> Unit) {
-    contract {
-        callsInPlace(onHalted, InvocationKind.AT_MOST_ONCE)
-    }
+// Where is my SendChannel.sendCatching ?!
+suspend inline fun <E> SendChannel<E>.sendCatchingClosed(element: E): Result<Unit> =
     try {
-        send(element)
-    } catch (_: HaltedException) {
-        onHalted()
+        Result.success(send(element))
+    } catch (e: ClosedSendChannelException) {
+        Result.failure(e)
     }
-}

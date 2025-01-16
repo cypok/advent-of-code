@@ -3,7 +3,8 @@ package year2019
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import utils.*
+import utils.permutations
+import utils.runAoc
 
 // Task description:
 //   https://adventofcode.com/2019/day/7
@@ -59,7 +60,7 @@ fun main() = runAoc {
                     val (chIn, chOut) = chPair
                     launch {
                         pc.run(chIn, chOut)
-                        chIn.halt()
+                        chIn.close()
                     }
                 }
                 for ((ch, phase) in chs zip phases) {
@@ -68,7 +69,7 @@ fun main() = runAoc {
 
                 var signal = 0L
                 while (true) {
-                    chs.first().sendOrOnHalted(signal) { break }
+                    chs.first().sendCatchingClosed(signal).onFailure { break }
                     signal = chs.last().receive()
                 }
                 signal

@@ -11,7 +11,10 @@ kotlin {
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.compilerOptions {
-    freeCompilerArgs.set(listOf("-XXLanguage:+BreakContinueInInlineLambdas"))
+    freeCompilerArgs.add("-XXLanguage:+BreakContinueInInlineLambdas")
+    freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
+    freeCompilerArgs.add("-opt-in=kotlin.io.path.ExperimentalPathApi")
+    freeCompilerArgs.add("-opt-in=kotlin.contracts.ExperimentalContracts")
 }
 
 sourceSets {

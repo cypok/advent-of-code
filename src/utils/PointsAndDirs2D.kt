@@ -148,14 +148,11 @@ operator fun <T> Array<Array<T>>.get(pos: Point): T = this[pos.i][pos.j]
 operator fun <T> Array<Array<T>>.set(pos: Point, v: T) { this[pos.i][pos.j] = v }
 fun <T> Array<Array<T>>.getOrNull(pos: Point): T? = this.getOrNull(pos.i)?.getOrNull(pos.j)
 
-fun Array<Array<Char>>.toAsciiArt(): String {
-    // Background heuristic.
-    val bg = this[0].groupingBy { it }.eachCount().maxBy { it.value }.key
-
+fun Array<Array<Char>>.toAsciiArt(backgroundChar: Char): String {
     val linesWithSpaces = this
         .map {
-            check(bg == ' ' || ' ' !in it)
-            it.joinToString("").replace(bg, ' ').trimEnd()
+            check(backgroundChar == ' ' || ' ' !in it)
+            it.joinToString("").replace(backgroundChar, ' ').trimEnd()
         }
         .dropWhile { it.isEmpty() }
         .dropLastWhile { it.isEmpty() }
@@ -167,10 +164,14 @@ fun Array<Array<Char>>.toAsciiArt(): String {
     val rectangularLines = linesWithSpaces.map { it.padEnd(width) }
 
     return rectangularLines.joinToString("\n") {
-        assert(bg == ' ' || bg !in it)
-        it.replace(' ', bg)
+        assert(backgroundChar == ' ' || backgroundChar !in it)
+        it.replace(' ', backgroundChar)
     }
 }
+
+fun Array<Array<Char>>.toAsciiArt(): String =
+    // Some heuristic.
+    toAsciiArt(this[0].groupingBy { it }.eachCount().maxBy { it.value }.key)
 
 val <T> Array<Array<T>>.valuesIndexed: Sequence<Pair<T, Point>>
     get() = sequence {
