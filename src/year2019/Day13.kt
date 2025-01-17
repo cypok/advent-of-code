@@ -83,8 +83,9 @@ fun main() = runAoc {
                 }
             }
 
-            val joystick = Channel<Long>()
-            val renderInstructions = Channel<Long>()
+            val joystick = Channel<Long>(capacity = Channel.RENDEZVOUS)
+            // Add buffer for several drawing instructions between joystick requests:
+            val renderInstructions = Channel<Long>(capacity = 3 * 20)
             launch {
                 game[0] = 2
                 game.run(joystick, renderInstructions)

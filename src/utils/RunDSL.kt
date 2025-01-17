@@ -174,7 +174,7 @@ fun runAoc(content: AocContext.() -> Unit) {
             }
             if (timed) {
                 val maxTimeSec = 10
-                val maxExtraMeasurements = 10
+                val maxExtraMeasurements = 30
                 var totalTime = time
                 print(" (took ${time.inWholeMilliseconds}")
                 if (!IS_BATCH_RUN && time.inWholeSeconds <= maxTimeSec/2 && !wrong) {

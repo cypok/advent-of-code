@@ -55,7 +55,7 @@ fun main() = runAoc {
 
         phaseSettings.maxOf { phases ->
             runBlocking {
-                val chs = List(n + 1) { Channel<Long>() }
+                val chs = List(n + 1) { Channel<Long>(capacity = Channel.RENDEZVOUS) }
                 val pcs = List(n) { IntCodeComputer(intCode) }
                 val pcJobs = (pcs zip chs.zipWithNext()).map { (pc, chPair) ->
                     val (chIn, chOut) = chPair

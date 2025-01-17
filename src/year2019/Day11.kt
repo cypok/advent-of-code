@@ -12,8 +12,8 @@ import utils.*
 fun main() = runAoc {
     @Suppress("LocalVariableName")
     solution { runBlocking {
-        val camera = Channel<Long>()
-        val instructions = Channel<Long>()
+        val camera = Channel<Long>(capacity = Channel.Factory.RENDEZVOUS)
+        val instructions = Channel<Long>(capacity = 2)
         val robot = IntCodeComputer(intCode)
         val robotJob = launch {
             robot.run(camera, instructions)
