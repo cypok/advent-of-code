@@ -3,6 +3,7 @@ package year2019
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.selects.whileSelect
 import utils.*
 
 // Task description:
@@ -14,9 +15,8 @@ fun main() = runAoc {
         val camera = Channel<Long>()
         val instructions = Channel<Long>()
         val robot = IntCodeComputer(intCode)
-        launch {
+        val robotJob = launch {
             robot.run(camera, instructions)
-            camera.close()
         }
 
         val B = ' '
@@ -46,17 +46,21 @@ fun main() = runAoc {
         }
 
         val touched = mutableSetOf<Point>()
-        while (true) {
-            camera.sendCatchingClosed(c2l(canvas[curPos])).onFailure { break }
-            val color = l2c(instructions.receive())
-            curDir = when (val dirCmd = instructions.receive()) {
-                0L -> curDir.left
-                1L -> curDir.right
-                else -> error(dirCmd)
+        whileSelect {
+            robotJob.onJoin { false }
+
+            camera.onSend(c2l(canvas[curPos])) {
+                val color = l2c(instructions.receive())
+                curDir = when (val dirCmd = instructions.receive()) {
+                    0L -> curDir.left
+                    1L -> curDir.right
+                    else -> error(dirCmd)
+                }
+                canvas[curPos] = color
+                touched += curPos
+                curPos = curPos.moveInDir(curDir)
+                true
             }
-            canvas[curPos] = color
-            touched += curPos
-            curPos = curPos.moveInDir(curDir)
         }
 
         if (isPart1) {

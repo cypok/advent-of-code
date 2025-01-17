@@ -1,6 +1,5 @@
 package year2019
 
-import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.runBlocking
@@ -150,11 +149,3 @@ class IntCodeComputer(program: List<Long>) {
         run(input.asList())
 
 }
-
-// Where is my SendChannel.sendCatching ?!
-suspend inline fun <E> SendChannel<E>.sendCatchingClosed(element: E): Result<Unit> =
-    try {
-        Result.success(send(element))
-    } catch (e: ClosedSendChannelException) {
-        Result.failure(e)
-    }

@@ -3,6 +3,7 @@ package year2019
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.selects.whileSelect
 import utils.permutations
 import utils.runAoc
 
@@ -56,11 +57,10 @@ fun main() = runAoc {
             runBlocking {
                 val chs = List(n + 1) { Channel<Long>() }
                 val pcs = List(n) { IntCodeComputer(intCode) }
-                for ((pc, chPair) in pcs zip chs.zipWithNext()) {
+                val pcJobs = (pcs zip chs.zipWithNext()).map { (pc, chPair) ->
                     val (chIn, chOut) = chPair
                     launch {
                         pc.run(chIn, chOut)
-                        chIn.close()
                     }
                 }
                 for ((ch, phase) in chs zip phases) {
@@ -68,9 +68,13 @@ fun main() = runAoc {
                 }
 
                 var signal = 0L
-                while (true) {
-                    chs.first().sendCatchingClosed(signal).onFailure { break }
-                    signal = chs.last().receive()
+                whileSelect {
+                    pcJobs.first().onJoin { false }
+
+                    chs.first().onSend(signal) {
+                        signal = chs.last().receive()
+                        true
+                    }
                 }
                 signal
             }
