@@ -97,23 +97,6 @@ fun main() = runAoc {
             var nextJoystickValue = 0
 
             whileSelect {
-                joystick.onSend(nextJoystickValue.toLong()) {
-                    if (frames.enabled) {
-                        val ch = when (nextJoystickValue) {
-                            -1 -> '<'
-                            0 -> '='
-                            1 -> '>'
-                            else -> shouldNotReachHere()
-                        }
-                        frames.start()
-                        info.draw(info.joystick, ch.toString().repeat(5))
-                        frames.save()
-                        info.clear(info.joystick)
-                        frames.save()
-                    }
-                    true
-                }
-
                 renderInstructions.onReceiveCatching { r ->
                     val x = r.getOrNull()?.toIntExact() ?: return@onReceiveCatching false
                     val y = renderInstructions.receive().toIntExact()
@@ -144,6 +127,23 @@ fun main() = runAoc {
                     }
 
                     frames.save()
+                    true
+                }
+
+                joystick.onSend(nextJoystickValue.toLong()) {
+                    if (frames.enabled) {
+                        val ch = when (nextJoystickValue) {
+                            -1 -> '<'
+                            0 -> '='
+                            1 -> '>'
+                            else -> shouldNotReachHere()
+                        }
+                        frames.start()
+                        info.draw(info.joystick, ch.toString().repeat(5))
+                        frames.save()
+                        info.clear(info.joystick)
+                        frames.save()
+                    }
                     true
                 }
             }
