@@ -27,12 +27,13 @@ fun main() = runAoc {
         val size = 100
         val canvas = Array(size) { Array(size) { EMPTY } }
 
-        val game = IntCodeComputer(intCode)
-
         if (isPart1) {
-            game.run().map { it.toIntExact() }.chunked(3).forEach { (x, y, id) ->
-                canvas[y, x] = cellsById[id]
-            }
+            IntCodeComputer(intCode).run()
+                .map { it.toIntExact() }
+                .chunked(3)
+                .forEach { (x, y, id) ->
+                    canvas[y, x] = cellsById[id]
+                }
             printExtra(canvas.toAsciiArt(EMPTY))
             canvas.valuesIndexed.count { (ch, _) -> ch == BLOCK }
 
@@ -87,6 +88,7 @@ fun main() = runAoc {
             // Add buffer for several drawing instructions between joystick requests:
             val renderInstructions = Channel<Long>(capacity = 3 * 20)
             launch {
+                val game = IntCodeComputer(intCode)
                 game[0] = 2
                 game.run(joystick, renderInstructions)
                 renderInstructions.close()

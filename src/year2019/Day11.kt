@@ -14,9 +14,8 @@ fun main() = runAoc {
     solution { runBlocking {
         val camera = Channel<Long>(capacity = Channel.Factory.RENDEZVOUS)
         val instructions = Channel<Long>(capacity = 2)
-        val robot = IntCodeComputer(intCode)
-        val robotJob = launch {
-            robot.run(camera, instructions)
+        val robot = launch {
+            IntCodeComputer(intCode).run(camera, instructions)
         }
 
         val B = ' '
@@ -47,7 +46,7 @@ fun main() = runAoc {
 
         val touched = mutableSetOf<Point>()
         whileSelect {
-            robotJob.onJoin { false }
+            robot.onJoin { false }
 
             camera.onSend(c2l(canvas[curPos])) {
                 val color = l2c(instructions.receive())

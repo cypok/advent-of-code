@@ -3,18 +3,8 @@ package year2019
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.runBlocking
-import year2019.IntCodeComputer.State.*
 
 class IntCodeComputer(program: List<Long>) {
-    private enum class State {
-        NOT_STARTED,
-        RUNNING,
-        WAITING_IO,
-        FINISHED,
-    }
-
-    @Volatile
-    private var state = NOT_STARTED
 
     private class Mem(initial: List<Long>) {
         private val fixed = initial.toMutableList()
@@ -39,31 +29,13 @@ class IntCodeComputer(program: List<Long>) {
     private val mem = Mem(program)
 
     operator fun get(i: Long): Long {
-        check(state == NOT_STARTED || state == FINISHED)
         return mem[i]
     }
     operator fun set(i: Long, value: Long) {
-        check(state == NOT_STARTED || state == FINISHED)
         mem[i] = value
     }
 
-    private fun changeState(from: State, to: State) {
-        check(state == from)
-        state = to
-    }
-
-    private inline fun <R> io(action: () -> R): R {
-        changeState(RUNNING, WAITING_IO)
-        try {
-            return action()
-        } finally {
-            changeState(WAITING_IO, RUNNING)
-        }
-    }
-
     suspend fun run(input: suspend () -> Long, output: suspend (Long) -> Unit) {
-        changeState(NOT_STARTED, RUNNING)
-
         var ip = 0L // instruction pointer
         var rb = 0L // relative base
         while (true) {
@@ -115,8 +87,8 @@ class IntCodeComputer(program: List<Long>) {
                 1 -> result(param() + param())
                 2 -> result(param() * param())
 
-                3 -> result(io { input() })
-                4 -> param().let { io { output(it) } }
+                3 -> result(input())
+                4 -> output(param())
 
                 5 -> jumpIf(param() != 0L)
                 6 -> jumpIf(param() == 0L)
@@ -131,8 +103,6 @@ class IntCodeComputer(program: List<Long>) {
                 else -> error(op)
             }
         }
-
-        changeState(RUNNING, FINISHED)
     }
 
     suspend fun run(input: ReceiveChannel<Long>, output: SendChannel<Long>) =
