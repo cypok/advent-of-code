@@ -25,7 +25,7 @@ interface ExampleContext {
 
 interface SolutionContext {
     val lines: List<String>
-    val map: StringArray2D
+    val map: Array2D<Char>
     val intCode: List<Long>
 
     val isPart1: Boolean
@@ -95,7 +95,7 @@ fun runAoc(content: AocContext.() -> Unit) {
         ) {
             open class SilentCtx : SolutionContext {
                 override val lines = input.trimEnd('\n').lines()
-                override val map by lazy { StringArray2D(lines) }
+                override val map by lazy { Array2D.fromLines(lines) }
                 override val intCode by lazy { lines.joinToString("").numbers() }
 
                 override val isPart1 get() = partNum == 1

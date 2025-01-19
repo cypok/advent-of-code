@@ -46,8 +46,8 @@ class Tests {
     }
 
     @Test
-    fun testStringArray2DWide() {
-        val map = StringArray2D( """
+    fun testArray2DWide() {
+        val map = Array2D.fromLines( """
             abcd
             efgh
         """.trimIndent().lines())
@@ -59,8 +59,8 @@ class Tests {
     }
 
     @Test
-    fun testStringArray2DNarrow() {
-        val map = StringArray2D("""
+    fun testArray2DNarrow() {
+        val map = Array2D.fromLines("""
             ae
             bf
             cg
@@ -71,8 +71,8 @@ class Tests {
     }
 
     @Test
-    fun testStringArray2DDiagonalsBig() {
-        val map = StringArray2D("""
+    fun testArray2DDiagonalsBig() {
+        val map = Array2D.fromLines("""
             abcd
             efgh
             ijkl

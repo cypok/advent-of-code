@@ -31,7 +31,7 @@ fun main() = runAoc {
         """
     }
     solution {
-        val timesMap = Array(map.height) { Array(map.width) { -1 } }
+        val timesMap = Array2D.ofInts(map.height, map.width, -1)
         val start = map.find('S')
         val finish = map.find('E')
         timesMap[start] = 0

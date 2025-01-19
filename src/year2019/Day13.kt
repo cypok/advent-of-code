@@ -25,7 +25,7 @@ fun main() = runAoc {
         val cellsById = arrayOf(EMPTY, WALL, BLOCK, PADDLE, BALL)
 
         val size = 100
-        val canvas = Array(size) { Array(size) { EMPTY } }
+        val canvas = Array2D.ofChars(size, size, EMPTY)
 
         if (isPart1) {
             IntCodeComputer(intCode).run()

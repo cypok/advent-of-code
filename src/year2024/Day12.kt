@@ -54,7 +54,7 @@ fun main() = runAoc {
         """
     }
     solution {
-        val visited = Array(map.height) { Array(map.width) { false }}
+        val visited = Array2D.ofBooleans(map.height, map.width, false)
         map.indices.sumOf { pos ->
             if (visited[pos]) return@sumOf 0L
 

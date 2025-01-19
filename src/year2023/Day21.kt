@@ -10,8 +10,8 @@ fun main() = test(
 )
 
 private fun solveFinite(input: List<String>, steps: Int): Long {
-    val map = StringArray2D(input)
-    val moves = Array(map.height) { Array(map.width) { -1 } }
+    val map = Array2D.fromLines(input)
+    val moves = Array2D.ofInts(map.height, map.width, -1)
 
     moves[map.find('S')] = 0
 
@@ -37,7 +37,7 @@ private fun solveFinite(input: List<String>, steps: Int): Long {
         }
     }
 
-    return moves.sumOf { it.sumOf { if (it == steps) 1L else 0L } }
+    return moves.sumOf { if (it == steps) 1L else 0L }
 }
 
 
@@ -48,7 +48,7 @@ private fun solveInfinite(input: List<String>, totalSteps: Int): Long {
     val enoughSteps = map.width * enoughExtension * 2
 
     val multiplier = 1 + 3 * enoughSteps / min(map.width, map.height)
-    val marks = Array(map.height * multiplier) { Array(map.width * multiplier) { -1 } }
+    val marks = Array2D.ofInts(map.height * multiplier, map.width * multiplier, -1)
 
     fun posForMap(p: Point) = p.row.mod(map.height) x p.col.mod(map.width)
 
@@ -77,8 +77,8 @@ private fun solveInfinite(input: List<String>, totalSteps: Int): Long {
 
     for (s in 0 until enoughSteps) {
         var reachedLimit = false
-        for (i in marks.indices) {
-            for (j in marks[i].indices) {
+        for (i in 0 until marks.height) {
+            for (j in 0 until marks.width) {
                 val base = i x j
                 if (marks[base] == s) {
                     step(UP, base, s)
@@ -95,7 +95,7 @@ private fun solveInfinite(input: List<String>, totalSteps: Int): Long {
 
         if (reachedLimit) {
             val past = s + 1
-            val count = marks.sumOf { it.sumOf { if (it == s + 1) 1L else 0L } }
+            val count = marks.sumOf { if (it == s + 1) 1L else 0L }
             limitHitEvents += past to count
             if (limitHitEvents.size == enoughExtension) {
                 break

@@ -36,7 +36,7 @@ fun main() = runAoc {
             }
 
         val size = 200
-        val canvas = Array(size) { Array(size) { B } }
+        val canvas = Array2D.ofChars(size, size, B)
         var curPos = size/2 x size/2
         var curDir = Dir.UP
 

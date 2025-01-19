@@ -27,8 +27,8 @@ private fun solve2(input: List<String>): Long {
     }.max()
 }
 
-private fun calculateEnergy(map: StringArray2D, startPos: Point, startDir: Dir): Long {
-    val beams = Array(map.height) { Array(map.width) { mutableSetOf<Dir>() } }
+private fun calculateEnergy(map: Array2D<Char>, startPos: Point, startDir: Dir): Long {
+    val beams = Array2D.of(map.height, map.width) { mutableSetOf<Dir>() }
 
     tailrec fun traverse(pos: Point, dir: Dir) {
         val (i, j) = pos
@@ -78,5 +78,5 @@ private fun calculateEnergy(map: StringArray2D, startPos: Point, startDir: Dir):
     }
 
     traverse(startPos, startDir)
-    return beams.sumOf { it.sumOf { if (it.isEmpty()) 0L else 1L } }
+    return beams.sumOf { if (it.isEmpty()) 0L else 1L }
 }

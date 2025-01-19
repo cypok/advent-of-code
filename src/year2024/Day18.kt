@@ -45,8 +45,8 @@ fun main() = runAoc {
         val height = 1 + bytes.maxOf { it.i }
         val width = 1 + bytes.maxOf { it.j }
 
-        fun calcStepsToFinish(canvas: Array<Array<Char>>): Int {
-            val visited = Array(height) { Array(width) { Int.MAX_VALUE } }
+        fun calcStepsToFinish(canvas: Array2D<Char>): Int {
+            val visited = Array2D.ofInts(height, width, Int.MAX_VALUE)
             val nextSteps = ArrayDeque(listOf((0 x 0) to 0))
 
             while (nextSteps.isNotEmpty() && visited[height - 1][width - 1] == Int.MAX_VALUE) {
@@ -66,7 +66,7 @@ fun main() = runAoc {
 
         if (isPart1) {
             val bytesCount = exampleParam as? Int ?: 1024
-            val canvas = Array(height) { Array(width) { '.' } }
+            val canvas = Array2D.ofChars(height, width, '.')
             bytes.asSequence().take(bytesCount).forEach { canvas[it] = '#' }
             calcStepsToFinish(canvas)
 
@@ -74,7 +74,7 @@ fun main() = runAoc {
             var low = 0 // always non-blocked
             var high = bytes.size - 1 // always blocked
 
-            val canvas = Array(height) { Array(width) { '.' } }
+            val canvas = Array2D.ofChars(height, width, '.')
             var prevCount = 0
 
             while (low + 1 != high) {

@@ -28,8 +28,8 @@ private val pipes = mapOf(
 private fun parsePipe(ch: Char): Set<Dir> =
     pipes[ch].orEmpty()
 
-private fun startAt(map: StringArray2D, startRow: Int, startCol: Int): Pair<Long, Long> {
-    val borderMap = Array(map.height) { Array(map.width) { false } }
+private fun startAt(map: Array2D<Char>, startRow: Int, startCol: Int): Pair<Long, Long> {
+    val borderMap = Array2D.ofBooleans(map.height, map.width, false)
     for (dir in Dir.entries) {
         followPipes(map, borderMap, startRow, startCol, dir, 0, allowInvalid = true)?.let { (length, returnDir) ->
             val maxDist = (length + 1) / 2
@@ -44,8 +44,8 @@ private fun startAt(map: StringArray2D, startRow: Int, startCol: Int): Pair<Long
 }
 
 private tailrec fun followPipes(
-    map: StringArray2D,
-    borderMap: Array<Array<Boolean>>,
+    map: Array2D<Char>,
+    borderMap: Array2D<Boolean>,
     row: Int,
     col: Int,
     dir: Dir,
@@ -80,7 +80,7 @@ private enum class AreaState {
     OUTSIDE, UPPER_BORDER, LOWER_BORDER, INSIDE,
 }
 
-private fun calcInsideArea(map: StringArray2D, borderMap: Array<Array<Boolean>>, startPipe: Char): Long {
+private fun calcInsideArea(map: Array2D<Char>, borderMap: Array2D<Boolean>, startPipe: Char): Long {
     var area = 0L
     for (i in 0 until map.height) {
         var state = OUTSIDE

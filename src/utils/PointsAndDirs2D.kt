@@ -2,6 +2,7 @@ package utils
 
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.sequences.toList
 
 data class Point(val row: Int, val col: Int) {
     val i get() = row
@@ -51,54 +52,76 @@ enum class Dir {
             else -> error(ch)
         }
     }
-
 }
 
-class StringArray2D(private val strings: List<String>) {
+class Array2D<T>(private val data: Array<Array<T>>) {
 
-    val height: Int get() = strings.size
-    val width: Int get() = strings[0].length
+    val height: Int = data.size
+    val width: Int = data[0].size
+
+    init {
+        check(data.all { it.size == width })
+    }
 
     operator fun contains(pos: Point): Boolean =
         (pos.row in 0 ..< height) && (pos.col in 0 ..< width)
 
-    operator fun get(row: Int, col: Int): Char =
-        strings[row][col]
+    operator fun get(row: Int, col: Int): T =
+        data[row][col]
 
-    operator fun get(pos: Point): Char =
+    operator fun get(pos: Point): T =
         get(pos.row, pos.col)
 
-    fun getOrNull(row: Int, col: Int): Char? =
-        strings.getOrNull(row)?.getOrNull(col)
+    operator fun get(row: Int): MutableList<T> =
+        row(row)
 
-    fun getOrNull(pos: Point): Char? =
+    fun getOrNull(row: Int, col: Int): T? =
+        data.getOrNull(row)?.getOrNull(col)
+
+    fun getOrNull(pos: Point): T? =
         getOrNull(pos.row, pos.col)
 
-    val rows: List<List<Char>> =
-        object : AbstractList<List<Char>>() {
+    operator fun set(row: Int, col: Int, value: T): T {
+        val oldValue = data[row][col]
+        data[row][col] = value
+        return oldValue
+    }
+
+    operator fun set(pos: Point, value: T): T =
+        set(pos.row, pos.col, value)
+
+    val rows: List<MutableList<T>> =
+        object : AbstractList<MutableList<T>>() {
             override val size: Int get() = height
-            override fun get(index: Int): List<Char> = row(index)
+            override fun get(index: Int): MutableList<T> = row(index)
         }
 
-    val cols: List<List<Char>> =
-        object : AbstractList<List<Char>>() {
+    val cols: List<MutableList<T>> =
+        object : AbstractList<MutableList<T>>() {
             override val size: Int get() = width
-            override fun get(index: Int): List<Char> = col(index)
+            override fun get(index: Int): MutableList<T> = col(index)
         }
 
-    fun row(row: Int): List<Char> =
-        object : AbstractList<Char>() {
+    private abstract class RowOrCol<T> : AbstractMutableList<T>() {
+        override fun add(index: Int, element: T) = throw UnsupportedOperationException()
+        override fun removeAt(index: Int): T = throw UnsupportedOperationException()
+    }
+
+    fun row(row: Int): MutableList<T> =
+        object : RowOrCol<T>() {
             override val size: Int get() = width
-            override fun get(index: Int): Char = get(row, index)
+            override fun get(index: Int): T = get(row, index)
+            override fun set(index: Int, element: T): T = set(row, index, element)
         }
 
-    fun col(col: Int): List<Char> =
-        object : AbstractList<Char>() {
+    fun col(col: Int): MutableList<T> =
+        object : RowOrCol<T>() {
             override val size: Int get() = height
-            override fun get(index: Int): Char = get(index, col)
+            override fun get(index: Int): T = get(index, col)
+            override fun set(index: Int, element: T): T = set(index, col, element)
         }
 
-    val diagonalsRight: List<List<Char>>
+    val diagonalsRight: List<List<T>>
         get() = buildList {
             // It could be done easier by just checking out of bounds access,
             // but I wanted to practice some math.
@@ -111,7 +134,7 @@ class StringArray2D(private val strings: List<String>) {
             }
         }
 
-    val diagonalsLeft: List<List<Char>>
+    val diagonalsLeft: List<List<T>>
         get() = buildList {
             for (j in 0 ..< width+height-1) {
                 val iMin = max(0, j-width+1)
@@ -128,28 +151,50 @@ class StringArray2D(private val strings: List<String>) {
         }
     }
 
-    val valuesIndexed: Sequence<Pair<Char, Point>> =
+    val valuesIndexed: Sequence<Pair<T, Point>> =
         indices.map { get(it) to it }
 
-    fun find(ch: Char): Point = find { it == ch }
+    fun find(ch: T): Point = find { it == ch }
 
-    fun find(predicate: (Char) -> Boolean): Point =
+    fun find(predicate: (T) -> Boolean): Point =
         valuesIndexed
             .mapNotNull { (ch, pos) -> pos.takeIf { predicate(ch) } }
             .toList()
             .also { check(it.size == 1) { it } }
             .first()
 
+    fun sumOf(selector: (T) -> Long): Long =
+        data.sumOf { it.sumOf(selector) }
+
+    companion object {
+        fun fromLines(lines: List<String>): Array2D<Char> =
+            Array2D(lines.map { it.toCharArray().toTypedArray() }.toTypedArray())
+
+        fun ofChars(height: Int, width: Int, init: Char): Array2D<Char> =
+            ofChars(height, width) { _, _ -> init }
+
+        fun ofChars(height: Int, width: Int, init: (Int, Int) -> Char): Array2D<Char> =
+            Array2D(Array(height) { i -> Array(width) { j -> init(i, j) } })
+
+        fun ofInts(height: Int, width: Int, init: Int): Array2D<Int> =
+            Array2D(Array(height) { Array(width) { init } })
+
+        fun ofBooleans(height: Int, width: Int, init: Boolean): Array2D<Boolean> =
+            Array2D(Array(height) { Array(width) { init } })
+
+        inline fun <reified T> of(height: Int, width: Int, init: () -> T): Array2D<T> =
+            Array2D(Array(height) { Array(width) { init() } })
+    }
 }
 
-operator fun <T> Array<Array<T>>.get(i: Int, j: Int): T = this[i][j]
-operator fun <T> Array<Array<T>>.set(i: Int, j: Int, v: T) { this[i][j] = v }
-operator fun <T> Array<Array<T>>.get(pos: Point): T = this[pos.i][pos.j]
-operator fun <T> Array<Array<T>>.set(pos: Point, v: T) { this[pos.i][pos.j] = v }
-fun <T> Array<Array<T>>.getOrNull(pos: Point): T? = this.getOrNull(pos.i)?.getOrNull(pos.j)
+@Deprecated("use Array2D.fromLines()")
+@Suppress("FunctionName")
+fun StringArray2D(lines: List<String>) = Array2D.fromLines(lines)
+typealias StringArray2D = Array2D<Char>
 
-fun Array<Array<Char>>.toAsciiArt(backgroundChar: Char): String {
+fun Array2D<Char>.toAsciiArt(backgroundChar: Char): String {
     val linesWithSpaces = this
+        .rows
         .map {
             check(backgroundChar == ' ' || ' ' !in it)
             it.joinToString("").replace(backgroundChar, ' ').trimEnd()
@@ -169,18 +214,9 @@ fun Array<Array<Char>>.toAsciiArt(backgroundChar: Char): String {
     }
 }
 
-fun Array<Array<Char>>.toAsciiArt(): String =
+fun Array2D<Char>.toAsciiArt(): String =
     // Some heuristic.
-    toAsciiArt(this[0].groupingBy { it }.eachCount().maxBy { it.value }.key)
-
-val <T> Array<Array<T>>.valuesIndexed: Sequence<Pair<T, Point>>
-    get() = sequence {
-        for (i in 0 until this@valuesIndexed.size) {
-            for (j in 0 until this@valuesIndexed[i].size) {
-                yield(get(i, j) to (i x j))
-            }
-        }
-    }
+    toAsciiArt(this.row(0).groupingBy { it }.eachCount().maxBy { it.value }.key)
 
 fun List<Char>.asString(): String =
     String(toCharArray())

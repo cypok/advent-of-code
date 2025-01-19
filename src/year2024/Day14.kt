@@ -39,7 +39,7 @@ fun main() = runAoc {
                 robots.map { it.px x it.py }.toSet().size == robots.size
             ) {
                 printExtra(run {
-                    val canvas = Array(height) { Array(width) { ' ' } }
+                    val canvas = Array2D.ofChars(height, width, ' ')
                     robots.forEach { canvas[it.py][it.px] = '*' }
                     canvas.toAsciiArt()
                 })

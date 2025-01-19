@@ -59,16 +59,14 @@ fun main() = runAoc {
         val initialPos = originalMap.find('@').let { (i, j) -> i x (j * widthMultiplier) }
 
         val canvas =
-            Array(height) { i ->
-                Array(width) { j ->
-                    val ch = originalMap[i, j / widthMultiplier]
-                    if (ch == 'O' && isPart2) {
-                        if (j % 2 == 0) '[' else ']'
-                    } else if (ch == '@' && isPart2 && j % 2 == 1) {
-                        '.'
-                    } else {
-                        ch
-                    }
+            Array2D.ofChars(height, width) { i, j ->
+                val ch = originalMap[i, j / widthMultiplier]
+                if (ch == 'O' && isPart2) {
+                    if (j % 2 == 0) '[' else ']'
+                } else if (ch == '@' && isPart2 && j % 2 == 1) {
+                    '.'
+                } else {
+                    ch
                 }
             }
 

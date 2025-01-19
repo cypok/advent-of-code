@@ -12,11 +12,11 @@ fun main() = test(
 private data class Arrow(val dst: Point, val dir: Dir, val len: Int, val heat: Long, val prev: Arrow?)
 
 private fun solve(input: List<String>, minLen: Int, maxLen: Int): Long {
-    val heatMap = StringArray2D(input)
+    val heatMap = Array2D.fromLines(input)
 
-    val marksMap = Array(heatMap.height) { Array(heatMap.width) {
+    val marksMap = Array2D.of(heatMap.height, heatMap.width) {
         mutableMapOf<Pair<Dir, Int>, Long>().withDefault { Long.MAX_VALUE }
-    }}
+    }
 
     val queue = PriorityQueue<Arrow>(Comparator.comparing { a -> a.heat })
 
