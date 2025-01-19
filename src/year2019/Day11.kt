@@ -10,6 +10,8 @@ import utils.*
 //   https://adventofcode.com/2019/day/11
 
 fun main() = runAoc {
+    measureRunTime()
+
     @Suppress("LocalVariableName")
     solution { runBlocking {
         val camera = Channel<Long>(capacity = Channel.Factory.RENDEZVOUS)

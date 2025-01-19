@@ -11,6 +11,8 @@ import kotlin.time.measureTimedValue
 interface AocContext {
     fun ignoreRealInput()
 
+    fun measureRunTime()
+
     fun example(description: String? = null, content: ExampleContext.() -> String)
 
     fun solution(code: Solution)
@@ -54,10 +56,13 @@ var TOTAL_FAILS = 0
 fun runAoc(content: AocContext.() -> Unit) {
     val ctx = object : AocContext {
         var ignoreRealInput = false
+        var measureRunTime = false
         val examples = mutableListOf<Example>()
         val solutions = mutableMapOf<Int, Solution>()
 
         override fun ignoreRealInput() { ignoreRealInput = true }
+
+        override fun measureRunTime() { if (!IS_BATCH_RUN) measureRunTime = true }
 
         override fun example(description: String?, content: ExampleContext.() -> String) {
             val codeLocation = findCallerFromMainFrame().let { "line ${it.lineNumber}" }
@@ -68,7 +73,9 @@ fun runAoc(content: AocContext.() -> Unit) {
             }
             val input = ctx.content().trimIndent()
             require(answers.isNotEmpty()) { "at least one answer for any part" }
-            examples += Example(description, codeLocation, input, answers)
+            if (!IS_BATCH_RUN) {
+                examples += Example(description, codeLocation, input, answers)
+            }
         }
 
         override fun solution1(code: SolutionContext.() -> Any) = solutions.putEnsuringNew(1, code)
@@ -109,7 +116,7 @@ fun runAoc(content: AocContext.() -> Unit) {
             }
             class VerboseCtx : SilentCtx() {
                 val extraPrints = mutableListOf<Any>()
-                override fun printExtra(arg: Any) { extraPrints += arg }
+                override fun printExtra(arg: Any) { if (!IS_BATCH_RUN) extraPrints += arg }
             }
             val solutionCtx = VerboseCtx()
             print("part$partNum, $runDesc: ")
@@ -177,16 +184,19 @@ fun runAoc(content: AocContext.() -> Unit) {
                 val maxExtraMeasurements = 30
                 var totalTime = time
                 print(" (took ${time.inWholeMilliseconds}")
-                if (!IS_BATCH_RUN && time.inWholeSeconds <= maxTimeSec/2 && !wrong) {
+                if (ctx.measureRunTime && time.inWholeSeconds <= maxTimeSec/2 && !wrong) {
                     run measurements@ {
+                        val times = mutableListOf<Long>()
                         repeat(maxExtraMeasurements) {
-                            if (totalTime.inWholeSeconds > maxTimeSec) {
+                            val stabilized = times.takeLast(5).let { it.size >= 5 && 1.0 * it.max() / it.min() < 1.05 }
+                            if (totalTime.inWholeSeconds > maxTimeSec || stabilized) {
                                 return@measurements
                             }
                             val (newResult, newTime) = measureTimedValue { runCatching { SilentCtx().solution() } }
-                            assert(newResult == result)
+                            check(newResult == result)
                             print(", ${newTime.inWholeMilliseconds}")
                             System.out.flush()
+                            times += newTime.inWholeNanoseconds
                             totalTime += newTime
                         }
                     }
@@ -194,22 +204,18 @@ fun runAoc(content: AocContext.() -> Unit) {
                 print(" ms)")
             }
             println()
-            if (!IS_BATCH_RUN) {
-                solutionCtx.extraPrints.forEach { println(it) }
-            }
+            solutionCtx.extraPrints.forEach { println(it) }
         }
 
-        if (!IS_BATCH_RUN) {
-            for (example in ctx.examples) {
-                val desc = example.description ?: "at ${example.codeLocation}"
-                val input = example.input
-                val (answer, param) = example.answers[partNum] ?: continue
-                runOne(
-                    "example $desc", input,
-                    { answer },
-                    param
-                )
-            }
+        for (example in ctx.examples) {
+            val desc = example.description ?: "at ${example.codeLocation}"
+            val input = example.input
+            val (answer, param) = example.answers[partNum] ?: continue
+            runOne(
+                "example $desc", input,
+                { answer },
+                param
+            )
         }
 
         if (!ctx.ignoreRealInput) {

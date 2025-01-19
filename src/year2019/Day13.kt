@@ -15,6 +15,8 @@ import kotlin.math.sign
 //   https://adventofcode.com/2019/day/13
 
 fun main() = runAoc {
+    measureRunTime()
+
     @Suppress("LocalVariableName")
     solution {
         val EMPTY = ' '
