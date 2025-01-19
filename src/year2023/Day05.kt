@@ -109,7 +109,7 @@ private fun processSeeds(input: List<String>, seedRanges: List<LongRange>): Long
                     assert(!toMove.isEmpty())
                     assert(kept.sumOf { it.count() } + toMove.count() == idRange.count())
 
-                    assert(nextIdRanges[i] == prevIdRanges[i], { "don't move range twice" })
+                    assert(nextIdRanges[i] == prevIdRanges[i]) { "don't move range twice" }
                     prevIdRanges[i] = toMove
                     nextIdRanges[i] = toMove.shifted(dst - src)
 

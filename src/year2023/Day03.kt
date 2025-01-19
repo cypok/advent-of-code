@@ -60,7 +60,7 @@ private fun solve2(input: List<String>): Int {
             if (!c.isDigit()) {
                 if (curNum != 0 && isPart) {
                     if (geared != null) {
-                        when (val prev = gears.get(geared)) {
+                        when (val prev = gears[geared]) {
                             null ->
                                 gears.put(geared, curNum)
                             else ->

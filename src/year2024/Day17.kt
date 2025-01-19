@@ -52,7 +52,7 @@ fun main() = runAoc {
                     else -> error("unexpected $operandValue")
                 }
 
-            var output = mutableListOf<Int>()
+            val output = mutableListOf<Int>()
 
             var ip = 0
             while (ip < instructions.size) {

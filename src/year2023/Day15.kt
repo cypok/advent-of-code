@@ -14,7 +14,7 @@ private fun solve1(input: List<String>): Long {
 private fun parseSteps(input: List<String>): List<String> =
     input.single().split(',')
 
-private val N = 256
+private const val N = 256
 
 private fun hash(str: String): Int =
     str.fold(0) { acc, ch -> (acc + ch.code) * 17 % N }

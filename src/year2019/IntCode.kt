@@ -109,7 +109,7 @@ class IntCodeComputer(program: List<Long>) {
         run(input::receive, output::send)
 
     fun run(input: List<Long>): List<Long> =
-        runBlocking() {
+        runBlocking {
             buildList {
                 run(input.iterator()::next, ::add)
             }

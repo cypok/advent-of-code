@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package utils
 
 import java.net.HttpURLConnection
@@ -139,29 +141,30 @@ fun runAoc(content: AocContext.() -> Unit) {
                 println(answer)
                 wrong = answer.isBlank()
                 print("⭕ (")
-                if (expected == null) {
-                    print("unchecked")
-                } else {
-                    print("expected $expected")
+                when (expected) {
+                    null -> print("unchecked")
+                    else -> print("expected $expected")
                 }
                 print(")")
             } else {
                 val actual = actualRaw.toString()
                 print("$actual ")
-                print(
-                    if (expected == null) {
+                print(when (expected) {
+                    null -> {
                         wrong = actual in trivialAnswers
                         "⭕ (unchecked)"
-                    } else if (expected == actual) {
+                    }
+                    actual -> {
                         check(actual !in trivialAnswers)
                         wrong = false
                         "🟢"
-                    } else {
+                    }
+                    else -> {
                         TOTAL_FAILS++
                         wrong = true
                         "🔴 (expected $expected)"
                     }
-                )
+                })
             }
             if (expected == null && !wrong) {
                 // Try to submit the answer for the real input.

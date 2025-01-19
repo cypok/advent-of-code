@@ -30,6 +30,7 @@ fun main() = runAoc {
         return null
     }
 
+    @Suppress("LocalVariableName")
     val YEAR = 2020L
 
     solution1 {

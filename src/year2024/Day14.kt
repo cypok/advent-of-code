@@ -52,7 +52,7 @@ fun main() = runAoc {
         }
 
         assert(isPart1)
-        var qs = mutableListOf(0, 0, 0, 0)
+        val qs = mutableListOf(0, 0, 0, 0)
         for (r in robots) {
             if (r.px != width / 2 && r.py != height / 2) {
                 val qx = r.px / (1 + width / 2)

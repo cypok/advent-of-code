@@ -7,8 +7,8 @@ import java.util.Collections
 //   https://adventofcode.com/2017/day/1
 
 fun main() = test(
-    { solve(it, { _ -> 1 }) },
-    { solve(it, { l -> l / 2 }) },
+    { solve(it) { 1 } },
+    { solve(it) { it / 2 } },
 )
 
 private fun solve(input: List<String>, shiftProvider: (Int) -> Int): Int {

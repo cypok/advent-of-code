@@ -69,12 +69,6 @@ private fun solve1(input: List<String>): Long {
     }
 }
 
-private fun areCollinear(a: Vec, b: Vec): Boolean {
-    return a.y*b.z - a.z*b.y == 0L &&
-            a.x*b.z - a.z*b.x == 0L &&
-            a.x*b.y - a.y*b.x == 0L;
-}
-
 private fun solve2(input: List<String>): Long {
     val stones = parse(input)
 
@@ -101,7 +95,7 @@ private fun solve2(input: List<String>): Long {
     val output = Files.createTempFile("aoc", ".txt")
 
     val pb = ProcessBuilder("/opt/homebrew/bin/python3", z3PythonScript.pathString).redirectOutput(output.toFile()).redirectErrorStream(true)
-    val p = pb.start().waitFor(5, TimeUnit.SECONDS)
+    pb.start().waitFor(5, TimeUnit.SECONDS)
     val result = output.readText().trim()
     return try {
         result.toLong()

@@ -5,11 +5,12 @@ import utils.Dir.*
 import kotlin.math.min
 
 fun main() = test(
-    { solveFinite(it, 64) },
-    { solveInfinite(it, 26_501_365) },
+    { solveFinite(it) },
+    { solveInfinite(it) },
 )
 
-private fun solveFinite(input: List<String>, steps: Int): Long {
+private fun solveFinite(input: List<String>): Long {
+    val steps = 64
     val map = Array2D.fromLines(input)
     val moves = Array2D.ofInts(map.height, map.width, -1)
 
@@ -41,7 +42,8 @@ private fun solveFinite(input: List<String>, steps: Int): Long {
 }
 
 
-private fun solveInfinite(input: List<String>, totalSteps: Int): Long {
+private fun solveInfinite(input: List<String>): Long {
+    val totalSteps = 26_501_365
     val map = StringArray2D(input)
 
     val enoughExtension = 5

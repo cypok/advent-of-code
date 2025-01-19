@@ -2,7 +2,6 @@ package year2023
 
 import utils.*
 import year2023.AreaState.*
-import kotlin.IllegalStateException
 
 fun main() = test(
     { solve(it).first },

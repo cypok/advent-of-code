@@ -10,7 +10,7 @@ class MultiSet<E>() {
     operator fun get(elem: E): Long =
         data[elem] ?: 0
 
-    fun add(elem: E, count: Long = 1L): Unit {
+    fun add(elem: E, count: Long = 1L) {
         data[elem] = Math.addExact(get(elem), count)
     }
 

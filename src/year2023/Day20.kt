@@ -22,7 +22,7 @@ private sealed class Module(val name: String, val outputNames: List<String>) {
 
     final override fun toString() = "$name{${extraToString()}}"
 
-    protected open fun extraToString() = ""
+    open fun extraToString() = ""
 
     class Output(name: String) : Module(name, emptyList()) {
         override fun process(inputs: List<Signal>): List<Pulse> =

@@ -1,9 +1,6 @@
 package year2023
 
 import utils.*
-import kotlin.IllegalStateException
-import kotlin.math.max
-import kotlin.math.min
 
 fun main() = test(
     ::part1,
@@ -79,7 +76,7 @@ private fun part2(input: List<String>): Long {
                     }
                 }
             }
-            shouldNotReachHere()
+            @Suppress("KotlinUnreachableCode") shouldNotReachHere() // Without it, the type checker fails.
         }
         .reduce(::lcm)
 }
