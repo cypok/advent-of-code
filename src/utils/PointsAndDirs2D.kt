@@ -168,6 +168,9 @@ class Array2D<T>(private val data: Array<Array<T>>) {
     fun sumOf(selector: (T) -> Long): Long =
         data.sumOf { it.sumOf(selector) }
 
+    fun count(selector: (T) -> Boolean): Long =
+        sumOf { if (selector(it)) 1 else 0 }
+
     companion object {
         fun fromLines(lines: List<String>): Array2D<Char> =
             Array2D(lines.map { it.toCharArray().toTypedArray() }.toTypedArray())
