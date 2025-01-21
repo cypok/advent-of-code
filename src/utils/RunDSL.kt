@@ -20,6 +20,8 @@ interface AocContext {
     fun solution(code: Solution)
     fun solution1(code: Solution)
     fun solution2(code: Solution)
+
+    fun test(code: Test)
 }
 
 interface ExampleContext {
@@ -43,6 +45,7 @@ interface SolutionContext {
 }
 
 private typealias Solution = SolutionContext.() -> Any
+private typealias Test = () -> Unit
 
 private data class Example(val description: String?,
                            val codeLocation: String,
@@ -61,10 +64,13 @@ fun runAoc(content: AocContext.() -> Unit) {
         var measureRunTime = false
         val examples = mutableListOf<Example>()
         val solutions = mutableMapOf<Int, Solution>()
+        val tests = mutableListOf<Test>()
 
         override fun ignoreRealInput() { ignoreRealInput = true }
 
         override fun measureRunTime() { if (!IS_BATCH_RUN) measureRunTime = true }
+
+        override fun test(code: Test) { if (!IS_BATCH_RUN) tests += code }
 
         override fun example(description: String?, content: ExampleContext.() -> String) {
             val codeLocation = findCallerFromMainFrame().let { "line ${it.lineNumber}" }
@@ -93,6 +99,18 @@ fun runAoc(content: AocContext.() -> Unit) {
 
     val (year, day) = guessYearAndDay()
     val (realInput, realAnswers) = prepareRealInputAndAnswers(year, day)
+
+    val testResults = ctx.tests.map { runCatching { it() }}
+    if (testResults.isNotEmpty()) {
+        if (testResults.all { it.isSuccess }) {
+            println("Tests passed 🟢")
+        } else {
+            testResults.mapNotNull { it.exceptionOrNull() }.forEach {
+                println("Test failed with 🔴 EXCEPTION")
+                it.printStackTrace(System.out)
+            }
+        }
+    }
 
     for ((partNum, solution) in ctx.solutions.entries.sortedBy { it.key }) {
         fun runOne(
