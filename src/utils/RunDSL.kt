@@ -123,90 +123,90 @@ fun runAoc(content: AocContext.() -> Unit) {
             val solutionCtx = VerboseCtx()
             print("part$partNum, $runDesc: ")
             val (result, time) = measureTimedValue { runCatching { solutionCtx.solution() } }
-            if (result.isFailure) {
+            if (result.isSuccess) {
+                // Heuristics around 100% or potentially wrong answer.
+                val trivialAnswers = setOf("0", "-1", "1", "")
+                val wrong: Boolean
+
+                val expected = answerProvider()
+                val actualRaw = result.getOrNull()!!
+                if (actualRaw is VisualAnswerWrapper) {
+                    println()
+                    val answer = actualRaw.value
+                    println(answer)
+                    wrong = answer.isBlank()
+                    print("⭕ (")
+                    when (expected) {
+                        null -> print("unchecked")
+                        else -> print("expected $expected")
+                    }
+                    print(")")
+                } else {
+                    val actual = actualRaw.toString()
+                    print("$actual ")
+                    print(when (expected) {
+                        null -> {
+                            wrong = actual in trivialAnswers
+                            "⭕ (unchecked)"
+                        }
+                        actual -> {
+                            check(actual !in trivialAnswers)
+                            wrong = false
+                            "🟢"
+                        }
+                        else -> {
+                            TOTAL_FAILS++
+                            wrong = true
+                            "🔴 (expected $expected)"
+                        }
+                    })
+                }
+                if (expected == null && !wrong) {
+                    // Try to submit the answer for the real input.
+                    // Note that an example always has a non-null expected answer.
+                    println()
+                    println("Submit? [yes/no]")
+                    if (readln() == "yes") {
+                        val actual =
+                            if (actualRaw is VisualAnswerWrapper) {
+                                println("What is the answer in the picture above?")
+                                readln()
+                            } else {
+                                actualRaw.toString()
+                            }
+                        submitRealAnswer(year, day, partNum, actual)
+                    }
+                }
+                if (timed) {
+                    val maxTimeSec = 10
+                    val maxExtraMeasurements = 30
+                    var totalTime = time
+                    print(" (took ${time.inWholeMilliseconds}")
+                    if (ctx.measureRunTime && time.inWholeSeconds <= maxTimeSec/2 && !wrong) {
+                        run measurements@{
+                            val times = mutableListOf<Long>()
+                            repeat(maxExtraMeasurements) {
+                                val stabilized = times.takeLast(5).let { it.size >= 5 && 1.0 * it.max() / it.min() < 1.05 }
+                                if (totalTime.inWholeSeconds > maxTimeSec || stabilized) {
+                                    return@measurements
+                                }
+                                val (newResult, newTime) = measureTimedValue { runCatching { SilentCtx().solution() } }
+                                check(newResult == result)
+                                print(", ${newTime.inWholeMilliseconds}")
+                                System.out.flush()
+                                times += newTime.inWholeNanoseconds
+                                totalTime += newTime
+                            }
+                        }
+                    }
+                    print(" ms)")
+                }
+                println()
+
+            } else { // isFailure
                 println("🔴 EXCEPTION")
                 result.exceptionOrNull()!!.printStackTrace(System.out)
-                return
             }
-
-            // Heuristics around 100% or potentially wrong answer.
-            val trivialAnswers = setOf("0", "-1", "1", "")
-            val wrong: Boolean
-
-            val expected = answerProvider()
-            val actualRaw = result.getOrNull()!!
-            if (actualRaw is VisualAnswerWrapper) {
-                println()
-                val answer = actualRaw.value
-                println(answer)
-                wrong = answer.isBlank()
-                print("⭕ (")
-                when (expected) {
-                    null -> print("unchecked")
-                    else -> print("expected $expected")
-                }
-                print(")")
-            } else {
-                val actual = actualRaw.toString()
-                print("$actual ")
-                print(when (expected) {
-                    null -> {
-                        wrong = actual in trivialAnswers
-                        "⭕ (unchecked)"
-                    }
-                    actual -> {
-                        check(actual !in trivialAnswers)
-                        wrong = false
-                        "🟢"
-                    }
-                    else -> {
-                        TOTAL_FAILS++
-                        wrong = true
-                        "🔴 (expected $expected)"
-                    }
-                })
-            }
-            if (expected == null && !wrong) {
-                // Try to submit the answer for the real input.
-                // Note that an example always has a non-null expected answer.
-                println()
-                println("Submit? [yes/no]")
-                if (readln() == "yes") {
-                    val actual =
-                        if (actualRaw is VisualAnswerWrapper) {
-                            println("What is the answer in the picture above?")
-                            readln()
-                        } else {
-                            actualRaw.toString()
-                        }
-                    submitRealAnswer(year, day, partNum, actual)
-                }
-            }
-            if (timed) {
-                val maxTimeSec = 10
-                val maxExtraMeasurements = 30
-                var totalTime = time
-                print(" (took ${time.inWholeMilliseconds}")
-                if (ctx.measureRunTime && time.inWholeSeconds <= maxTimeSec/2 && !wrong) {
-                    run measurements@ {
-                        val times = mutableListOf<Long>()
-                        repeat(maxExtraMeasurements) {
-                            val stabilized = times.takeLast(5).let { it.size >= 5 && 1.0 * it.max() / it.min() < 1.05 }
-                            if (totalTime.inWholeSeconds > maxTimeSec || stabilized) {
-                                return@measurements
-                            }
-                            val (newResult, newTime) = measureTimedValue { runCatching { SilentCtx().solution() } }
-                            check(newResult == result)
-                            print(", ${newTime.inWholeMilliseconds}")
-                            System.out.flush()
-                            times += newTime.inWholeNanoseconds
-                            totalTime += newTime
-                        }
-                    }
-                }
-                print(" ms)")
-            }
-            println()
             solutionCtx.extraPrints.forEach { println(it) }
         }
 
