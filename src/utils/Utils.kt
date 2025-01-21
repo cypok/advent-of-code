@@ -122,7 +122,7 @@ operator fun <T> List<T>.component6() = get(5)
 
 fun <T> List<T>.middle(): T = this[this.size/2]
 
-inline fun <T> Iterable<T>.countWhile(predicate: (T) -> Boolean): Int {
+inline fun <T> Iterator<T>.countWhile(predicate: (T) -> Boolean): Int {
     var idx = 0
     for (item in this) {
         if (!predicate(item)) {
@@ -132,6 +132,9 @@ inline fun <T> Iterable<T>.countWhile(predicate: (T) -> Boolean): Int {
     }
     return idx
 }
+
+inline fun <T> Iterable<T>.countWhile(predicate: (T) -> Boolean): Int = iterator().countWhile(predicate)
+inline fun <T> Sequence<T>.countWhile(predicate: (T) -> Boolean): Int = iterator().countWhile(predicate)
 
 inline fun <T> List<T>.countLastWhile(predicate: (T) -> Boolean): Int {
     var idx = size - 1
