@@ -1,7 +1,6 @@
 package year2024
 
 import utils.*
-import kotlin.math.max
 
 // Task description:
 //   https://adventofcode.com/2024/day/17
@@ -92,39 +91,31 @@ fun main() = runAoc {
             interpret(raOriginal).joinToString(",")
 
         } else {
-            val outsCount = instructions.size
-
             // Heavily based on the code of the machine, which loops by dividing rA by 8 again and again
-            var curLow = 1L.shl(3 * (outsCount - 1)) // 8^(outsCount-1)
-            var curHigh = 1L.shl(3 * (outsCount)) // 8^(outsCount)
 
-            var curIdx = outsCount - 1
-
-            while (true) {
-                if (curIdx == -1) {
-                    return@solution curLow + 1
+            fun tryIt(curValue: Long, checkedOuts: Int): Long? {
+                if (checkedOuts == instructions.size) {
+                    return curValue
                 }
 
-                val step = max(1, ((curHigh - curLow) / 100))
-                val outs =
-                    ((curLow until curHigh step step) + (curHigh - 1)).map { ra ->
-                        val out = interpret(ra)
-                        check(out.size == instructions.size)
-                        ra to out
+                val nextExpected = instructions.subList(instructions.size - checkedOuts - 1, instructions.size)
+                for (addend in 0 until 8) {
+                    val nextValue = curValue * 8 + addend
+                    val out = interpret(nextValue)
+                    if (out.size == nextExpected.size) {
+                        if (out[0] == nextExpected[0]) {
+                            assert(out == nextExpected)
+                            tryIt(nextValue, checkedOuts + 1)?.let {
+                                return it
+                            }
+                        }
+                    } else {
+                        assert(out == nextExpected.subList(1, nextExpected.size))
                     }
-
-                fun isGood(out: List<Int>): Boolean =
-                    (curIdx until instructions.size).all { idx -> out[idx] == instructions[idx] }
-
-                val bads = outs.countWhile { (_, out) -> !isGood(out) }
-                if (bads > 0) {
-                    val goods = outs.drop(bads).countWhile { (_, out) -> isGood(out) }
-                    check(bads + goods < outs.size)
-                    curLow = outs[bads - 1].first
-                    curHigh = outs[bads + goods].first
-                } // else just go to the next digit
-                curIdx--
+                }
+                return null
             }
+            tryIt(0L, 0)!!
         }
     }
 }
