@@ -39,6 +39,8 @@ interface SolutionContext {
 
     val exampleParam: Any?
 
+    val wrongAnswer: Any
+
     fun visualAnswer(answer: String): Any
 
     fun printExtra(arg: Any)
@@ -53,6 +55,10 @@ private data class Example(val description: String?,
                            val answers: Map<Int, Pair<String, Any?>>)
 
 private data class VisualAnswerWrapper(val value: String)
+
+private val WrongAnswer = object {
+    override fun toString() = "(wrong answer)"
+}
 
 // TODO: somehow rework these dirty hacks for running all days
 var IS_BATCH_RUN = false
@@ -130,6 +136,8 @@ fun runAoc(content: AocContext.() -> Unit) {
 
                 override val exampleParam = param
 
+                override val wrongAnswer = WrongAnswer
+
                 override fun visualAnswer(answer: String) = VisualAnswerWrapper(answer)
 
                 override fun printExtra(arg: Any) { /* nop */ }
@@ -143,7 +151,7 @@ fun runAoc(content: AocContext.() -> Unit) {
             val (result, time) = measureTimedValue { runCatching { solutionCtx.solution() } }
             if (result.isSuccess) {
                 // Heuristics around 100% or potentially wrong answer.
-                val trivialAnswers = setOf("0", "-1", "1", "")
+                val trivialAnswers = setOf<String>("0", "-1", "1", "")
                 val wrong: Boolean
 
                 val expected = answerProvider()
@@ -161,14 +169,15 @@ fun runAoc(content: AocContext.() -> Unit) {
                     print(")")
                 } else {
                     val actual = actualRaw.toString()
+                    val looksWrong = actual in trivialAnswers || actualRaw === WrongAnswer
                     print("$actual ")
                     print(when (expected) {
                         null -> {
-                            wrong = actual in trivialAnswers
+                            wrong = looksWrong
                             "⭕ (unchecked)"
                         }
                         actual -> {
-                            check(actual !in trivialAnswers)
+                            check(!looksWrong)
                             wrong = false
                             "🟢"
                         }

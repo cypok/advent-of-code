@@ -148,7 +148,7 @@ class IntCodeComputer(program: List<Long>) {
             class Num(val value: Long) : AsciiResult
         }
 
-        private fun read(): AsciiResult = runBlocking {
+        fun read(): AsciiResult = runBlocking {
             val rcv = output.receiveCatching()
             if (rcv.isClosed) {
                 return@runBlocking End
@@ -176,6 +176,13 @@ class IntCodeComputer(program: List<Long>) {
 
         fun readNum(): Long = (read() as Num).value
         fun readLine(): String = (read() as Str).value
+
+        fun readLineOrEnd(): String? =
+            when (val res = read()) {
+                is End -> null
+                is Str -> res.value
+                is Num -> error("Unexpected number ${res.value}")
+            }
 
         fun expectLine(expected: String) {
             val actual = readLine()
