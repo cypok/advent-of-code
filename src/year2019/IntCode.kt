@@ -1,8 +1,9 @@
 package year2019
 
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.*
+import utils.toIntExact
+import year2019.IntCodeComputer.AsciiApi.AsciiResult.*
 
 class IntCodeComputer(program: List<Long>) {
 
@@ -117,5 +118,73 @@ class IntCodeComputer(program: List<Long>) {
 
     fun run(vararg input: Long): List<Long> =
         run(input.asList())
+
+
+    fun launchAsAscii(logging: (String) -> Unit = {}): AsciiApi =
+        AsciiApi(this, logging)
+
+    class AsciiApi(pc: IntCodeComputer, private val logging: (String) -> Unit) {
+        private val runScope = CoroutineScope(Dispatchers.Default)
+        private val output = Channel<Long>(capacity = Channel.UNLIMITED)
+        private val input = Channel<Long>(capacity = Channel.UNLIMITED)
+
+        init {
+            runScope.launch {
+                pc.run(input, output)
+                output.close()
+                runScope.cancel()
+            }
+        }
+
+        fun printLine(str: String) = runBlocking {
+            str.lines().forEach { logging(">> $it") }
+            str.forEach { input.send(it.code.toLong()) }
+            input.send('\n'.code.toLong())
+        }
+
+        sealed interface AsciiResult {
+            object End : AsciiResult
+            class Str(val value: String) : AsciiResult
+            class Num(val value: Long) : AsciiResult
+        }
+
+        private fun read(): AsciiResult = runBlocking {
+            val rcv = output.receiveCatching()
+            if (rcv.isClosed) {
+                return@runBlocking End
+                    .also {
+                        logging("<$ The End.")
+                    }
+            }
+            val value = rcv.getOrThrow()
+            if (value in 0..127) {
+                Str(buildString {
+                    var raw = value
+                    while (raw != '\n'.code.toLong()) {
+                        append(raw.toIntExact().toChar())
+                        raw = output.receive()
+                    }
+                }).also {
+                    logging("<< ${it.value}")
+                }
+            } else {
+                Num(value).also {
+                    logging("<# ${it.value}")
+                }
+            }
+        }
+
+        fun readNum(): Long = (read() as Num).value
+        fun readLine(): String = (read() as Str).value
+
+        fun expectLine(expected: String) {
+            val actual = readLine()
+            check(actual == expected) { "Expected '$expected' but got '$actual'" }
+        }
+
+        fun expectEnd() {
+            check(read() == End)
+        }
+    }
 
 }

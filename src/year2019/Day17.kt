@@ -1,8 +1,5 @@
 package year2019
 
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import utils.*
 import kotlin.math.abs
 
@@ -114,50 +111,19 @@ fun main() = runAoc {
         }
     }
 
-    solution { runBlocking {
-        val ascii = object {
-            val output = Channel<Long>(capacity = Channel.BUFFERED)
-            val input = Channel<Long>(capacity = Channel.BUFFERED)
-
-            init {
-                launch {
-                    val pc = IntCodeComputer(intCode)
-                    check(pc[0] == 1L)
-                    if (isPart2) {
-                        pc[0] = 2L
-                    }
-                    pc.run(input, output)
-                    output.close()
-                }
+    solution {
+        val ascii = run {
+            val pc = IntCodeComputer(intCode)
+            check(pc[0] == 1L)
+            if (isPart2) {
+                pc[0] = 2L
             }
-
-            suspend fun readNum(): Long =
-                output.receive().also {
-                    printExtra("<< number: $it")
-                }
-
-            suspend fun readln(): String = buildString {
-                while (true) {
-                    val ch = output.receive().toIntExact().toChar()
-                    if (ch == '\n') {
-                        break
-                    }
-                    append(ch)
-                }
-            }.also {
-                printExtra("<< $it")
-            }
-
-            suspend fun println(str: String) {
-                printExtra(">> $str")
-                str.forEach { input.send(it.code.toLong()) }
-                input.send('\n'.code.toLong())
-            }
+            pc.launchAsAscii(::printExtra)
         }
 
         val map = Array2D.fromLines(buildList {
             while (true) {
-                val line = ascii.readln()
+                val line = ascii.readLine()
                 if (line.isEmpty()) {
                     break
                 }
@@ -182,25 +148,25 @@ fun main() = runAoc {
         } else {
             val movements = compressPath(buildRawPath(map, startPos, startDir), 20).first().map { it.joinWithCommas() }
 
-            check(ascii.readln() == "Main:")
-            ascii.println(movements[0])
-            check(ascii.readln() == "Function A:")
-            ascii.println(movements[1])
-            check(ascii.readln() == "Function B:")
-            ascii.println(movements[2])
-            check(ascii.readln() == "Function C:")
-            ascii.println(movements[3])
-            check(ascii.readln() == "Continuous video feed?")
-            ascii.println("n")
+            ascii.expectLine("Main:")
+            ascii.printLine(movements[0])
+            ascii.expectLine("Function A:")
+            ascii.printLine(movements[1])
+            ascii.expectLine("Function B:")
+            ascii.printLine(movements[2])
+            ascii.expectLine("Function C:")
+            ascii.printLine(movements[3])
+            ascii.expectLine("Continuous video feed?")
+            ascii.printLine("n")
 
-            check(ascii.readln().isEmpty())
-            while (ascii.readln().isNotEmpty()) {
+            ascii.expectLine("")
+            while (ascii.readLine().isNotEmpty()) {
                 // consume the map after the movement
             }
 
-            ascii.readNum()
+            ascii.readNum().also { ascii.expectEnd() }
         }
-    }}
+    }
 
     test {
         val map = Array2D.fromLines("""
