@@ -7,8 +7,7 @@ import year2019.IntCodeComputer.AsciiApi.AsciiResult.*
 //   https://adventofcode.com/2019/day/21
 
 fun main() = runAoc {
-    solution {
-        val prog = IntCodeComputer(intCode).launchAsAscii(::printExtra)
+    solution { runAsciiIntCode(::printExtra) {
 
         fun Int.regName() = 'A' + this - 1
 
@@ -21,7 +20,7 @@ fun main() = runAoc {
         fun IntCodeComputer.AsciiApi.printScript(instructions: String) =
             printLine(instructions.trimIndent().prepareScript())
 
-        prog.expectLine("Input instructions:")
+        expectLine("Input instructions:")
 
         // Jump only if can jump and has something to jump over, don't jump without a necessity.
         // Jumping without a necessity fails on the input:
@@ -31,7 +30,7 @@ fun main() = runAoc {
         //   123456789
 
         // Need to jump: if there is something to jump over.
-        prog.printScript("""
+        printScript("""
             OR  1 J  ; J = 1
             AND 2 J  ; J = 12
             AND 3 J  ; J = 123
@@ -40,11 +39,11 @@ fun main() = runAoc {
 
         // Can jump: there is a safe path after the jump.
         if (isPart1) {
-            prog.printScript("""
+            printScript("""
                 OR 4 T  ; T = 4
             """)
         } else {
-            prog.printScript("""
+            printScript("""
                 OR  6 T  ; T = 6
                 OR  9 T  ; T = 6 || 9
                 AND 5 T  ; T = 5 && (6 || 9) = 56 || 59
@@ -52,26 +51,24 @@ fun main() = runAoc {
                 AND 4 T  ; T = 48 || 456 || 459
             """)
         }
-        prog.printScript("""
+        printScript("""
             AND T J  ; J = !(123) && (4 && ...)
         """)
-        prog.printScript(if (isPart1) "WALK" else "RUN")
-        prog.expectLine("")
-        prog.expectLine(if (isPart1) "Walking..." else "Running...")
-        prog.expectLine("")
+        printScript(if (isPart1) "WALK" else "RUN")
+        expectLine("")
+        expectLine(if (isPart1) "Walking..." else "Running...")
+        expectLine("")
 
-        when (val res = prog.read()) {
+        when (val res = scan()) {
             is Num -> res.value
-                .also { prog.expectEnd() }
+                .also { expectEnd() }
             is Str -> {
                 check(res.value == "")
-                prog.expectLine("Didn't make it across:")
-                while (prog.readLineOrEnd() != null) {
-                    // consume all
-                }
+                expectLine("Didn't make it across:")
+                scanLinesUntilEnd()
                 wrongAnswer
             }
             End -> error("unexpected end")
         }
-    }
+    }}
 }

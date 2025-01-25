@@ -111,19 +111,19 @@ fun main() = runAoc {
         }
     }
 
-    solution {
-        val ascii = run {
-            val pc = IntCodeComputer(intCode)
-            check(pc[0] == 1L)
+    fun SolutionContext.pc() =
+        IntCodeComputer(intCode).apply {
+            check(this[0] == 1L)
             if (isPart2) {
-                pc[0] = 2L
+                this[0] = 2L
             }
-            pc.launchAsAscii(::printExtra)
         }
+
+    solution { pc().runAscii(::printExtra) {
 
         val map = Array2D.fromLines(buildList {
             while (true) {
-                val line = ascii.readLine()
+                val line = scanLine()
                 if (line.isEmpty()) {
                     break
                 }
@@ -148,25 +148,25 @@ fun main() = runAoc {
         } else {
             val movements = compressPath(buildRawPath(map, startPos, startDir), 20).first().map { it.joinWithCommas() }
 
-            ascii.expectLine("Main:")
-            ascii.printLine(movements[0])
-            ascii.expectLine("Function A:")
-            ascii.printLine(movements[1])
-            ascii.expectLine("Function B:")
-            ascii.printLine(movements[2])
-            ascii.expectLine("Function C:")
-            ascii.printLine(movements[3])
-            ascii.expectLine("Continuous video feed?")
-            ascii.printLine("n")
+            expectLine("Main:")
+            printLine(movements[0])
+            expectLine("Function A:")
+            printLine(movements[1])
+            expectLine("Function B:")
+            printLine(movements[2])
+            expectLine("Function C:")
+            printLine(movements[3])
+            expectLine("Continuous video feed?")
+            printLine("n")
 
-            ascii.expectLine("")
-            while (ascii.readLine().isNotEmpty()) {
+            expectLine("")
+            while (scanLine().isNotEmpty()) {
                 // consume the map after the movement
             }
 
-            ascii.readNum().also { ascii.expectEnd() }
+            scanNum().also { expectEnd() }
         }
-    }
+    }}
 
     test {
         val map = Array2D.fromLines("""

@@ -2,8 +2,11 @@ package year2019
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
+import utils.SolutionContext
 import utils.toIntExact
+import year2019.IntCodeComputer.AsciiApi
 import year2019.IntCodeComputer.AsciiApi.AsciiResult.*
+import java.io.Closeable
 
 class IntCodeComputer(program: List<Long>) {
 
@@ -32,6 +35,7 @@ class IntCodeComputer(program: List<Long>) {
     operator fun get(i: Long): Long {
         return mem[i]
     }
+
     operator fun set(i: Long, value: Long) {
         mem[i] = value
     }
@@ -119,11 +123,7 @@ class IntCodeComputer(program: List<Long>) {
     fun run(vararg input: Long): List<Long> =
         run(input.asList())
 
-
-    fun launchAsAscii(logging: (String) -> Unit = {}): AsciiApi =
-        AsciiApi(this, logging)
-
-    class AsciiApi(pc: IntCodeComputer, private val logging: (String) -> Unit) {
+    class AsciiApi(pc: IntCodeComputer, private val logging: (String) -> Unit) : Closeable {
         private val runScope = CoroutineScope(Dispatchers.Default)
         private val output = Channel<Long>(capacity = Channel.UNLIMITED)
         private val input = Channel<Long>(capacity = Channel.UNLIMITED)
@@ -132,8 +132,12 @@ class IntCodeComputer(program: List<Long>) {
             runScope.launch {
                 pc.run(input, output)
                 output.close()
-                runScope.cancel()
+                close()
             }
+        }
+
+        override fun close() {
+            runScope.cancel()
         }
 
         fun printLine(str: String) = runBlocking {
@@ -148,7 +152,7 @@ class IntCodeComputer(program: List<Long>) {
             class Num(val value: Long) : AsciiResult
         }
 
-        fun read(): AsciiResult = runBlocking {
+        fun scan(): AsciiResult = runBlocking {
             val rcv = output.receiveCatching()
             if (rcv.isClosed) {
                 return@runBlocking End
@@ -174,24 +178,35 @@ class IntCodeComputer(program: List<Long>) {
             }
         }
 
-        fun readNum(): Long = (read() as Num).value
-        fun readLine(): String = (read() as Str).value
+        fun scanNum(): Long = (scan() as Num).value
+        fun scanLine(): String = (scan() as Str).value
 
-        fun readLineOrEnd(): String? =
-            when (val res = read()) {
+        fun scanLineOrEnd(): String? =
+            when (val res = scan()) {
                 is End -> null
                 is Str -> res.value
                 is Num -> error("Unexpected number ${res.value}")
             }
 
+        fun scanLinesUntilEnd(): List<String> =
+            generateSequence { scanLineOrEnd() }.toList()
+
+        fun scanLinesWhile(predicate: (String) -> Boolean): List<String> =
+            generateSequence { scanLine().takeIf(predicate) }.toList()
+
         fun expectLine(expected: String) {
-            val actual = readLine()
+            val actual = scanLine()
             check(actual == expected) { "Expected '$expected' but got '$actual'" }
         }
 
         fun expectEnd() {
-            check(read() == End)
+            check(scan() == End)
         }
     }
-
 }
+
+fun <R> IntCodeComputer.runAscii(logging: (String) -> Unit, action: AsciiApi.() -> R): R =
+    AsciiApi(this, logging).use { it.action() }
+
+fun <R> SolutionContext.runAsciiIntCode(logging: (String) -> Unit, action: AsciiApi.() -> R): R =
+    IntCodeComputer(intCode).runAscii(logging, action)
