@@ -4,6 +4,7 @@ Solutions for [Advent of Code](https://adventofcode.com)
 in [Kotlin](https://kotlinlang.org).
 
 Got 50 ⭐️ every year since 2023.
+And also 23 ⭐️ in 2019 for all [IntCode](https://adventofcode.com/2019/day/2) days.
 
 Features:
 *   automatic input file downloading
