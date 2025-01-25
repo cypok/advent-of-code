@@ -32,7 +32,7 @@ fun main() = runAoc {
 
             init {
                 GlobalScope.launch {
-                    IntCodeComputer(intCode).run(movement, status)
+                    intCodeComputer().run(movement, status)
                 }
             }
 

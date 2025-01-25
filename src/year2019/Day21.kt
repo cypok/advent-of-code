@@ -1,6 +1,7 @@
 package year2019
 
 import utils.*
+import year2019.IntCodeComputer.AsciiApi
 import year2019.IntCodeComputer.AsciiApi.AsciiResult.*
 
 // Task description:
@@ -17,7 +18,7 @@ fun main() = runAoc {
                 .replace("\n+".toRegex(), "\n")
                 .replace("^\n".toRegex(), "")
 
-        fun IntCodeComputer.AsciiApi.printScript(instructions: String) =
+        fun AsciiApi.printScript(instructions: String) =
             printLine(instructions.trimIndent().prepareScript())
 
         expectLine("Input instructions:")

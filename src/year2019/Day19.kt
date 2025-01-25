@@ -13,7 +13,7 @@ fun main() = runAoc {
 
     solution {
         fun isPulledAt(x: Int, y: Int): Boolean {
-            val s = IntCodeComputer(intCode).run(x.toLong(), y.toLong()).single().toIntExact()
+            val s = intCodeComputer().run(x.toLong(), y.toLong()).single().toIntExact()
             return when (s) {
                 0 -> false
                 1 -> true

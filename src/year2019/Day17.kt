@@ -112,7 +112,7 @@ fun main() = runAoc {
     }
 
     fun SolutionContext.pc() =
-        IntCodeComputer(intCode).apply {
+        intCodeComputer().apply {
             check(this[0] == 1L)
             if (isPart2) {
                 this[0] = 2L

@@ -7,7 +7,7 @@ import utils.*
 
 fun main() = runAoc {
     solution {
-        val pc = IntCodeComputer(intCode)
+        val pc = intCodeComputer()
         if (isPart1) {
             val result = pc.run(1)
             check(result.dropLast(1).all { it == 0L })

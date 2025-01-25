@@ -7,6 +7,6 @@ import utils.*
 
 fun main() = runAoc {
     solution {
-        IntCodeComputer(intCode).run(if (isPart1) 1 else 2).single()
+        intCodeComputer().run(if (isPart1) 1 else 2).single()
     }
 }

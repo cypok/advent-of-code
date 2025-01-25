@@ -30,7 +30,7 @@ fun main() = runAoc {
         val canvas = Array2D.ofChars(size, size, EMPTY)
 
         if (isPart1) {
-            IntCodeComputer(intCode).run()
+            intCodeComputer().run()
                 .map { it.toIntExact() }
                 .chunked(3)
                 .forEach { (x, y, id) ->
@@ -90,7 +90,7 @@ fun main() = runAoc {
             // Add buffer for several drawing instructions between joystick requests:
             val renderInstructions = Channel<Long>(capacity = 3 * 20)
             launch {
-                val game = IntCodeComputer(intCode)
+                val game = intCodeComputer()
                 game[0] = 2
                 game.run(joystick, renderInstructions)
                 renderInstructions.close()

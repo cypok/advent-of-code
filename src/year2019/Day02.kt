@@ -8,7 +8,7 @@ import utils.*
 fun main() = runAoc {
     solution {
         fun run(noun: Long, verb: Long): Long {
-            val pc = IntCodeComputer(intCode)
+            val pc = intCodeComputer()
             pc[1] = noun
             pc[2] = verb
             pc.run()

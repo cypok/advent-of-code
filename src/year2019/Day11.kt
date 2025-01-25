@@ -17,7 +17,7 @@ fun main() = runAoc {
         val camera = Channel<Long>(capacity = Channel.Factory.RENDEZVOUS)
         val instructions = Channel<Long>(capacity = 2)
         val robot = launch {
-            IntCodeComputer(intCode).run(camera, instructions)
+            intCodeComputer().run(camera, instructions)
         }
 
         val B = ' '

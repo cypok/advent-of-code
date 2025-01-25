@@ -3,6 +3,7 @@ package year2019
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
 import utils.SolutionContext
+import utils.numbers
 import utils.toIntExact
 import year2019.IntCodeComputer.AsciiApi
 import year2019.IntCodeComputer.AsciiApi.AsciiResult.*
@@ -205,8 +206,12 @@ class IntCodeComputer(program: List<Long>) {
     }
 }
 
+fun SolutionContext.intCodeComputer() =
+    IntCodeComputer(lines.joinToString("").numbers())
+
+fun <R> SolutionContext.runAsciiIntCode(logging: (String) -> Unit, action: AsciiApi.() -> R): R =
+    intCodeComputer().runAscii(logging, action)
+
 fun <R> IntCodeComputer.runAscii(logging: (String) -> Unit, action: AsciiApi.() -> R): R =
     AsciiApi(this, logging).use { it.action() }
 
-fun <R> SolutionContext.runAsciiIntCode(logging: (String) -> Unit, action: AsciiApi.() -> R): R =
-    IntCodeComputer(intCode).runAscii(logging, action)

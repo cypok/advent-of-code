@@ -58,7 +58,7 @@ fun main() = runAoc {
                 val chs = List(n + 1) { Channel<Long>(capacity = Channel.RENDEZVOUS) }
                 val pcs = chs.zipWithNext().map { (chIn, chOut) ->
                     launch {
-                        IntCodeComputer(intCode).run(chIn, chOut)
+                        intCodeComputer().run(chIn, chOut)
                     }
                 }
                 for ((ch, phase) in chs zip phases) {

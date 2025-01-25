@@ -88,7 +88,7 @@ fun main() = runAoc {
         val theNetwork = launch {
             repeat(count) { addr ->
                 launch {
-                    val pc = IntCodeComputer(intCode)
+                    val pc = intCodeComputer()
 
                     var ownAddressRead = false
                     val inputBuffer = inputBuffers[addr]
