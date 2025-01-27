@@ -11,6 +11,8 @@ import year2019.IntCodeComputer.AsciiApi
 //   https://adventofcode.com/2019/day/25
 
 fun main() = runAoc {
+    measureRunTime()
+
     @Suppress("LocalVariableName")
     solution1 {
         fun logging(str: String) = printExtra(str)

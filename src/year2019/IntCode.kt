@@ -8,6 +8,7 @@ import utils.toIntExact
 import year2019.IntCodeComputer.AsciiApi
 import year2019.IntCodeComputer.AsciiApi.AsciiResult.*
 import java.io.Closeable
+import kotlin.coroutines.coroutineContext
 
 class IntCodeComputer(program: List<Long>) {
 
@@ -44,7 +45,7 @@ class IntCodeComputer(program: List<Long>) {
     suspend fun run(input: suspend () -> Long, output: suspend (Long) -> Unit) {
         var ip = 0L // instruction pointer
         var rb = 0L // relative base
-        while (true) {
+        while (coroutineContext.isActive) {
             val opAndMode = mem[ip++]
             val op = (opAndMode % 100).toInt()
 
