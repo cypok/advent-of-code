@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "2.1.0"
+    kotlin("jvm") version "2.2.21"
     id("application")
     id("idea")
 }
@@ -11,7 +11,6 @@ kotlin {
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.compilerOptions {
-    freeCompilerArgs.add("-XXLanguage:+BreakContinueInInlineLambdas")
     freeCompilerArgs.add("-opt-in=kotlin.contracts.ExperimentalContracts")
     freeCompilerArgs.add("-opt-in=kotlin.io.path.ExperimentalPathApi")
     freeCompilerArgs.add("-opt-in=kotlinx.coroutines.DelicateCoroutinesApi")
