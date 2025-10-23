@@ -1,15 +1,17 @@
 package year2023
 
 import utils.*
+import utils.Array2D
 import year2023.AreaState.*
 
+@Suppress("DEPRECATION")
 fun main() = test(
     { solve(it).first },
     { solve(it).second },
 )
 
 private fun solve(input: List<String>): Pair<Long, Long> {
-    val map = StringArray2D(input)
+    val map = Array2D.fromLines(input)
     map.find('S').let { (i, j) ->
         return startAt(map, i, j)
     }

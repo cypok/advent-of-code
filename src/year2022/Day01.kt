@@ -3,6 +3,7 @@ package year2022
 import utils.splitByEmptyLines
 import utils.test
 
+@Suppress("DEPRECATION")
 fun main() = test(
     { solve(it, 1) },
     { solve(it, 3) },

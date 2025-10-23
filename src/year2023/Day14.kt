@@ -1,6 +1,7 @@
 package year2023
 
 import utils.*
+import utils.Array2D
 
 fun main() = runAoc {
     solution1 { solve1() }
@@ -8,7 +9,7 @@ fun main() = runAoc {
 }
 
 private fun SolutionContext.solve1(): Long {
-    return StringArray2D(lines).cols.sumOf { col ->
+    return Array2D.fromLines(lines).cols.sumOf { col ->
         col.withIndex().fold(Pair(0, 0L)) { acc, (i, ch) ->
             if (ch != 'O') return@fold acc
 
@@ -24,7 +25,7 @@ private fun SolutionContext.solve1(): Long {
 }
 
 private fun SolutionContext.solve2(): Long {
-    val originalMap = StringArray2D(lines)
+    val originalMap = Array2D.fromLines(lines)
     val height = originalMap.height
     val width = originalMap.width
 

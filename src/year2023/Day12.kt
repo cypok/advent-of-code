@@ -2,6 +2,7 @@ package year2023
 
 import utils.*
 
+@Suppress("DEPRECATION")
 fun main() = test(
     { solve(it, 1) },
     { solve(it, 5) },

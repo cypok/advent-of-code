@@ -6,6 +6,7 @@ import java.util.Collections
 // Task description:
 //   https://adventofcode.com/2017/day/1
 
+@Suppress("DEPRECATION")
 fun main() = test(
     { solve(it) { 1 } },
     { solve(it) { it / 2 } },

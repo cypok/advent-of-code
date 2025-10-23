@@ -1,9 +1,11 @@
 package year2023
 
 import utils.*
+import utils.Array2D
 import utils.Dir.*
 import kotlin.math.min
 
+@Suppress("DEPRECATION")
 fun main() = test(
     { solveFinite(it) },
     { solveInfinite(it) },
@@ -44,7 +46,7 @@ private fun solveFinite(input: List<String>): Long {
 
 private fun solveInfinite(input: List<String>): Long {
     val totalSteps = 26_501_365
-    val map = StringArray2D(input)
+    val map = Array2D.fromLines(input)
 
     val enoughExtension = 5
     val enoughSteps = map.width * enoughExtension * 2

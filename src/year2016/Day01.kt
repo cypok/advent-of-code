@@ -6,6 +6,7 @@ import kotlin.math.absoluteValue
 // Task description:
 //   https://adventofcode.com/2016/day/1
 
+@Suppress("DEPRECATION")
 fun main() = test(
     ::solve1,
     ::solve2,

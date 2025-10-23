@@ -4,6 +4,7 @@ import utils.*
 import kotlin.math.max
 import kotlin.math.min
 
+@Suppress("DEPRECATION")
 fun main() = test(
     ::solve,
 )

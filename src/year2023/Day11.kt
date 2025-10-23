@@ -1,14 +1,16 @@
 package year2023
 
 import utils.*
+import utils.Array2D
 
+@Suppress("DEPRECATION")
 fun main() = test(
     { solve(it, 2) },
     { solve(it, 1000000) },
 )
 
 private fun solve(input: List<String>, expansion: Int): Long {
-    val map = StringArray2D(input)
+    val map = Array2D.fromLines(input)
     val emptyCols = collectEmptyLines(map.cols)
     val emptyRows = collectEmptyLines(map.rows)
 

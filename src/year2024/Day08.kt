@@ -42,7 +42,7 @@ fun main() = runAoc {
     }
 }
 
-private fun antinodesLocations(advanced: Boolean, map: StringArray2D, p1: Point, p2: Point) = buildList {
+private fun antinodesLocations(advanced: Boolean, map: Array2D<Char>, p1: Point, p2: Point) = buildList {
     for ((start, diff) in listOf(1 to 1, 0 to -1)) {
         val indices =
             if (advanced) generateSequence(start) { it + diff }

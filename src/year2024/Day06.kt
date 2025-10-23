@@ -2,6 +2,7 @@ package year2024
 
 import kotlinx.coroutines.*
 import utils.*
+import utils.Array2D
 import java.util.concurrent.ConcurrentHashMap
 
 // Task description:
@@ -90,7 +91,7 @@ fun main() = runAoc {
 }
 
 private fun solve1(input: List<String>): Int {
-    val map = StringArray2D(input)
+    val map = Array2D.fromLines(input)
     var curPos = map.find('^')
     var curDir = Dir.UP
 
@@ -110,7 +111,7 @@ private fun solve1(input: List<String>): Int {
 }
 
 private fun solve2(input: List<String> ): Int {
-    val map = StringArray2D(input)
+    val map = Array2D.fromLines(input)
     val originalGuardPos = map.find('^')
 
     var curPos = originalGuardPos
@@ -154,7 +155,7 @@ private fun solve2(input: List<String> ): Int {
 }
 
 private fun solve2BruteForce(input: List<String>): Int {
-    val map = StringArray2D(input)
+    val map = Array2D.fromLines(input)
     val originalGuardPos = map.find('^')
     val originalGuardDir = Dir.UP
 
@@ -169,7 +170,7 @@ private fun solve2BruteForce(input: List<String>): Int {
     }
 }
 
-private fun wouldLoop(map: StringArray2D, extraObstruction: Point,
+private fun wouldLoop(map: Array2D<Char>, extraObstruction: Point,
                       startPos: Point, startDir: Dir): Boolean {
     var curPos = startPos
     var curDir = startDir

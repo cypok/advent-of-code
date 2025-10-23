@@ -2,6 +2,7 @@ package year2023
 
 import utils.*
 
+@Suppress("DEPRECATION")
 fun main() = test(
     { process(it, withJoker = false) },
     { process(it, withJoker = true) },

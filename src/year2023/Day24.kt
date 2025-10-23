@@ -8,6 +8,7 @@ import kotlin.io.path.readText
 import kotlin.io.path.writeLines
 import kotlin.math.abs
 
+@Suppress("DEPRECATION")
 fun main() = test(
     ::solve1,
     ::solve2,

@@ -9,6 +9,7 @@ private data class RGB(
     val blue: Int
 )
 
+@Suppress("DEPRECATION")
 fun main() = test(
     ::solve1,
     ::solve2,

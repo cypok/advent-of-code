@@ -5,6 +5,7 @@ import utils.*
 // Task description:
 //   https://adventofcode.com/2019/day/1
 
+@Suppress("DEPRECATION")
 fun main() = test(
     ::solve1,
     ::solve2,

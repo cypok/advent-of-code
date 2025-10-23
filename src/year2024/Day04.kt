@@ -1,6 +1,7 @@
 package year2024
 
 import utils.*
+import utils.Array2D
 
 // Task description:
 //   https://adventofcode.com/2024/day/4
@@ -45,14 +46,14 @@ private fun solve1(input: List<String>): Long {
     val xmasChars1 = "XMAS".toCharArray().toList()
     val xmasChars2 = xmasChars1.reversed()
 
-    val map = StringArray2D(input)
+    val map = Array2D.fromLines(input)
     return (map.rows + map.cols + map.diagonalsLeft + map.diagonalsRight).sumOf { chars ->
         chars.windowed(4).count { it == xmasChars1 || it == xmasChars2 }.toLong()
     }
 }
 
 private fun solve2(input: List<String>): Long {
-    val map = StringArray2D(input)
+    val map = Array2D.fromLines(input)
     return (1 ..< map.width-1).sumOf { j ->
         (1 ..< map.height-1).sumOf { i ->
             val middle = map[j, i]

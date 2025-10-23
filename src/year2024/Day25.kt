@@ -1,6 +1,7 @@
 package year2024
 
 import utils.*
+import utils.Array2D
 
 // Task description:
 //   https://adventofcode.com/2024/day/25
@@ -9,7 +10,7 @@ fun main() = runAoc {
     solution1 {
         val locksAndKeys =
             lines.splitByEmptyLines()
-                .map { StringArray2D(it) }
+                .map { Array2D.fromLines(it) }
 
         val (_, height) =
             locksAndKeys

@@ -4,6 +4,7 @@ import utils.*
 import utils.Dir.*
 import java.util.PriorityQueue
 
+@Suppress("DEPRECATION")
 fun main() = test(
     { solve(it, 0, 3) },
     { solve(it, 4, 10) },

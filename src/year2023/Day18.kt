@@ -3,6 +3,7 @@ package year2023
 import utils.*
 import utils.Dir.*
 
+@Suppress("DEPRECATION")
 fun main() = test(
     { solve(it.map(::parseLinePart1)) },
     { solve(it.map(::parseLinePart2)) },

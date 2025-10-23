@@ -3,6 +3,7 @@ package year2023
 import utils.*
 import kotlin.math.min
 
+@Suppress("DEPRECATION")
 fun main() = test(
     ::solve1,
     ::solve2,

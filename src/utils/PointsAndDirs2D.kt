@@ -192,11 +192,6 @@ class Array2D<T>(private val data: Array<Array<T>>) {
     }
 }
 
-@Deprecated("use Array2D.fromLines()")
-@Suppress("FunctionName")
-fun StringArray2D(lines: List<String>) = Array2D.fromLines(lines)
-typealias StringArray2D = Array2D<Char>
-
 fun Array2D<Char>.toAsciiArt(backgroundChar: Char): String {
     val linesWithSpaces = this
         .rows

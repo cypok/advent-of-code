@@ -1,6 +1,7 @@
 package year2024
 
 import utils.*
+import utils.Array2D
 
 // Task description:
 //   https://adventofcode.com/2024/day/15
@@ -53,7 +54,7 @@ fun main() = runAoc {
 
         val widthMultiplier = if (isPart2) 2 else 1
 
-        val originalMap = StringArray2D(mapLines)
+        val originalMap = Array2D.fromLines(mapLines)
         val height = originalMap.height
         val width = originalMap.width * widthMultiplier
         val initialPos = originalMap.find('@').let { (i, j) -> i x (j * widthMultiplier) }

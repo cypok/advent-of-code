@@ -1,7 +1,9 @@
 package year2023
 
 import utils.*
+import utils.Array2D
 
+@Suppress("DEPRECATION")
 fun main() = test(
     { solve(it, 0) },
     { solve(it, 1) },
@@ -9,7 +11,7 @@ fun main() = test(
 
 private fun solve(input: List<String>, expectedSmudgesCount: Int): Long {
     return input.splitByEmptyLines().sumOf { map ->
-        when (val ref = solveOne(StringArray2D(map.toList()), expectedSmudgesCount)) {
+        when (val ref = solveOne(Array2D.fromLines(map.toList()), expectedSmudgesCount)) {
             is Reflection.Vertical -> ref.col
             is Reflection.Horizontal -> ref.row * 100
         }.toLong()
@@ -21,7 +23,7 @@ private sealed class Reflection {
     data class Horizontal(val row: Int) : Reflection()
 }
 
-private fun solveOne(map: StringArray2D, expectedSmudgesCount: Int): Reflection {
+private fun solveOne(map: Array2D<Char>, expectedSmudgesCount: Int): Reflection {
     fun tryDimension(width: Int, rows: List<List<Char>>): Int? =
         (1 until width).firstOrNull { colNum ->
             rows.sumOf { row -> countSmudges(row, colNum) } == expectedSmudgesCount

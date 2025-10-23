@@ -1,20 +1,22 @@
 package year2023
 
 import utils.*
+import utils.Array2D
 import utils.Dir.*
 
+@Suppress("DEPRECATION")
 fun main() = test(
     ::solve1,
     ::solve2,
 )
 
 private fun solve1(input: List<String>): Long {
-    val map = StringArray2D(input)
+    val map = Array2D.fromLines(input)
     return calculateEnergy(map, Point(0, 0), RIGHT)
 }
 
 private fun solve2(input: List<String>): Long {
-    val map = StringArray2D(input)
+    val map = Array2D.fromLines(input)
     return sequence {
         for (i in 0 until map.height) {
             yield(calculateEnergy(map, Point(i, 0), RIGHT))
