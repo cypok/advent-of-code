@@ -122,8 +122,8 @@ fun runAoc(content: AocContext.() -> Unit) {
             runDesc: String,
             input: String,
             answerProvider: () -> String?,
-            param: Any? = null,
-            timed: Boolean = false,
+            isExample: Boolean,
+            exampleParam: Any? = null,
         ) {
             open class SilentCtx : SolutionContext {
                 override val lines = input.trimEnd('\n').lines()
@@ -132,7 +132,7 @@ fun runAoc(content: AocContext.() -> Unit) {
                 override val isPart1 get() = partNum == 1
                 override val isPart2 get() = partNum == 2
 
-                override val exampleParam = param
+                override val exampleParam = exampleParam
 
                 override val wrongAnswer = WrongAnswer
 
@@ -175,7 +175,8 @@ fun runAoc(content: AocContext.() -> Unit) {
                             "⭕ (unchecked)"
                         }
                         actual -> {
-                            check(!looksWrong)
+                            // Example could have a trivial answer.
+                            check(isExample || !looksWrong)
                             wrong = false
                             "🟢"
                         }
@@ -202,7 +203,7 @@ fun runAoc(content: AocContext.() -> Unit) {
                         submitRealAnswer(year, day, partNum, actual)
                     }
                 }
-                if (timed) {
+                if (!isExample) {
                     val maxTimeSec = 10
                     val maxExtraMeasurements = 30
                     var totalTime = time
@@ -240,18 +241,23 @@ fun runAoc(content: AocContext.() -> Unit) {
             val input = example.input
             val (answer, param) = example.answers[partNum] ?: continue
             runOne(
-                "example $desc", input,
+                "example $desc",
+                input,
                 { answer },
-                param
+                isExample = true,
+                exampleParam = param,
             )
         }
 
         if (!ctx.ignoreRealInput) {
             val input = realInput.readText()
             val answer = { realAnswers(partNum) }
-            runOne("real", input,
+            runOne(
+                "real",
+                input,
                 answer,
-                timed = true)
+                isExample = false,
+            )
         }
     }
 }
@@ -365,7 +371,7 @@ private fun webAccess(year: Int, day: Int, subUrl: String, method: String, postD
                 connection.inputStream.use { input ->
                     return String(input.readAllBytes())
                 }
-            else -> throw RuntimeException("Bad response: ${connection.responseCode}, ${connection.responseMessage}")
+            else -> throw RuntimeException("Bad response from $url: ${connection.responseCode}, ${connection.responseMessage}")
         }
     } catch (e: Exception) {
         throw RuntimeException("Cannot access $url", e)
@@ -377,7 +383,7 @@ private fun previewRealInput(input: String) {
     val width = 40
     val lines = input.lines()
     println("========= REAL INPUT PREVIEW ==============")
-    lines.take(height).map {
+    lines.take(height).forEach {
         println(it.take(width) + (if (it.length > width) "..." else ""))
     }
     if (lines.size > height) {
