@@ -36,6 +36,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
     implementation("org.jgrapht:jgrapht-core:1.5.2")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    implementation("org.jetbrains.lincheck:lincheck:3.2")
 }
 
 application {
