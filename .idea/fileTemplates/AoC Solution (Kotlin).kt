@@ -12,7 +12,16 @@ import utils.*
 //   https://adventofcode.com/$YearUrl/day/$DayUrl
 
 fun main() = runAoc {
+    example {
+        answer1(0 /* expected answer goes here */)
+        """
+            example
+            goes
+            here
+        """
+    }
+
     solution1 {
-        0L
+        // solution goes here
     }
 }

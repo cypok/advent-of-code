@@ -149,7 +149,7 @@ fun runAoc(content: AocContext.() -> Unit) {
             val (result, time) = measureTimedValue { runCatching { solutionCtx.solution() } }
             if (result.isSuccess) {
                 // Heuristics around 100% or potentially wrong answer.
-                val trivialAnswers = setOf<String>("0", "-1", "1", "")
+                val trivialAnswers = setOf<String>("0", "-1", "1", "", Unit.toString())
                 val wrong: Boolean
 
                 val expected = answerProvider()
