@@ -2,6 +2,7 @@ package utils
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class Tests {
 
@@ -96,6 +97,7 @@ class Tests {
         assertEquals(listOf(37L, -42L), "37   -42".numbers())
         assertEquals(listOf(37L, -42L), " 37   -42 ".numbers())
         assertEquals(listOf(37L, -42L), "37,-42".numbers())
+        assertEquals(listOf(37L, 42L), "37 -> 42".numbers())
     }
 
     @Test
@@ -126,5 +128,27 @@ class Tests {
         assertEquals(0, listOf(10, -5, -3, 20, -5, 7).countLastWhile { it < 0 })
         assertEquals(6, listOf(-10, -5, -3, -20, -5, -7).countLastWhile { it < 0 })
         assertEquals(0, listOf<Int>().countLastWhile { it < 0 })
+    }
+
+    @Test
+    fun testListPair() {
+        assertEquals(1 to 2, listOf(1, 2).pair())
+        assertThrows<Exception> { emptyList<Int>().pair() }
+        assertThrows<Exception> { listOf(1).pair() }
+        assertThrows<Exception> { listOf(1, 2, 3).pair() }
+        assertThrows<Exception> { listOf(1, 2, 3, 4).pair() }
+    }
+
+    @Test
+    fun testListDisjointPairs() {
+        assertEquals(listOf(10 to 20, 30 to 40), listOf(10, 20, 30, 40).disjointPairs())
+        assertThrows<Exception> { listOf(10, 20, 30).disjointPairs() }
+        assertThrows<Exception> { listOf(10).disjointPairs() }
+    }
+
+    @Test
+    fun testListWindowedPairs() {
+        assertEquals(listOf(10 to 20, 20 to 30), listOf(10, 20, 30).windowedPairs())
+        assertEquals(emptyList<Nothing>(), listOf(10).windowedPairs())
     }
 }

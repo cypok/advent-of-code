@@ -41,7 +41,9 @@ fun String.words(): List<String> =
     split("""\s+""".toRegex())
 
 fun String.numbers(): List<Long> =
-    split("""[^0-9+-]+""".toRegex()).filterNot { it.isEmpty() }.map { it.toLong() }
+    """([+-])?[0-9]+""".toRegex().findAll(this)
+        .map { it.value.toLong() }
+        .toList()
 
 fun String.numbersAsInts(): List<Int> =
     numbers().map { it.toIntExact() }
@@ -114,7 +116,11 @@ fun <T> List<T>.pair(): Pair<T, T> =
         else -> throw IllegalArgumentException("List has more than one element.")
     }
 
-/** Like [single], but for two elements. */
+/** Split the list into the list of disjoint pairs. */
+fun <T> Iterable<T>.disjointPairs(): List<Pair<T, T>> =
+    windowed(2, step = 2, partialWindows = true).map { it.pair() }
+
+/** Generate the list of windowed pairs from the given list. */
 fun <T> Iterable<T>.windowedPairs(): List<Pair<T, T>> =
     windowed(2, step = 1, partialWindows = false).map { it.pair() }
 
