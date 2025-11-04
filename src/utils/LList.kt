@@ -6,12 +6,23 @@ class LList<T>(val head: T, val tail: LList<T>?) {
         (this as LList<T>?).toString()
 }
 
+tailrec operator fun <T> LList<T>?.contains(element: T): Boolean =
+    this != null && (this.head == element || this.tail.contains(element))
+
+fun <T> LList<T>?.sumOf(selector: (T) -> Long): Long {
+    tailrec fun <T> LList<T>?.iter(selector: (T) -> Long, acc: Long): Long =
+        if (this == null) acc
+        else tail.iter(selector, Math.addExact(acc, selector(head)))
+
+    return iter(selector, 0)
+}
+
 fun <T> LList<T>?.toList(): List<T> =
     when (this) {
         null ->
-            emptyList<T>()
+            emptyList()
         else ->
-            buildList<T> {
+            buildList {
                 var cur: LList<T>? = this@toList
                 while (cur != null) {
                     add(cur.head)
