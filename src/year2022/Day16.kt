@@ -27,7 +27,7 @@ fun main() = runAoc {
         """
     }
 
-    solution1 {
+    solution {
         val input = lines.map { line ->
             // e.g. "Valve AA has flow rate=0; tunnels lead to valves DD, II, BB"
             val words = line.words()
@@ -98,27 +98,105 @@ fun main() = runAoc {
         val valveId: Map<Valve, Int> = valves.toList().sortedBy { it.first }.withIndex().associate { (i, namedValve) -> namedValve.second to i }
         val alreadyOpened = BitSet(valveId.size)
 
-        fun open(valve: Valve, timeLeft: Int, alreadyReleased: Int, oldRate: Int): Int {
-            assert(timeLeft >= 0)
-            val newRate = oldRate + valve.rate
-            val somethingOpened = goodValves.maxOf { next ->
-                val nextId = valveId[next]!!
-                if (alreadyOpened[nextId]) return@maxOf -1
-                val timeToOpenNext = graph[valve]!![next]!! + 1
-                if (timeToOpenNext > timeLeft) return@maxOf -1
-                try {
-                    alreadyOpened[nextId] = true
-                    open(next, timeLeft - timeToOpenNext, alreadyReleased + timeToOpenNext * newRate, newRate)
-                } finally {
-                    alreadyOpened[nextId] = false
-                }
+        @Suppress("LocalVariableName")
+        val NEVER = Int.MAX_VALUE
+
+        tailrec fun simulate(
+            valveA: Valve, timeToValveA: Int,
+            valveB: Valve, timeToValveB: Int,
+            timeLeft: Int, alreadyReleased: Int, oldRate: Int
+        ): Int {
+            if (timeLeft == 0) return alreadyReleased
+
+            fun tryOpenMore(src: Valve, calcWithOpened: (Valve, Int) -> Int?): Int? {
+                return goodValves.mapNotNull { next ->
+                    val nextId = valveId[next]!!
+                    if (alreadyOpened[nextId]) return@mapNotNull null
+                    val timeToOpenNext = graph[src]!![next]!! + 1
+                    if (timeToOpenNext > timeLeft) return@mapNotNull null
+                    try {
+                        alreadyOpened[nextId] = true
+                        calcWithOpened(next, timeToOpenNext)
+                    } finally {
+                        alreadyOpened[nextId] = false
+                    }
+                }.maxOrNull()
             }
-            return if (somethingOpened != -1) somethingOpened else alreadyReleased + timeLeft * newRate
+
+            val hitA = timeToValveA == 0
+            val hitB = timeToValveB == 0
+
+            val newRate = oldRate +
+                    (if (hitA) valveA.rate else 0) +
+                    (if (hitB) valveB.rate else 0)
+
+            return when {
+                !hitA && !hitB ->
+                    simulate(
+                        valveA, timeToValveA - 1,
+                        valveB, timeToValveB - 1,
+                        timeLeft - 1, alreadyReleased + newRate, newRate
+                    )
+
+                hitA && !hitB ->
+                    tryOpenMore(valveA) { next, timeToOpenNext ->
+                        @Suppress("NON_TAIL_RECURSIVE_CALL")
+                        simulate(
+                            next, timeToOpenNext - 1,
+                            valveB, timeToValveB - 1,
+                            timeLeft - 1, alreadyReleased + newRate, newRate
+                        )
+                    } ?: simulate(
+                        start, NEVER,
+                        valveB, timeToValveB - 1,
+                        timeLeft - 1, alreadyReleased + newRate, newRate
+                    )
+
+                !hitA && hitB ->
+                    tryOpenMore(valveB) { next, timeToOpenNext ->
+                        @Suppress("NON_TAIL_RECURSIVE_CALL")
+                        simulate(
+                            valveA, timeToValveA - 1,
+                            next, timeToOpenNext - 1,
+                            timeLeft - 1, alreadyReleased + newRate, newRate
+                        )
+                    } ?: simulate(
+                        valveA, timeToValveA - 1,
+                        start, NEVER,
+                        timeLeft - 1, alreadyReleased + newRate, newRate
+                    )
+
+                else -> // hitA && hitB
+                    tryOpenMore(valveA) { nextA, timeToOpenNextA ->
+                        tryOpenMore(valveB) { nextB, timeToOpenNextB ->
+                            @Suppress("NON_TAIL_RECURSIVE_CALL")
+                            simulate(
+                                nextA, timeToOpenNextA - 1,
+                                nextB, timeToOpenNextB - 1,
+                                timeLeft - 1, alreadyReleased + newRate, newRate,
+                            )
+                        }
+                    } ?: (alreadyReleased + timeLeft * newRate)
+            }
         }
 
         check(start.rate == 0)
-        open(start, 30, 0, 0)
+        if (isPart1) {
+            simulate(
+                start, 0,
+                start, NEVER,
+                30, 0, 0
+            )
+        } else {
+            simulate(
+                start, 0,
+                start, 0,
+                26, 0, 0
+            )
+        }
     }
 }
 
-private class Valve(val name: String, val rate: Int)
+private class Valve(val name: String, val rate: Int) {
+    override fun toString() = name
+}
