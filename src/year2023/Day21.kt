@@ -61,7 +61,9 @@ fun main() = runAoc {
     solution2 {
         val totalSteps = (exampleParam as Int?) ?: 26_501_365
 
-        val enoughExtension = 5
+        // 5 is to verify the sequence. 3 is just to get an answer.
+        val enoughExtension = 3
+
         val enoughSteps = map.width * enoughExtension * 2
 
         val multiplier = 1 + 3 * enoughSteps / min(map.width, map.height)
@@ -120,9 +122,7 @@ fun main() = runAoc {
             }
         }
 
-        if (limitHitEvents.size < 5) {
-            error("not enough steps!")
-        }
+        check(limitHitEvents.size == enoughExtension)
 
         val velocities = limitHitEvents.map { it.second }.derivative()
         val accelerations = velocities.derivative()
