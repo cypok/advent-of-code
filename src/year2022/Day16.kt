@@ -3,6 +3,8 @@ package year2022
 import utils.*
 import java.util.BitSet
 import java.util.PriorityQueue
+import kotlin.math.max
+import kotlin.math.min
 
 // Task description:
 //   https://adventofcode.com/2022/day/16
@@ -72,47 +74,74 @@ fun main() = runAoc {
                 }
         }
 
-        val graph: Map<Valve, Map<Valve, Int>> = run {
-            adjacentValvesCompressed.keys.associateWith { base ->
-                mutableMapOf<Valve, Int>().also { dists ->
+        val graph: Map<Valve, Map<Valve, Int>> =
+            adjacentValvesCompressed.keys
+                .associateWith { base ->
+                    mutableMapOf<Valve, Int>().also { dists ->
 
-                    val queue = PriorityQueue<Pair<Valve, Int>>(Comparator.comparing { it.second })
-                    queue.add(base to 0)
-                    while (queue.isNotEmpty()) {
-                        val (cur, dist) = queue.poll()
-                        if (cur in dists) continue
-                        if (cur != base) dists[cur] = dist
+                        val queue = PriorityQueue<Pair<Valve, Int>>(Comparator.comparing { it.second })
+                        queue.add(base to 0)
+                        while (queue.isNotEmpty()) {
+                            val (cur, dist) = queue.poll()
+                            if (cur in dists) continue
+                            if (cur != base) dists[cur] = dist
 
-                        adjacentValvesCompressed[cur]!!.forEach { (next, leg) ->
-                            if (next !in dists && next != base) {
-                                queue.add(next to (dist + leg))
+                            adjacentValvesCompressed[cur]!!.forEach { (next, leg) ->
+                                if (next !in dists && next != base) {
+                                    queue.add(next to (dist + leg))
+                                }
                             }
                         }
                     }
                 }
-            }
-        }
 
-        val goodValves = graph.keys.filter { it.rate > 0 }
+        fun dist(src: Valve, dst: Valve) =
+            graph.getValue(src).getValue(dst)
+
+        val goodValves = valves.values.filter { it.rate > 0 }.sortedBy { it.rate }
 
         val valveId: Map<Valve, Int> = valves.toList().sortedBy { it.first }.withIndex().associate { (i, namedValve) -> namedValve.second to i }
         val alreadyOpened = BitSet(valveId.size)
 
         @Suppress("LocalVariableName")
-        val NEVER = Int.MAX_VALUE
+        val NEVER = 1_000_000
 
+        var currentBest = -1
         tailrec fun simulate(
             valveA: Valve, timeToValveA: Int,
             valveB: Valve, timeToValveB: Int,
-            timeLeft: Int, alreadyReleased: Int, oldRate: Int
+            timeLeft: Int, alreadyReleased: Int, oldRate: Int,
+            skipBoundCheck: Boolean = false
         ): Int {
-            if (timeLeft == 0) return alreadyReleased
+            if (timeLeft == 0) {
+                if (alreadyReleased > currentBest) {
+                    currentBest = alreadyReleased
+                }
+                return alreadyReleased
+            }
+
+            fun estimateMax(): Int =
+                alreadyReleased +
+                        oldRate * timeLeft +
+                        valveA.rate * max(0, timeLeft - timeToValveA) +
+                        valveB.rate * max(0, timeLeft - timeToValveB) +
+                        goodValves
+                            .sumOf {
+                                if (alreadyOpened[valveId[it]!!]) return@sumOf 0
+                                val tA = timeToValveA + dist(valveA, it)
+                                val tB = timeToValveB + dist(valveB, it)
+                                it.rate * max(0, timeLeft - min(tA, tB) - 1)
+                            }
+
+            if (!skipBoundCheck && estimateMax() < currentBest) {
+                return -1
+            }
 
             fun tryOpenMore(src: Valve, calcWithOpened: (Valve, Int) -> Int?): Int? {
                 return goodValves.mapNotNull { next ->
                     val nextId = valveId[next]!!
                     if (alreadyOpened[nextId]) return@mapNotNull null
-                    val timeToOpenNext = graph[src]!![next]!! + 1
+                    val timeToOpenNext = dist(src, next) + 1
                     if (timeToOpenNext > timeLeft) return@mapNotNull null
                     try {
                         alreadyOpened[nextId] = true
@@ -135,7 +164,8 @@ fun main() = runAoc {
                     simulate(
                         valveA, timeToValveA - 1,
                         valveB, timeToValveB - 1,
-                        timeLeft - 1, alreadyReleased + newRate, newRate
+                        timeLeft - 1, alreadyReleased + newRate, newRate,
+                        skipBoundCheck = true
                     )
 
                 hitA && !hitB ->
@@ -173,27 +203,24 @@ fun main() = runAoc {
                             simulate(
                                 nextA, timeToOpenNextA - 1,
                                 nextB, timeToOpenNextB - 1,
-                                timeLeft - 1, alreadyReleased + newRate, newRate,
+                                timeLeft - 1, alreadyReleased + newRate, newRate
                             )
                         }
-                    } ?: (alreadyReleased + timeLeft * newRate)
+                    } ?: simulate(
+                        start, NEVER,
+                        start, NEVER,
+                        timeLeft - 1, alreadyReleased + newRate, newRate
+                    )
             }
         }
 
         check(start.rate == 0)
-        if (isPart1) {
-            simulate(
-                start, 0,
-                start, NEVER,
-                30, 0, 0
-            )
-        } else {
-            simulate(
-                start, 0,
-                start, 0,
-                26, 0, 0
-            )
-        }
+        simulate(
+            start, 0,
+            start, if (isPart1) NEVER else 0,
+            if (isPart1) 30 else 26, 0, 0,
+            skipBoundCheck = true
+        )
     }
 }
 
