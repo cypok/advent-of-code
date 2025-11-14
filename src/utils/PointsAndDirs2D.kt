@@ -6,9 +6,20 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.sequences.toList
 
-data class Point(val row: Int, val col: Int) {
-    val i get() = row
-    val j get() = col
+
+@JvmInline
+value class Point(private val hiRowLoCol: Long) {
+    constructor(row: Int, col: Int)
+            : this(row.toLong().shl(32) + col.toLong().and(0xFFFFFFFF))
+
+    val row: Int get() = hiRowLoCol.shr(32).toInt()
+    val col: Int get() = hiRowLoCol.toInt()
+
+    val i: Int get() = row
+    val j: Int get() = col
+
+    operator fun component1(): Int = row
+    operator fun component2(): Int = col
 
     override fun toString(): String = "${row}x${col}"
 

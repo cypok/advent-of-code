@@ -151,4 +151,17 @@ class Tests {
         assertEquals(listOf(10 to 20, 20 to 30), listOf(10, 20, 30).windowedPairs())
         assertEquals(emptyList<Nothing>(), listOf(10).windowedPairs())
     }
+
+    @Test
+    fun testPoints() {
+        for ((r, c) in listOf(37 to 42, 0 to 0, -10 to -20)) {
+            val p = r x c
+            assertEquals(r, p.row)
+            assertEquals(c, p.col)
+            assertEquals((r - 1) x c, p.moveInDir(Dir.UP))
+            assertEquals((r + 1) x c, p.moveInDir(Dir.DOWN))
+            assertEquals(r x (c - 1), p.moveInDir(Dir.LEFT))
+            assertEquals(r x (c + 1), p.moveInDir(Dir.RIGHT))
+        }
+    }
 }
