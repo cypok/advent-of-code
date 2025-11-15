@@ -40,6 +40,8 @@ interface SolutionContext {
 
     val wrongAnswer: Any
 
+    fun configurationProblem(problem: Any?): Any
+
     fun visualAnswer(answer: String): Any
 
     fun printExtra(arg: Any)
@@ -53,11 +55,16 @@ private data class Example(val description: String?,
                            val input: String,
                            val answers: Map<Int, Pair<String, Any?>>)
 
-private data class VisualAnswerWrapper(val value: String)
+private class VisualAnswerWrapper(val value: String)
 
 private val WrongAnswer = object {
     override fun toString() = "(wrong answer)"
 }
+
+private class ConfigurationProblem(val problem: Any?) {
+    override fun toString() = "(configuration problem: $problem)"
+}
+
 
 // TODO: somehow rework these dirty hacks for running all days
 var IS_BATCH_RUN = false
@@ -136,6 +143,8 @@ fun runAoc(content: AocContext.() -> Unit) {
 
                 override val wrongAnswer = WrongAnswer
 
+                override fun configurationProblem(problem: Any?) = ConfigurationProblem(problem)
+
                 override fun visualAnswer(answer: String) = VisualAnswerWrapper(answer)
 
                 override fun printExtra(arg: Any) { /* nop */ }
@@ -165,6 +174,9 @@ fun runAoc(content: AocContext.() -> Unit) {
                         else -> print("expected $expected")
                     }
                     print(")")
+                } else if (actualRaw is ConfigurationProblem) {
+                    print("🟡 (configuration problem: ${actualRaw.problem})")
+                    wrong = true
                 } else {
                     val actual = actualRaw.toString()
                     val looksWrong = actual in trivialAnswers || actualRaw === WrongAnswer
@@ -230,7 +242,8 @@ fun runAoc(content: AocContext.() -> Unit) {
                 println()
 
             } else { // isFailure
-                println("🔴 EXCEPTION")
+                TOTAL_FAILS++
+                println("💥 EXCEPTION")
                 result.exceptionOrNull()!!.printStackTrace(System.out)
             }
             solutionCtx.extraPrints.forEach { println(it) }
