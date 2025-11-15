@@ -1,7 +1,6 @@
 package year2023
 
 import utils.*
-import utils.Dir.*
 import kotlin.math.min
 
 // Task description:
@@ -27,99 +26,98 @@ fun main() = runAoc {
         """
     }
 
-    solution1 {
-        val steps = (exampleParam as Int?) ?: 64
-        val moves = Array2D.ofInts(map.height, map.width, -1)
+    @Suppress("LocalVariableName")
+    val UNVISITED = Int.MIN_VALUE
 
-        moves[map.find('S')] = 0
-
-        fun step(dir: Dir, base: Point, s: Int) {
-            val next = base.moveInDir(dir)
-            val ch = map.getOrNull(next) ?: return
-            if (ch == '#') return
-            val old = moves[next]
-            assert(old != s)
-            if (old != s + 1) {
-                moves[next] = s + 1
-            }
+    fun SolutionContext.step(marks: Array2D<Int>, dir: Dir, base: Point, s: Int): Point? {
+        val next = base.moveInDir(dir)
+        val ch = map.getOrNull(next.i % map.height, next.j % map.width)
+        if (ch == null || ch == '#') return null
+        val old = marks[next]
+        return if (old == UNVISITED) {
+            marks[next] = s + 1
+            next
+        } else {
+            assert(old in 0..<s || old == s + 1)
+            null
         }
+    }
 
-        repeat(steps) { s ->
-            for (base in map.indices) {
-                if (moves[base] == s) {
-                    step(UP, base, s)
-                    step(LEFT, base, s)
-                    step(DOWN, base, s)
-                    step(RIGHT, base, s)
+    fun SolutionContext.iterate(
+        steps: Int, start: Point, marks: Array2D<Int>,
+        preStepCheck: (List<Point>, Int) -> Boolean = { _, _ -> true }
+    ) {
+        marks[start] = 0
+        var frontier = listOf(start)
+        for (s in 0 until steps) {
+            if (!preStepCheck(frontier, s)) break
+
+            val nextFrontier = mutableListOf<Point>()
+            for (base in frontier) {
+                for (dir in Dir.entries) {
+                    step(marks, dir, base, s)?.let {
+                        nextFrontier += it
+                    }
                 }
             }
+            frontier = nextFrontier
         }
+    }
 
-        moves.sumOf { if (it == steps) 1 else 0 }
+    fun countPlots(marks: Array2D<Int>, steps: Int): Long =
+        marks.count { it >= 0 && it % 2 == steps % 2 }
+
+    solution1 {
+        val steps = (exampleParam as Int?) ?: 64
+        val marks = Array2D.ofInts(map.height, map.width, UNVISITED)
+        val start = map.find('S')
+        iterate(steps, start, marks)
+
+        if (false) printExtra(
+            Array2D.ofChars(map.height, map.width) { i, j ->
+                when {
+                    map[i, j] == '#' -> '#'
+                    marks[i, j] == steps -> '0'
+                    marks[i, j] < 0 -> '.'
+                    marks[i, j] % 2 == 0 -> '/'
+                    marks[i, j] % 2 == 1 -> '\\'
+                    else -> shouldNotReachHere()
+                }
+            }.toAsciiArt(' ')
+        )
+
+        countPlots(marks, steps)
     }
 
     solution2 {
         val totalSteps = (exampleParam as Int?) ?: 26_501_365
 
-        // 5 is to verify the sequence. 3 is just to get an answer.
-        val enoughExtension = 3
+        val enoughExtension = 5
 
         val enoughSteps = map.width * enoughExtension * 2
 
         val multiplier = 1 + 3 * enoughSteps / min(map.width, map.height)
-        val marks = Array2D.ofInts(map.height * multiplier, map.width * multiplier, -1)
+        val marks = Array2D.ofInts(map.height * multiplier, map.width * multiplier, UNVISITED)
 
-        fun posForMap(p: Point) = p.row.mod(map.height) x p.col.mod(map.width)
-
-        map.find('S').let { (i, j) ->
-            marks[i + multiplier / 2 * map.height, j + multiplier / 2 * map.width] = 0
-        }
-
-        fun step(dir: Dir, base: Point, s: Int): Boolean {
-            val next = base.moveInDir(dir)
-            val ch = map[posForMap(next)]
-            if (ch == '#') return false
-            val old = marks[next]
-            assert(old != s)
-            return if (old != s + 1) {
-                marks[next] = s + 1
-                true
-            } else {
-                false
-            }
+        val start = map.find('S').let { (i, j) ->
+            (i + multiplier / 2 * map.height) x (j + multiplier / 2 * map.width)
         }
 
         // Just choose one of the directions.
-        var leftLimitNext = multiplier/2 * map.width + 1
+        var leftLimitNext = multiplier/2 * map.width
 
         val limitHitEvents = mutableListOf<Pair<Int, Long>>()
 
-        for (s in 0 until enoughSteps) {
-            var reachedLimit = false
-            for (i in 0 until marks.height) {
-                for (j in 0 until marks.width) {
-                    val base = i x j
-                    if (marks[base] == s) {
-                        step(UP, base, s)
-                        if (step(LEFT, base, s) && i == leftLimitNext) {
-                            assert(!reachedLimit)
-                            reachedLimit = true
-                            leftLimitNext -= map.width
-                        }
-                        step(DOWN, base, s)
-                        step(RIGHT, base, s)
-                    }
-                }
-            }
-
-            if (reachedLimit) {
-                val past = s + 1
-                val count = marks.sumOf { if (it == s + 1) 1L else 0L }
-                limitHitEvents += past to count
+        iterate(enoughSteps, start, marks) { frontier, s ->
+            if (frontier.any() { it.j == leftLimitNext }) {
+                leftLimitNext -= map.width
+                val count = countPlots(marks, s)
+                limitHitEvents += s to count
                 if (limitHitEvents.size == enoughExtension) {
-                    break
+                    return@iterate false
                 }
             }
+            return@iterate true
         }
 
         check(limitHitEvents.size == enoughExtension)
