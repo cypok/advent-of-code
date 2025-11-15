@@ -1,3 +1,4 @@
+import utils.BATCH_TIMES
 import utils.IS_BATCH_RUN
 import utils.TOTAL_FAILS
 import utils.cartesianProduct
@@ -41,12 +42,12 @@ fun main() {
                         println()
                         lastWasShort = false
                     }
-                    println("Year $year, Day $day")
+                    println(dayDesc(year, day))
                     val method = lookup.findStatic(cls, mainName, mainMT)
                     method.invokeExact()
                     println()
                 } else {
-                    println("Year $year, Day $day: not yet")
+                    println("${dayDesc(year, day)}: not yet")
                     lastWasShort = true
                 }
             }
@@ -55,6 +56,20 @@ fun main() {
     if (lastWasShort) {
         println()
     }
+
+    val slowDays = BATCH_TIMES
+        .map { (y, d, t) -> Triple(y, d, t.inWholeMilliseconds) }
+        .filter { (_, _, t) -> t >= 1_000 }
+        .sortedBy { (_, _, t) -> t }
+        .take(5)
+    if (slowDays.isNotEmpty()) {
+        println("Top of days slower than 1 second:")
+        slowDays.forEach { (y, d, t) -> println("${dayDesc(y, d)} took $t ms") }
+        println()
+    }
+
     val status = if (TOTAL_FAILS == 0) "🟢" else "🔴 ($TOTAL_FAILS failed)"
     println("Total: $totalDays days in ${totalTime.inWholeSeconds} s $status")
 }
+
+private fun dayDesc(year: Int, day: Int) = "Year $year, Day $day"

@@ -8,6 +8,7 @@ import java.net.URLEncoder
 import java.nio.file.Path
 import kotlin.io.path.*
 import kotlin.streams.asSequence
+import kotlin.time.Duration
 import kotlin.time.measureTimedValue
 
 interface AocContext {
@@ -69,6 +70,7 @@ private class ConfigurationProblem(val problem: Any?) {
 // TODO: somehow rework these dirty hacks for running all days
 var IS_BATCH_RUN = false
 var TOTAL_FAILS = 0
+var BATCH_TIMES = mutableListOf<Triple<Int, Int, Duration>>() // day to duration
 
 fun runAoc(content: AocContext.() -> Unit) {
     val ctx = object : AocContext {
@@ -238,6 +240,7 @@ fun runAoc(content: AocContext.() -> Unit) {
                         }
                     }
                     print(" ms)")
+                    BATCH_TIMES += Triple(year, day, time)
                 }
                 println()
 
