@@ -63,7 +63,7 @@ fun main() {
         .sortedBy { (_, _, t) -> t }
         .take(5)
     if (slowDays.isNotEmpty()) {
-        println("Top of days slower than 1 second:")
+        println("Slowest days exceeding 1 second:")
         slowDays.forEach { (y, d, t) -> println("${dayDesc(y, d)} took $t ms") }
         println()
     }
