@@ -41,7 +41,7 @@ interface SolutionContext {
 
     val wrongAnswer: Any
 
-    fun configurationProblem(problem: Any?): Any
+    fun ignoredAnswer(problem: Any?): Any
 
     fun visualAnswer(answer: String): Any
 
@@ -62,8 +62,8 @@ private val WrongAnswer = object {
     override fun toString() = "(wrong answer)"
 }
 
-private class ConfigurationProblem(val problem: Any?) {
-    override fun toString() = "(configuration problem: $problem)"
+private class IgnoredAnswer(val problem: Any?) {
+    override fun toString() = "(ignored answer, $problem)"
 }
 
 
@@ -112,6 +112,8 @@ fun runAoc(content: AocContext.() -> Unit) {
     ctx.content()
 
     val (year, day) = guessYearAndDay()
+    println(dayDesc(year, day))
+
     val (realInput, realAnswers) = prepareRealInputAndAnswers(year, day)
 
     val testResults = ctx.tests.map { runCatching { it() }}
@@ -145,7 +147,7 @@ fun runAoc(content: AocContext.() -> Unit) {
 
                 override val wrongAnswer = WrongAnswer
 
-                override fun configurationProblem(problem: Any?) = ConfigurationProblem(problem)
+                override fun ignoredAnswer(problem: Any?) = IgnoredAnswer(problem)
 
                 override fun visualAnswer(answer: String) = VisualAnswerWrapper(answer)
 
@@ -176,8 +178,8 @@ fun runAoc(content: AocContext.() -> Unit) {
                         else -> print("expected $expected")
                     }
                     print(")")
-                } else if (actualRaw is ConfigurationProblem) {
-                    print("🟡 (configuration problem: ${actualRaw.problem})")
+                } else if (actualRaw is IgnoredAnswer) {
+                    print("🟡 (ignored answer, ${actualRaw.problem})")
                     wrong = true
                 } else {
                     val actual = actualRaw.toString()
@@ -423,6 +425,8 @@ private fun findCallerFromMainFrame(): StackWalker.StackFrame =
             .firstOrNull { MAIN_CLASS_PATTERN.matches(it.className) }
             ?: error("this function should be called from DayNN class")
     }
+
+internal fun dayDesc(year: Int, day: Int) = "Year $year, Day $day"
 
 @Deprecated("use runAoc() DSL")
 fun test(part1: (List<String>) -> Any) =

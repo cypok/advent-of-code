@@ -1,7 +1,6 @@
 package year2023
 
 import utils.*
-import java.io.IOException
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.createTempFile
 import kotlin.io.path.pathString
@@ -99,11 +98,14 @@ fun main() = runAoc {
     solution2 {
         val check = runZ3Script(sequenceOf("print('it works')"))
         check.exceptionOrNull()?.let {
-            return@solution2 configurationProblem(it)
+            printExtra(it)
+            return@solution2 ignoredAnswer("python z3 unavailable")
         }
         check.getOrThrow().let { (out, err) ->
             if (out != "it works") {
-                return@solution2 configurationProblem("$out\n$err".trim())
+                if (out.isNotBlank()) printExtra("stdout:\n$out")
+                printExtra("stderr:\n$err")
+                return@solution2 ignoredAnswer("python z3 unavailable")
             }
         }
 

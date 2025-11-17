@@ -2,6 +2,7 @@ import utils.BATCH_TIMES
 import utils.IS_BATCH_RUN
 import utils.TOTAL_FAILS
 import utils.cartesianProduct
+import utils.dayDesc
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
 import java.time.LocalDate
@@ -42,7 +43,6 @@ fun main() {
                         println()
                         lastWasShort = false
                     }
-                    println(dayDesc(year, day))
                     val method = lookup.findStatic(cls, mainName, mainMT)
                     method.invokeExact()
                     println()
@@ -71,5 +71,3 @@ fun main() {
     val status = if (TOTAL_FAILS == 0) "🟢" else "🔴 ($TOTAL_FAILS failed)"
     println("Total: $totalDays days in ${totalTime.inWholeSeconds} s $status")
 }
-
-private fun dayDesc(year: Int, day: Int) = "Year $year, Day $day"
