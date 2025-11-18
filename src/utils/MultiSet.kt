@@ -14,6 +14,13 @@ class MultiSet<E>() {
         data[elem] = Math.addExact(get(elem), count)
     }
 
+    fun addAll(elems: Collection<E>) {
+        elems.forEach { add(it) }
+    }
+
+    val uniqueCount: Int
+        get() = data.size
+
     data class ElementGrouped<E>(val elem: E, val count: Long)
 
     val grouped: Sequence<ElementGrouped<E>>

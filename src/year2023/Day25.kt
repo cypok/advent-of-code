@@ -1,88 +1,91 @@
 package year2023
 
 import utils.*
-import kotlin.math.max
-import kotlin.math.min
+import kotlin.random.Random
 
-@Suppress("DEPRECATION")
-fun main() = test(
-    ::solve,
-)
+// Task description:
+//   https://adventofcode.com/2023/day/25
 
-private fun solve(input: List<String>): Long {
-    val g = Graph(input)
+fun main() = runAoc {
+    measureRunTime()
 
-    for (e1 in g.edges) {
-        val (start, finish) = e1
-        g.withoutEdge(e1) {
-            val path23 = g.findPath(start, finish)!!
-            for (e2 in path23) {
-                g.withoutEdge(e2) {
-                    val path3 = g.findPath(start, finish)!!
-                    for (e3 in path3) {
-                        g.withoutEdge(e3) {
-                            if (!g.areConnected(start, finish)) {
-                                return 1L * g.findSccSize(start) * g.findSccSize(finish)
-                            }
-                        }
+    example {
+        answer1(54)
+        """
+            jqt: rhn xhk nvd
+            rsh: frs pzl lsr
+            xhk: hfx
+            cmg: qnr nvd lhk bvb
+            rhn: xhk bvb hfx
+            bvb: xhk hfx
+            pzl: lsr hfx nvd
+            qnr: nvd
+            ntq: jqt hfx bvb xhk
+            nvd: lhk
+            lsr: lhk
+            rzs: qnr cmg lsr rsh
+            frs: qnr lhk lsr
+        """
+    }
+
+    solution1 {
+        val enoughPathsCount = 1000
+
+        val g = Graph<String>()
+        for (line in lines) {
+            val src = line.substringBefore(": ")
+            val dsts = line.substringAfter(": ").words()
+            for (dst in dsts) {
+                g.addEdge(src, dst)
+            }
+        }
+
+        // Only three edges connect the whole graph.
+        // Take random paths, collect the most frequent edges, they are likely to be a cut.
+        val frequentEdges = MultiSet<Pair<String, String>>()
+        val rng = Random(2023 * 25)
+        repeat(enoughPathsCount) { i ->
+            val start = g.vertices.random(rng)
+            val finish = g.vertices.random(rng)
+            val path = g.findPath(start, finish)!!.map { it.sorted() }
+            frequentEdges.addAll(path)
+            if (frequentEdges.uniqueCount >= 3 && i % 10 == 0) {
+                val cutEdges = frequentEdges.grouped.sortedByDescending { it.count }.map { it.elem }.take(3).toList()
+                g.withoutEdges(cutEdges) {
+                    val cutSize = g.findSccSize(g.vertices.first())
+                    if (cutSize < g.vertices.size) {
+                        return@solution1 1L * cutSize * (g.vertices.size - cutSize)
                     }
                 }
             }
         }
-    }
 
-    shouldNotReachHere()
+        error("min cut not found")
+    }
 }
 
-private class Graph(input: List<String>) {
-    val nodes: Set<String>
+private fun Pair<String, String>.sorted(): Pair<String, String> =
+    if (first > second) second to first else this
 
-    val nameByIdx: List<String>
-    val idxByName: Map<String, Int>
+private class Graph<V> {
+    val vertices = mutableSetOf<V>()
+    val edges = mutableMapOf<V, MutableSet<V>>()
 
-    val edges: List<Pair<Int, Int>>
-    val edgesByNodeMutable: Array<MutableSet<Int>>
-
-    init {
-        val parsed = input.map {
-            val src = it.substringBefore(": ")
-            val dsts = it.substringAfter(": ").words()
-            Pair(src, dsts)
-        }
-        nodes = buildSet<String> {
-            for ((src, dsts) in parsed) {
-                add(src)
-                addAll(dsts)
-            }
-        }
-        nameByIdx = nodes.toList().sorted()
-        idxByName = nameByIdx.withIndex().associate { (idx, node) -> node to idx }
-        edges = mutableListOf()
-        val connectionMatrix = Array(nodes.size) { BooleanArray(nodes.size) }
-        for ((src, dsts) in parsed) {
-            val srcIdx = idxByName[src]!!
-            for (dst in dsts) {
-                val dstIdx = idxByName[dst]!!
-                check(srcIdx != dstIdx)
-                connectionMatrix[srcIdx][dstIdx] = true
-                connectionMatrix[dstIdx][srcIdx] = true
-                edges += min(srcIdx, dstIdx) to max(srcIdx, dstIdx)
-            }
-        }
-        edgesByNodeMutable = Array(nodes.size) { srcIdx ->
-            val connections = connectionMatrix[srcIdx]
-            nodes.indices.filter { connections[it] }.toMutableSet()
-        }
+    fun addEdge(src: V, dst: V) {
+        vertices += src
+        vertices += dst
+        edges.getOrPut(src) { mutableSetOf() } += dst
+        edges.getOrPut(dst) { mutableSetOf() } += src
     }
 
     private inline fun <S, T> traverse(
         initState: S,
-        nextState: (S, Int) -> S,
-        nodeFromState: (S) -> Int,
-        finish: Pair<Int, (S) -> T>?,
-        onEnd: (BooleanArray) -> T
+        nextState: (S, V) -> S,
+        nodeFromState: (S) -> V,
+        finish: Pair<V, (S) -> T>?,
+        onEnd: (Set<V>) -> T
     ): T {
-        val visited = BooleanArray(nodes.size)
+        val visited = mutableSetOf<V>()
         val next = ArrayDeque<S>()
         next += initState
 
@@ -90,15 +93,15 @@ private class Graph(input: List<String>) {
             val s = next.removeFirst()
             val node = nodeFromState(s)
 
-            if (visited[node]) continue
-            visited[node] = true
+            if (node in visited) continue
+            visited += node
 
             if (finish != null && node == finish.first) {
                 return finish.second(s)
             }
 
-            for (dst in edgesByNodeMutable[node]) {
-                if (!visited[dst]) {
+            for (dst in edges[node]!!) {
+                if (dst !in visited) {
                     next += nextState(s, dst)
                 }
             }
@@ -107,7 +110,7 @@ private class Graph(input: List<String>) {
         return onEnd(visited)
     }
 
-    fun findPath(start: Int, finish: Int): Set<Pair<Int, Int>>? =
+    fun findPath(start: V, finish: V): Set<Pair<V, V>>? =
         traverse(
             listOf(start),
             { path, dst -> path + dst },
@@ -115,34 +118,30 @@ private class Graph(input: List<String>) {
             finish to { path -> path.windowedPairs().toSet() },
             { null })
 
-    fun areConnected(start: Int, finish: Int): Boolean =
+    fun areConnected(start: V, finish: V): Boolean =
         traverse(
             start, { _, dst -> dst }, { it },
             finish to { true },
             { false })
 
-    fun findSccSize(start: Int): Int =
+    fun findSccSize(start: V): Int =
         traverse(
             start, { _, dst -> dst }, { it },
             null,
-            { it.count { it } })
+            { it.size })
 
-    inline fun <T> withoutEdge(edge: Pair<Int, Int>, action: () -> T): T {
-        val src = edge.first
-        val dst = edge.second
-        edgesByNodeMutable[src].without(dst) {
-            edgesByNodeMutable[dst].without(src) {
-                return action()
+    inline fun <T> withoutEdges(edges: Collection<Pair<V, V>>, action: () -> T): T {
+        for ((s, d) in edges) {
+            this.edges[s]!! -= d
+            this.edges[d]!! -= s
+        }
+        try {
+            return action()
+        } finally {
+            for ((s, d) in edges) {
+                this.edges[s]!! += d
+                this.edges[d]!! += s
             }
         }
-    }
-}
-
-inline fun <E, T> MutableSet<E>.without(elem: E, action: () -> T): T {
-    check(this.remove(elem))
-    try {
-        return action()
-    } finally {
-        this.add(elem)
     }
 }
