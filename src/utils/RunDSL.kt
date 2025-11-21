@@ -128,6 +128,8 @@ fun runAoc(content: AocContext.() -> Unit) {
         }
     }
 
+    var dayRealTime = Duration.ZERO
+
     for ((partNum, solution) in ctx.solutions.entries.sortedBy { it.key }) {
         fun runOne(
             runDesc: String,
@@ -220,6 +222,7 @@ fun runAoc(content: AocContext.() -> Unit) {
                     }
                 }
                 if (!isExample) {
+                    dayRealTime += time
                     val maxTimeSec = 10
                     val maxExtraMeasurements = 30
                     var totalTime = time
@@ -242,7 +245,6 @@ fun runAoc(content: AocContext.() -> Unit) {
                         }
                     }
                     print(" ms)")
-                    BATCH_TIMES += Triple(year, day, time)
                 }
                 println()
 
@@ -278,6 +280,8 @@ fun runAoc(content: AocContext.() -> Unit) {
             )
         }
     }
+
+    BATCH_TIMES += Triple(year, day, dayRealTime)
 }
 
 private fun <K, V> MutableMap<K, V>.putEnsuringNew(key: K, value: V) {
