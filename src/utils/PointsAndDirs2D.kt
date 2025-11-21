@@ -57,13 +57,16 @@ enum class Dir {
         get() = left.opposite
 
     companion object {
-        fun fromChar(ch: Char) = when (ch) {
+        fun fromCharOrNull(ch: Char): Dir? = when (ch) {
             'U', '^' -> UP
             'D', 'v' -> DOWN
             'L', '<' -> LEFT
             'R', '>' -> RIGHT
-            else -> error(ch)
+            else -> null
         }
+
+        fun fromChar(ch: Char): Dir =
+            fromCharOrNull(ch) ?: error(ch)
     }
 }
 

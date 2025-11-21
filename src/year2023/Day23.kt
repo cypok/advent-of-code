@@ -1,18 +1,11 @@
 package year2023
 
 import utils.*
-import utils.Dir.*
+import java.util.BitSet
 
 fun main() = runAoc {
     solution {
         val respectSlopes = isPart1
-
-        val slopes = mapOf(
-            '^' to UP,
-            '<' to LEFT,
-            'v' to DOWN,
-            '>' to RIGHT,
-        )
 
         val start = 0 x 1
         val finish = (map.height - 1) x (map.width - 2)
@@ -24,7 +17,7 @@ fun main() = runAoc {
             if (ch == '#') return false
 
             if (respectSlopes) {
-                slopes[ch]?.let { slopeDir ->
+                Dir.fromCharOrNull(ch)?.let { slopeDir ->
                     if (slopeDir != dir) {
                         return false
                     }
@@ -62,24 +55,37 @@ fun main() = runAoc {
             buildGraph(start)
         }
 
-        fun findLongest(forkPos: Point, curLen: Int, visited: MutableSet<Point>): Int {
-            if (forkPos in visited) return -1
-            if (forkPos == finish) return curLen
-
-            val nextEdges = forkPointDirections[forkPos]!!.filter { it.first !in visited }
-            if (nextEdges.isEmpty()) return -1
-
-            visited += forkPos
-            try {
-                return nextEdges.maxOf { (nextPos, len) ->
-                    findLongest(nextPos, curLen + len, visited)
+        // Switch from Points to Ints…
+        run {
+            val forkPointNumbering = (forkPointDirections.keys + forkPointDirections.values.flatMap { it.map { it.first } })
+                .withIndex().associate { it.value to it.index }
+            val start = forkPointNumbering[start]!!
+            val finish = forkPointNumbering[finish]!!
+            val forkPointDirections = forkPointDirections.map { (k, v) ->
+                forkPointNumbering[k]!! to v.map { (p, l) ->
+                    forkPointNumbering[p]!! to l
                 }
-            } finally {
-                visited -= forkPos
-            }
-        }
+            }.toMap()
 
-        findLongest(start, 0, mutableSetOf())
+            fun findLongest(forkPos: Int, curLen: Int, visited: BitSet): Int {
+                if (forkPos in visited) return -1
+                if (forkPos == finish) return curLen
+
+                val nextEdges = forkPointDirections[forkPos]!!.filter { it.first !in visited }
+                if (nextEdges.isEmpty()) return -1
+
+                visited += forkPos
+                try {
+                    return nextEdges.maxOf { (nextPos, len) ->
+                        findLongest(nextPos, curLen + len, visited)
+                    }
+                } finally {
+                    visited -= forkPos
+                }
+            }
+
+            findLongest(start, 0, BitSet(forkPointNumbering.size))
+        }
     }
 
     example {

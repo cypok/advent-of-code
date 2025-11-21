@@ -127,7 +127,7 @@ fun main() = runAoc {
                         valveB.rate * max(0, timeLeft - timeToValveB) +
                         goodValves
                             .sumOf {
-                                if (alreadyOpened[valveId[it]!!]) return@sumOf 0
+                                if (valveId[it]!! in alreadyOpened) return@sumOf 0
                                 val tA = timeToValveA + dist(valveA, it)
                                 val tB = timeToValveB + dist(valveB, it)
                                 it.rate * max(0, timeLeft - min(tA, tB) - 1)
@@ -140,14 +140,14 @@ fun main() = runAoc {
             fun tryOpenMore(src: Valve, calcWithOpened: (Valve, Int) -> Int?): Int? {
                 return goodValves.mapNotNull { next ->
                     val nextId = valveId[next]!!
-                    if (alreadyOpened[nextId]) return@mapNotNull null
+                    if (nextId in alreadyOpened) return@mapNotNull null
                     val timeToOpenNext = dist(src, next) + 1
                     if (timeToOpenNext > timeLeft) return@mapNotNull null
                     try {
-                        alreadyOpened[nextId] = true
+                        alreadyOpened += nextId
                         calcWithOpened(next, timeToOpenNext)
                     } finally {
-                        alreadyOpened[nextId] = false
+                        alreadyOpened -= nextId
                     }
                 }.maxOrNull()
             }

@@ -4,6 +4,7 @@ package utils
 
 import java.math.BigInteger
 import java.security.MessageDigest
+import java.util.BitSet
 import kotlin.math.max
 import kotlin.math.min
 
@@ -152,6 +153,10 @@ inline fun <T> List<T>.countLastWhile(predicate: (T) -> Boolean): Int {
     }
     return size - 1 - idx
 }
+
+operator fun BitSet.contains(elem: Int): Boolean = get(elem)
+operator fun BitSet.plusAssign(elem: Int): Unit = set(elem)
+operator fun BitSet.minusAssign(elem: Int): Unit = clear(elem)
 
 fun shouldNotReachHere(): Nothing = error("should not reach here")
 

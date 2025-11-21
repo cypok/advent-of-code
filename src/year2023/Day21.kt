@@ -92,7 +92,8 @@ fun main() = runAoc {
     solution2 {
         val totalSteps = (exampleParam as Int?) ?: 26_501_365
 
-        val enoughExtension = 5
+        // 5 is to verify the sequence. 3 is just to get an answer.
+        val enoughExtension = 3
 
         val enoughSteps = map.width * enoughExtension * 2
 
