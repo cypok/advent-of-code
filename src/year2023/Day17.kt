@@ -12,18 +12,20 @@ fun main() = test(
 
 private data class Arrow(val dst: Point, val dir: Dir, val len: Int, val heat: Long, val prev: Arrow?)
 
+private class Mark {
+    val heatByDirAndLen = Array(Dir.entries.size) { mutableMapOf<Int, Long>() }
+}
+
 private fun solve(input: List<String>, minLen: Int, maxLen: Int): Long {
     val heatMap = Array2D.fromLines(input)
 
-    val marksMap = Array2D.of(heatMap.height, heatMap.width) {
-        mutableMapOf<Pair<Dir, Int>, Long>().withDefault { Long.MAX_VALUE }
-    }
+    val marksMap = Array2D.of(heatMap.height, heatMap.width) { Mark() }
 
     val queue = PriorityQueue<Arrow>(Comparator.comparing { a -> a.heat })
 
     fun isWorthy(arr: Arrow): Boolean {
         val marks = marksMap[arr.dst]
-        val prevHeat = marks.getValue(arr.dir to arr.len)
+        val prevHeat = marks.heatByDirAndLen[arr.dir.ordinal][arr.len] ?: return true
         return arr.heat < prevHeat
     }
 
@@ -46,7 +48,7 @@ private fun solve(input: List<String>, minLen: Int, maxLen: Int): Long {
         val newHeat = arr.heat + heatMap[arr.dst].digitToInt()
 
         if (arr.len >= minLen) {
-            marksMap[arr.dst][arr.dir to arr.len] = arr.heat
+            marksMap[arr.dst].heatByDirAndLen[arr.dir.ordinal][arr.len] = arr.heat
 
             if (arr.dst.row == heatMap.height - 1 && arr.dst.col == heatMap.width - 1) {
                 return newHeat
