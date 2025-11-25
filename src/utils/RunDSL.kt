@@ -75,7 +75,7 @@ var BATCH_TIMES = mutableListOf<Triple<Int, Int, Duration>>() // day to duration
 fun runAoc(content: AocContext.() -> Unit) {
     val ctx = object : AocContext {
         var ignoreRealInput = false
-        var measureRunTime = true
+        var measureRunTime = false
         val examples = mutableListOf<Example>()
         val solutions = mutableMapOf<Int, Solution>()
         val tests = mutableListOf<Test>()
