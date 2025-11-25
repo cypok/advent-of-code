@@ -56,7 +56,7 @@ private data class Example(val description: String?,
                            val input: String,
                            val answers: Map<Int, Pair<String, Any?>>)
 
-private class VisualAnswerWrapper(val value: String)
+private data class VisualAnswerWrapper(val value: String)
 
 private val WrongAnswer = object {
     override fun toString() = "(wrong answer)"
