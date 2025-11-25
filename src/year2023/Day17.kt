@@ -3,7 +3,6 @@ package year2023
 import utils.*
 import utils.Dir.*
 import java.util.PriorityQueue
-import kotlin.math.sign
 
 @Suppress("DEPRECATION")
 fun main() = test(
@@ -11,10 +10,7 @@ fun main() = test(
     { solve(it, 4, 10) },
 )
 
-private data class Arrow(val dst: Point, val dir: Dir, val len: Int, val heat: Long, val prev: Arrow?) : Comparable<Arrow> {
-    override fun compareTo(other: Arrow): Int =
-        (this.heat - other.heat).sign
-}
+private data class Arrow(val dst: Point, val dir: Dir, val len: Int, val heat: Long, val prev: Arrow?)
 
 private val DIR_COUNT = Dir.entries.size
 
@@ -35,7 +31,7 @@ private fun solve(input: List<String>, minLen: Int, maxLen: Int): Long {
 
     val marksMap = Array2D.of(heatMap.height, heatMap.width) { Mark(maxLen) }
 
-    val queue = PriorityQueue<Arrow>()
+    val queue = PriorityQueue<Arrow>(Comparator.comparing { a -> a.heat })
 
     fun isWorthy(arr: Arrow): Boolean {
         val prevHeat = marksMap[arr.dst][arr]
