@@ -10,7 +10,10 @@ fun main() = test(
     { solve(it, 4, 10) },
 )
 
-private data class Arrow(val dst: Point, val dir: Dir, val len: Int, val heat: Long, val prev: Arrow?)
+private data class Arrow(val dst: Point, val dir: Dir, val len: Int, val heat: Long, val prev: Arrow?) : Comparable<Arrow> {
+    override fun compareTo(other: Arrow): Int =
+        this.heat compareTo other.heat
+}
 
 private val DIR_COUNT = Dir.entries.size
 
@@ -31,7 +34,8 @@ private fun solve(input: List<String>, minLen: Int, maxLen: Int): Long {
 
     val marksMap = Array2D.of(heatMap.height, heatMap.width) { Mark(maxLen) }
 
-    val queue = PriorityQueue<Arrow>(Comparator.comparing { a -> a.heat })
+    // Usage of comparator somehow makes the solution 2x slower, so it's easier to keep Arrow as Comparable.
+    val queue = PriorityQueue<Arrow>()
 
     fun isWorthy(arr: Arrow): Boolean {
         val prevHeat = marksMap[arr.dst][arr]
