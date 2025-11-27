@@ -8,11 +8,11 @@ import kotlin.math.min
 
 // Task description:
 //   https://adventofcode.com/2022/day/16
+fun main() = main2()
+fun main2() = runAoc {
+    //measureRunTime()
 
-fun main() = runAoc {
-    measureRunTime()
-
-    example {
+    if (false) example {
         answer1(1651)
         answer2(1707)
         """
@@ -29,7 +29,7 @@ fun main() = runAoc {
         """
     }
 
-    solution {
+    solution1 {
         val input = lines.map { line ->
             // e.g. "Valve AA has flow rate=0; tunnels lead to valves DD, II, BB"
             val words = line.words()

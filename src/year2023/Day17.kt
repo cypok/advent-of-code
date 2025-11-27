@@ -2,16 +2,27 @@ package year2023
 
 import utils.*
 import utils.Dir.*
+import year2022.main2
 import java.util.PriorityQueue
 import kotlin.math.sign
 
 @Suppress("DEPRECATION")
-fun main() = test(
-    { solve(it, 0, 3) },
-    { solve(it, 4, 10) },
-)
+fun main() {
+    main3()
+    main2()
+    main3()
+}
 
-private data class Arrow(val dst: Point, val dir: Dir, val len: Int, val heat: Long, val prev: Arrow?) : Comparable<Arrow> {
+fun main3() = runAoc {
+    if (false) solution1 {
+        solve(lines, 0, 3)
+    }
+    solution2 {
+        solve(lines, 4, 10)
+    }
+}
+
+data class Arrow(val dst: Point, val dir: Dir, val len: Int, val heat: Long, val prev: Arrow?) : Comparable<Arrow> {
     override fun compareTo(other: Arrow): Int =
         (this.heat - other.heat).sign
 }
@@ -35,7 +46,11 @@ private fun solve(input: List<String>, minLen: Int, maxLen: Int): Long {
 
     val marksMap = Array2D.of(heatMap.height, heatMap.width) { Mark(maxLen) }
 
-    val queue = PriorityQueue<Arrow>()
+    val cc4 = HelperJava.CC4
+    val cc5 = HelperKotlin.CC5
+    val cc6 = HelperKotlin.CC6
+    val ccX = HelperKotlin.CCX
+    val queue = PriorityQueue<Arrow>(ccX)
 
     fun isWorthy(arr: Arrow): Boolean {
         val prevHeat = marksMap[arr.dst][arr]

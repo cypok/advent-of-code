@@ -20,6 +20,7 @@ compileKotlin.compilerOptions {
 sourceSets {
     main {
         kotlin.srcDir("src")
+        java.srcDir("src")
     }
     test {
         kotlin.srcDir("test")
