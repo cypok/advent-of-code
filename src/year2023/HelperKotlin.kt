@@ -1,13 +1,11 @@
 package year2023
 
-import java.util.function.Function
-
 object HelperKotlin {
-    var CC5: Comparator<Arrow> = Comparator.comparing {
+    var CC5_slow: Comparator<Arrow> = Comparator.comparing {
         it.heat
     }
 
-    var CC6: Comparator<Arrow> = object : Comparator<Arrow> {
+    var CC6_fast: Comparator<Arrow> = object : Comparator<Arrow> {
         private val f: (Arrow) -> Long = {
             it.heat
         }
@@ -21,5 +19,5 @@ object HelperKotlin {
         }
     }
 
-    val CCX = CC5
+    val CCX = CC5_slow
 }

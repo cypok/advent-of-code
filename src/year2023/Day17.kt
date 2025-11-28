@@ -47,8 +47,8 @@ private fun solve(input: List<String>, minLen: Int, maxLen: Int): Long {
     val marksMap = Array2D.of(heatMap.height, heatMap.width) { Mark(maxLen) }
 
     val cc4 = HelperJava.CC4
-    val cc5 = HelperKotlin.CC5
-    val cc6 = HelperKotlin.CC6
+    val cc5 = HelperKotlin.CC5_slow
+    val cc6 = HelperKotlin.CC6_fast
     val ccX = HelperKotlin.CCX
     val queue = PriorityQueue<Arrow>(ccX)
 
