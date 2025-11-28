@@ -38,16 +38,19 @@ fun <T> List<T>.split(separator: T): Sequence<List<T>> = sequence {
 fun List<String>.splitByEmptyLines(): Sequence<List<String>> =
     split("")
 
+private val WORDS_REGEX = """\s+""".toRegex()
+
 fun String.words(): List<String> =
-    split("""\s+""".toRegex())
+    split(WORDS_REGEX)
+
+private val NUMBERS_REGEX = """([+-])?[0-9]+""".toRegex()
+private fun String.numbersRaw(): Sequence<MatchResult> = NUMBERS_REGEX.findAll(this)
 
 fun String.numbers(): List<Long> =
-    """([+-])?[0-9]+""".toRegex().findAll(this)
-        .map { it.value.toLong() }
-        .toList()
+    numbersRaw().map { it.value.toLong() }.toList()
 
 fun String.numbersAsInts(): List<Int> =
-    numbers().map { it.toIntExact() }
+    numbersRaw().map { it.value.toInt() }.toList()
 
 /**
  * Transform
