@@ -114,7 +114,9 @@ fun runAoc(content: AocContext.() -> Unit) {
     val (year, day) = guessYearAndDay()
     println(dayDesc(year, day))
 
-    val (realInput, realAnswers) = prepareRealInputAndAnswers(year, day)
+    val realInputAndAnswers =
+        if (ctx.ignoreRealInput) null
+        else prepareRealInputAndAnswers(year, day)
 
     val testResults = ctx.tests.map { runCatching { it() }}
     if (testResults.isNotEmpty()) {
@@ -269,7 +271,7 @@ fun runAoc(content: AocContext.() -> Unit) {
             )
         }
 
-        if (!ctx.ignoreRealInput) {
+        realInputAndAnswers?.let { (realInput, realAnswers) ->
             val input = realInput.readText()
             val answer = { realAnswers(partNum) }
             runOne(
