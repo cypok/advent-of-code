@@ -1,13 +1,10 @@
-import utils.BATCH_TIMES
-import utils.IS_BATCH_RUN
-import utils.TOTAL_FAILS
-import utils.cartesianProduct
-import utils.dayDesc
+import utils.*
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
 import java.time.LocalDate
 import java.time.Month
 import java.time.Year
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.measureTime
 
 fun main() {
@@ -57,14 +54,14 @@ fun main() {
         println()
     }
 
+    val threshold = 1.seconds
     val slowDays = BATCH_TIMES
-        .map { (y, d, t) -> Triple(y, d, t.inWholeMilliseconds) }
-        .filter { (_, _, t) -> t >= 1_000 }
+        .filter { (_, _, t) -> t >= threshold }
         .sortedBy { (_, _, t) -> t }
         .take(5)
     if (slowDays.isNotEmpty()) {
-        println("Slowest days exceeding 1 second:")
-        slowDays.forEach { (y, d, t) -> println("${dayDesc(y, d)} took $t ms") }
+        println("Slowest days exceeding $threshold:")
+        slowDays.forEach { (y, d, t) -> println("${dayDesc(y, d)} took ${t.inWholeMilliseconds} ms") }
         println()
     }
 
