@@ -80,11 +80,15 @@ private fun SolutionContext.solve2(): Long {
         tiltCycle()
         loads.current = calcLoadN()
         loads.tick(i.toLong())
+
+        if ((i + 1) % 100 == 0) {
+            loads.detectCycle()?.let { cycle ->
+                val realLastLoad = loads.extrapolateUntil(1_000_000_000)
+                printExtra("cycle = $cycle")
+                return realLastLoad
+            }
+        }
     }
 
-    val cycle = loads.detectCycle() ?: error("cycle not found")
-    val realLastLoad = loads.extrapolateUntil(1_000_000_000)
-
-    printExtra("cycle = $cycle")
-    return realLastLoad
+    error("cycle not found")
 }
