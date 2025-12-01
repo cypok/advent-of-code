@@ -23,7 +23,28 @@ fun main() = runAoc {
         """
     }
 
-    solution {
+    solution("fast") {
+        var cur = 50
+        var res = 0
+        for (line in lines) {
+            val dir = if (line[0] == 'R') 1 else -1
+            val clicks = line.substring(1).toInt()
+
+            // It's hard to count to the left side, always to the right is easier.
+            fun wrap(x: Int) = if (dir == 1) x else (100 - x).mod(100)
+
+            val new = wrap(cur) + clicks
+            cur = wrap(new).mod(100)
+            if (isPart1) {
+                if (cur == 0) res++
+            } else {
+                res += new / 100
+            }
+        }
+        res
+    }
+
+    solution("nice") {
         sequence {
             for (line in lines) {
                 val dir = if (line[0] == 'R') 1 else -1

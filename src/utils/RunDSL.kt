@@ -18,9 +18,9 @@ interface AocContext {
 
     fun example(description: String? = null, content: ExampleContext.() -> String)
 
-    fun solution(code: Solution)
-    fun solution1(code: Solution)
-    fun solution2(code: Solution)
+    fun solution(name: String? = null, code: Solution)
+    fun solution1(name: String? = null, code: Solution)
+    fun solution2(name: String? = null, code: Solution)
 
     fun test(code: Test)
 }
@@ -72,12 +72,14 @@ var IS_BATCH_RUN = false
 var TOTAL_FAILS = 0
 var BATCH_TIMES = mutableListOf<Triple<Int, Int, Duration>>() // day to duration
 
+private data class SolutionDesc(val name: String?, val partNum: Int, val code: Solution)
+
 fun runAoc(content: AocContext.() -> Unit) {
     val ctx = object : AocContext {
         var ignoreRealInput = false
         var measureRunTime = false
         val examples = mutableListOf<Example>()
-        val solutions = mutableMapOf<Int, Solution>()
+        val solutions = mutableListOf<SolutionDesc>()
         val tests = mutableListOf<Test>()
 
         override fun ignoreRealInput() { ignoreRealInput = true }
@@ -100,13 +102,18 @@ fun runAoc(content: AocContext.() -> Unit) {
             }
         }
 
-        override fun solution1(code: SolutionContext.() -> Any) = solutions.putEnsuringNew(1, code)
-        override fun solution2(code: SolutionContext.() -> Any) = solutions.putEnsuringNew(2, code)
-
-        override fun solution(code: SolutionContext.() -> Any) {
-            solution1(code)
-            solution2(code)
+        private fun solutionImpl(name: String?, partNum: Int, code: SolutionContext.() -> Any) {
+            require(!solutions.any { (n, pn, _) -> n == name && pn == partNum }) {
+                "solution duplication, you can use names to distinguish them"
+            }
+            solutions += SolutionDesc(name, partNum, code)
         }
+
+        override fun solution1(name: String?, code: SolutionContext.() -> Any) = solutionImpl(name, 1, code)
+        override fun solution2(name: String?, code: SolutionContext.() -> Any) = solutionImpl(name, 2, code)
+
+        override fun solution(name: String?, code: SolutionContext.() -> Any) =
+            listOf(1, 2).forEach { solutionImpl(name, it, code) }
     }
 
     ctx.content()
@@ -132,7 +139,8 @@ fun runAoc(content: AocContext.() -> Unit) {
 
     var dayRealTime = Duration.ZERO
 
-    for ((partNum, solution) in ctx.solutions.entries.sortedBy { it.key }) {
+    for ((solutionName, partNum, solution) in ctx.solutions) {
+        val solutionDesc = solutionName?.let { ", \"$it\"" } ?: ""
         fun runOne(
             runDesc: String,
             input: String,
@@ -162,7 +170,7 @@ fun runAoc(content: AocContext.() -> Unit) {
                 override fun printExtra(arg: Any) { if (!IS_BATCH_RUN) extraPrints += arg }
             }
             val solutionCtx = VerboseCtx()
-            print("part$partNum, $runDesc: ")
+            print("part$partNum$solutionDesc, $runDesc: ")
             val (result, time) = measureTimedValue { runCatching { solutionCtx.solution() } }
             if (result.isSuccess) {
                 // Heuristics around 100% or potentially wrong answer.
