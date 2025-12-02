@@ -41,7 +41,11 @@ fun main() {
                         lastWasShort = false
                     }
                     val method = lookup.findStatic(cls, mainName, mainMT)
-                    method.invokeExact()
+                    try {
+                        method.invokeExact()
+                    } catch (e: Throwable) {
+                        e.printStackTrace(System.out)
+                    }
                     println()
                 } else {
                     println("${dayDesc(year, day)}: not yet")
