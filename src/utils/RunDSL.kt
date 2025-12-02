@@ -144,7 +144,7 @@ fun runAoc(content: AocContext.() -> Unit) {
         fun runOne(
             runDesc: String,
             input: String,
-            answerProvider: () -> String?,
+            answerProvider: () -> Answers,
             isExample: Boolean,
             exampleParam: Any? = null,
         ) {
@@ -185,9 +185,9 @@ fun runAoc(content: AocContext.() -> Unit) {
                     println(answer)
                     wrong = answer.isBlank()
                     print("⭕ (")
-                    when (expected) {
+                    when (val rightAnswer = expected.rightAnswer) {
                         null -> print("unchecked")
-                        else -> print("expected $expected")
+                        else -> print("expected $rightAnswer")
                     }
                     print(")")
                 } else if (actualRaw is IgnoredAnswer) {
@@ -197,25 +197,31 @@ fun runAoc(content: AocContext.() -> Unit) {
                     val actual = actualRaw.toString()
                     val looksWrong = actual in trivialAnswers || actualRaw === WrongAnswer
                     print("$actual ")
-                    print(when (expected) {
-                        null -> {
-                            wrong = looksWrong
-                            "⭕ (unchecked)"
-                        }
-                        actual -> {
+                    val rightAnswer = expected.rightAnswer
+                    print(if (rightAnswer != null) {
+                        if (actual == rightAnswer) {
                             // Example could have a trivial answer.
                             check(isExample || !looksWrong)
                             wrong = false
                             "🟢"
-                        }
-                        else -> {
+                        } else {
                             TOTAL_FAILS++
                             wrong = true
-                            "🔴 (expected $expected)"
+                            "🔴 (expected $rightAnswer)"
+                        }
+                    } else {
+                        val wrongAnswers = expected.wrongAnswers
+                        if (actual in wrongAnswers) {
+                            TOTAL_FAILS++
+                            wrong = true
+                            "🔴 (known wrong)"
+                        } else {
+                            wrong = looksWrong
+                            "⭕ (unchecked)"
                         }
                     })
                 }
-                if (expected == null && !wrong) {
+                if (expected.rightAnswer == null && !wrong) {
                     // Try to submit the answer for the real input.
                     // Note that an example always has a non-null expected answer.
                     println()
@@ -273,7 +279,7 @@ fun runAoc(content: AocContext.() -> Unit) {
             runOne(
                 "example $desc",
                 input,
-                { answer },
+                { Answers(answer, emptyList()) },
                 isExample = true,
                 exampleParam = param,
             )
@@ -299,7 +305,9 @@ private fun <K, V> MutableMap<K, V>.putEnsuringNew(key: K, value: V) {
     check(oldValue == null)
 }
 
-private fun prepareRealInputAndAnswers(year: Int, day: Int): Pair<Path, (Int) -> String?> {
+private class Answers(val rightAnswer: String?, val wrongAnswers: List<String>)
+
+private fun prepareRealInputAndAnswers(year: Int, day: Int): Pair<Path, (Int) -> Answers> {
     val realInput = getRealInputPath(year, day)
         .also { path ->
             if (path.notExists()) {
@@ -314,16 +322,21 @@ private fun prepareRealInputAndAnswers(year: Int, day: Int): Pair<Path, (Int) ->
 
     // Download them only when it's necessary.
     val availableWebAnswers = lazy { downloadAnswers(year, day) }
-    fun answerProvider(partNum: Int): String? {
+    fun answerProvider(partNum: Int): Answers {
         val path = getAnswerPath(year, day, partNum)
         if (path.exists()) {
-            return path.readText()
+            return Answers(path.readText(), emptyList())
         }
 
         return availableWebAnswers.value.getOrNull(partNum - 1)
-            ?.also { answer ->
+            ?.let { answer ->
                 path.createParentDirectories()
                 path.writeText(answer)
+                Answers(answer, emptyList())
+            }
+            ?: run {
+                val wrongs = getWrongAnswersPath(year, day, partNum)
+                Answers(null, (if (wrongs.exists()) wrongs.readText() else "").lines())
             }
     }
 
@@ -335,6 +348,9 @@ private fun getRealInputPath(year: Int, day: Int) =
 
 private fun getAnswerPath(year: Int, day: Int, partNum: Int) =
     getCachedFilePath(year, day, "answer$partNum")
+
+private fun getWrongAnswersPath(year: Int, day: Int, partNum: Int) =
+    getCachedFilePath(year, day, "wrong-answers$partNum")
 
 private fun getCachedFilePath(year: Int, day: Int, suffix: String): Path {
     val day2Digits = "%02d".format(day)
@@ -382,6 +398,11 @@ private fun submitRealAnswer(year: Int, day: Int, partNum: Int, answer: String) 
         check(path.notExists())
         path.createParentDirectories()
         path.writeText(answer)
+    } else if (output.startsWith("That's not the right answer")){
+        val path = getWrongAnswersPath(year, day, partNum)
+        path.createParentDirectories()
+        if (!path.exists()) path.createFile()
+        path.appendText(answer + "\n")
     }
 }
 
