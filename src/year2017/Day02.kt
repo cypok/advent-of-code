@@ -21,7 +21,7 @@ fun main() = runAoc {
             if (isPart1) {
                 nums.max() - nums.min()
             } else {
-                listOf(nums, nums).cartesianProduct()
+                nums.cartesianSquare()
                     .filter { (a, b) -> a > b && a % b == 0 }
                     .map { (a, b) -> a / b }
                     .single()

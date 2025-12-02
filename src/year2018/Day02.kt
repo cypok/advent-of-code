@@ -51,7 +51,7 @@ fun main() = runAoc {
                 .map { (ca, _) -> ca }
                 .joinToString(separator = "")
 
-        listOf(lines, lines).cartesianProduct()
+        lines.cartesianSquare()
             .find { (sa, sb) -> sa < sb && diff(sa, sb) == 1 }!!
             .let { (sa, sb) -> common(sa, sb) }
     }

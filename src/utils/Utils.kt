@@ -67,6 +67,25 @@ fun <T> Collection<Iterable<T>>.cartesianProduct(): List<List<T>> {
     return first().flatMap { head -> tails.map { tail -> listOf(head) + tail } }
 }
 
+/**
+ * Transform
+ *
+ *     [a,b,c]
+ *
+ * to
+ *
+ *     [(a,a), (a, b), (a, c),
+ *      (b,a), (b, b), (b, c),
+ *      (c,a), (c, b), (c, c)]
+ */
+fun <T> Iterable<T>.cartesianSquare(): Sequence<Pair<T, T>> = sequence {
+    this@cartesianSquare.forEach { a ->
+        this@cartesianSquare.forEach { b ->
+            yield(a to b)
+        }
+    }
+}
+
 fun <T> Collection<T>.permutations(): Set<List<T>> {
     if (isEmpty()) return setOf(emptyList())
 
