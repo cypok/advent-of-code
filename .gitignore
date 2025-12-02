@@ -1,6 +1,6 @@
-.gradle
-.idea
-build
-src/**/*.txt
+/.gradle
+/.idea
+/build
+/out
 /inputs/
 /.session-cookie
