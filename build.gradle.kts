@@ -37,6 +37,8 @@ dependencies {
     implementation("org.jgrapht:jgrapht-core:1.5.2")
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation("io.arrow-kt:arrow-core:2.2.0")
+    implementation("io.arrow-kt:arrow-fx-coroutines:2.2.0")
 }
 
 application {

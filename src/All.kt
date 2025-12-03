@@ -27,7 +27,7 @@ fun main() {
                 val nameParts = listOf(
                     listOf("year$year."),
                     listOf("Day"),
-                    listOf(day.toString(), "%02d".format(day)),
+                    listOf("%d", "%02d").map { it.format(day) },
                     listOf("Kt", "")
                 )
                 val cls = nameParts.cartesianProduct().firstNotNullOfOrNull { parts ->

@@ -2,6 +2,7 @@
 
 package utils
 
+import arrow.core.Either
 import java.net.HttpURLConnection
 import java.net.URI
 import java.net.URLEncoder
@@ -123,7 +124,7 @@ fun runAoc(content: AocContext.() -> Unit) {
 
     val realInputAndAnswers =
         if (ctx.ignoreRealInput) null
-        else prepareRealInputAndAnswers(year, day)
+        else prepareRealInputAndAnswers(year, day).also { if (it == null) TOTAL_FAILS++ }
 
     val testResults = ctx.tests.map { runCatching { it() }}
     if (testResults.isNotEmpty()) {
@@ -307,15 +308,23 @@ private fun <K, V> MutableMap<K, V>.putEnsuringNew(key: K, value: V) {
 
 private class Answers(val rightAnswer: String?, val wrongAnswers: List<String>)
 
-private fun prepareRealInputAndAnswers(year: Int, day: Int): Pair<Path, (Int) -> Answers> {
+private fun prepareRealInputAndAnswers(year: Int, day: Int): Pair<Path, (Int) -> Answers>? {
     val realInput = getRealInputPath(year, day)
         .also { path ->
             if (path.notExists()) {
-                val content = downloadRealInput(year, day)
-                path.createParentDirectories()
-                path.writeText(content)
-                if (false) { // Doesn't seem so useful.
-                    previewRealInput(content)
+                when (val response = downloadRealInput(year, day)) {
+                    is Either.Left -> {
+                        println("Cannot get real input: ${response.value}")
+                        return null
+                    }
+                    is Either.Right -> {
+                        val content = response.value
+                        path.createParentDirectories()
+                        path.writeText(content)
+                        if (false) { // Doesn't seem so useful.
+                            previewRealInput(content)
+                        }
+                    }
                 }
             }
         }
@@ -358,33 +367,48 @@ private fun getCachedFilePath(year: Int, day: Int, suffix: String): Path {
     return Path("$baseName-$suffix.txt")
 }
 
-private fun downloadRealInput(year: Int, day: Int): String =
+private fun downloadRealInput(year: Int, day: Int): WebResponse =
     webGet(year, day, "/input")
 
 private fun downloadAnswers(year: Int, day: Int): List<String> =
-    webGet(year, day, "").let { content ->
-        """Your puzzle answer was <code>([^<]+)</code>""".toRegex()
-            .findAll(content)
-            .map { it.groupValues[1] }
-            .toList()
+    webGet(year, day, "").let { response ->
+        when (response) {
+            is Either.Left -> {
+                println("Cannot download answers: ${response.value}")
+                emptyList()
+            }
+            is Either.Right -> {
+                """Your puzzle answer was <code>([^<]+)</code>""".toRegex()
+                    .findAll(response.value)
+                    .map { it.groupValues[1] }
+                    .toList()
+            }
+        }
     }
 
-private fun webGet(year: Int, day: Int, subUrl: String): String =
+private fun webGet(year: Int, day: Int, subUrl: String): WebResponse =
     webAccess(year, day, subUrl, "GET")
 
 private fun submitRealAnswer(year: Int, day: Int, partNum: Int, answer: String) {
     val encodedAnswer = URLEncoder.encode(answer, Charsets.UTF_8)
     val data = "level=$partNum&answer=$encodedAnswer"
     val output = run {
-        val response = webAccess(year, day, "/answer", "POST", data)
-        try {
-            // Extract the first paragraph of <article> and remove all HTML tags.
-            val articleRegex = """<article><p>(.*?)</p>""".toRegex(RegexOption.DOT_MATCHES_ALL)
-            val article = articleRegex.findAll(response).single().groupValues[1]
-            val tagRegex = """<[^>]+>""".toRegex()
-            tagRegex.replace(article, "")
-        } catch (e: Exception) {
-            throw RuntimeException("Cannot parse response:\n$response", e)
+        when (val response = webAccess(year, day, "/answer", "POST", data)) {
+            is Either.Left -> {
+                println("Cannot submit answer: ${response.value}")
+                return
+            }
+            is Either.Right -> {
+                try {
+                    // Extract the first paragraph of <article> and remove all HTML tags.
+                    val articleRegex = """<article><p>(.*?)</p>""".toRegex(RegexOption.DOT_MATCHES_ALL)
+                    val article = articleRegex.findAll(response.value).single().groupValues[1]
+                    val tagRegex = """<[^>]+>""".toRegex()
+                    tagRegex.replace(article, "")
+                } catch (e: Exception) {
+                    throw RuntimeException("Cannot parse response:\n$response", e)
+                }
+            }
         }
     }
     output.split("""((?<=[.?!])\s+|\n)""".toRegex())
@@ -406,7 +430,9 @@ private fun submitRealAnswer(year: Int, day: Int, partNum: Int, answer: String) 
     }
 }
 
-private fun webAccess(year: Int, day: Int, subUrl: String, method: String, postData: String? = null): String {
+private typealias WebResponse = Either<String, String>
+
+private fun webAccess(year: Int, day: Int, subUrl: String, method: String, postData: String? = null): WebResponse {
     val url = URI("https://adventofcode.com/$year/day/$day$subUrl").toURL()
     try {
         val connection = url.openConnection() as HttpURLConnection
@@ -419,15 +445,16 @@ private fun webAccess(year: Int, day: Int, subUrl: String, method: String, postD
             connection.outputStream.use { it.write(data.encodeToByteArray()) }
         }
 
-        when (connection.responseCode) {
+        return when (connection.responseCode) {
             HttpURLConnection.HTTP_OK ->
                 connection.inputStream.use { input ->
-                    return String(input.readAllBytes())
+                    Either.Right(input.readAllBytes().decodeToString())
                 }
-            else -> throw RuntimeException("Bad response from $url: ${connection.responseCode}, ${connection.responseMessage}")
+            else ->
+                Either.Left("${connection.responseCode}, ${connection.responseMessage}: $url")
         }
     } catch (e: Exception) {
-        throw RuntimeException("Cannot access $url", e)
+        return Either.Left(e.toString())
     }
 }
 
