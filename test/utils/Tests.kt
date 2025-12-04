@@ -130,6 +130,21 @@ class Tests {
     }
 
     @Test
+    fun testWorkList() {
+        val wl = WorkList(1, 2, 3)
+        assertEquals(
+            listOf(1, 4, 9, 16, 25, 36, 49),
+            wl.asSequence()
+                .map {
+                    if (it < 6) {
+                        wl += it + 1
+                        wl += it + 2
+                    }
+                    it * it
+                }.toList())
+    }
+
+    @Test
     fun testCountWhile() {
         assertEquals(3, listOf(-10, -5, -3, 20, -5, -7).countWhile { it < 0 })
         assertEquals(0, listOf(10, -5, -3, 20, -5, -7).countWhile { it < 0 })
