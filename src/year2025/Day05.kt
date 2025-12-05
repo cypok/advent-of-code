@@ -40,7 +40,7 @@ fun main() = runAoc {
         val (freshRangesStr, availableIdsStr) = lines.splitByEmptyLines().toList()
         val freshRanges = freshRangesStr.map {
             val (l, r) = it.numbers()
-            l..-r
+            l..r
         }
 
         if (isPart1) {

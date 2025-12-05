@@ -41,7 +41,7 @@ fun main() = runAoc {
     solution {
         lines.sumOf { line ->
             line.numbers().disjointPairs().sumOf { (l, r) ->
-                (l..-r).sumOf {
+                (l..r).sumOf {
                     val s = it.toString()
                     if (isPart1 && isInvalid1(s) || isPart2 && isInvalid2(s)) it else 0
                 }

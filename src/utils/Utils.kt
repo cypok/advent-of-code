@@ -43,7 +43,8 @@ private val WORDS_REGEX = """\s+""".toRegex()
 fun String.words(): List<String> =
     split(WORDS_REGEX)
 
-private val NUMBERS_REGEX = """([+-])?[0-9]+""".toRegex()
+// Treat '-' or '+' as a sign only when it does not immediately follow a digit to support ranges (e.g., 10-20).
+private val NUMBERS_REGEX = """(?<!\d)[+-]?\d+""".toRegex()
 private fun String.numbersRaw(): Sequence<MatchResult> = NUMBERS_REGEX.findAll(this)
 
 fun String.numbers(): List<Long> =

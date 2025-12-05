@@ -110,6 +110,12 @@ class Tests {
         assertEquals(listOf(37L, -42L), " 37   -42 ".numbers())
         assertEquals(listOf(37L, -42L), "37,-42".numbers())
         assertEquals(listOf(37L, 42L), "37 -> 42".numbers())
+
+        assertEquals(listOf(37L, 42L), "37-42".numbers())
+        assertEquals(listOf(37L, -42L), "37 -42".numbers())
+        assertEquals(listOf(37L, 42L), "37 - 42".numbers())
+        assertEquals(listOf(-42L), "-42".numbers())
+        assertEquals(listOf(-42L), " -42".numbers())
     }
 
     @Test
