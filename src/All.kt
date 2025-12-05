@@ -65,10 +65,16 @@ fun main() {
         .take(5)
     if (slowDays.isNotEmpty()) {
         println("Slowest days exceeding $threshold:")
-        slowDays.forEach { (y, d, t) -> println("${dayDesc(y, d)} took ${t.inWholeMilliseconds} ms") }
+        slowDays.forEach { (y, d, t) -> println("  ${dayDesc(y, d)} took ${t.inWholeMilliseconds} ms") }
         println()
     }
 
-    val status = if (TOTAL_FAILS == 0) "🟢" else "🔴 ($TOTAL_FAILS failed)"
+    if (TOTAL_FAILS.isNotEmpty()) {
+        println("Failed days:")
+        TOTAL_FAILS.forEach { (y, d) -> println("  ${dayDesc(y, d)}") }
+        println()
+    }
+
+    val status = if (TOTAL_FAILS.isEmpty()) "🟢" else "🔴 (${TOTAL_FAILS.size} failed)"
     println("Total: $totalDays days in ${totalTime.inWholeSeconds} s $status")
 }

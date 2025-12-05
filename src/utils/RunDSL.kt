@@ -70,7 +70,7 @@ private class IgnoredAnswer(val problem: Any?) {
 
 // TODO: somehow rework these dirty hacks for running all days
 var IS_BATCH_RUN = false
-var TOTAL_FAILS = 0
+var TOTAL_FAILS = mutableSetOf<Pair<Int, Int>>()
 var BATCH_TIMES = mutableListOf<Triple<Int, Int, Duration>>() // day to duration
 
 private data class SolutionDesc(val name: String?, val partNum: Int, val code: Solution)
@@ -122,9 +122,13 @@ fun runAoc(content: AocContext.() -> Unit) {
     val (year, day) = guessYearAndDay()
     println(dayDesc(year, day))
 
+    fun dayFailed() {
+        TOTAL_FAILS += (year to day)
+    }
+
     val realInputAndAnswers =
         if (ctx.ignoreRealInput) null
-        else prepareRealInputAndAnswers(year, day).also { if (it == null) TOTAL_FAILS++ }
+        else prepareRealInputAndAnswers(year, day).also { if (it == null) dayFailed() }
 
     val testResults = ctx.tests.map { runCatching { it() }}
     if (testResults.isNotEmpty()) {
@@ -206,14 +210,14 @@ fun runAoc(content: AocContext.() -> Unit) {
                             wrong = false
                             "🟢"
                         } else {
-                            TOTAL_FAILS++
+                            dayFailed()
                             wrong = true
                             "🔴 (expected $rightAnswer)"
                         }
                     } else {
                         val wrongAnswers = expected.wrongAnswers
                         if (actual in wrongAnswers) {
-                            TOTAL_FAILS++
+                            dayFailed()
                             wrong = true
                             "🔴 (known wrong)"
                         } else {
@@ -266,7 +270,7 @@ fun runAoc(content: AocContext.() -> Unit) {
                 println()
 
             } else { // isFailure
-                TOTAL_FAILS++
+                dayFailed()
                 println("💥 EXCEPTION")
                 result.exceptionOrNull()!!.printStackTrace(System.out)
             }
