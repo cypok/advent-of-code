@@ -176,11 +176,13 @@ fun main() = runAoc {
                             valveB, timeToValveB - 1,
                             timeLeft - 1, alreadyReleased + newRate, newRate
                         )
-                    } ?: simulate(
-                        start, NEVER,
-                        valveB, timeToValveB - 1,
-                        timeLeft - 1, alreadyReleased + newRate, newRate
-                    )
+                    } ?:
+                        @Suppress("NON_TAIL_RECURSIVE_CALL") // It's a tail call, see KT-82196.
+                        simulate(
+                            start, NEVER,
+                            valveB, timeToValveB - 1,
+                            timeLeft - 1, alreadyReleased + newRate, newRate
+                        )
 
                 !hitA && hitB ->
                     tryOpenMore(valveB) { next, timeToOpenNext ->
@@ -189,12 +191,15 @@ fun main() = runAoc {
                             valveA, timeToValveA - 1,
                             next, timeToOpenNext - 1,
                             timeLeft - 1, alreadyReleased + newRate, newRate
+
                         )
-                    } ?: simulate(
-                        valveA, timeToValveA - 1,
-                        start, NEVER,
-                        timeLeft - 1, alreadyReleased + newRate, newRate
-                    )
+                    } ?:
+                        @Suppress("NON_TAIL_RECURSIVE_CALL") // It's a tail call, see KT-82196.
+                        simulate(
+                            valveA, timeToValveA - 1,
+                            start, NEVER,
+                            timeLeft - 1, alreadyReleased + newRate, newRate
+                        )
 
                 else -> // hitA && hitB
                     tryOpenMore(valveA) { nextA, timeToOpenNextA ->
@@ -206,11 +211,13 @@ fun main() = runAoc {
                                 timeLeft - 1, alreadyReleased + newRate, newRate
                             )
                         }
-                    } ?: simulate(
-                        start, NEVER,
-                        start, NEVER,
-                        timeLeft - 1, alreadyReleased + newRate, newRate
-                    )
+                    } ?:
+                        @Suppress("NON_TAIL_RECURSIVE_CALL") // It's a tail call, see KT-82196.
+                        simulate(
+                            start, NEVER,
+                            start, NEVER,
+                            timeLeft - 1, alreadyReleased + newRate, newRate
+                        )
             }
         }
 
