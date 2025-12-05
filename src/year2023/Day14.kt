@@ -74,12 +74,11 @@ private fun SolutionContext.solve2(): Long {
 
     val measure = 2000
 
-    val loads = CyclicState(-1L)
+    val loads = CyclicState<Long>()
 
     for (i in 0 until measure) {
         tiltCycle()
-        loads.current = calcLoadN()
-        loads.tick(i.toLong())
+        loads.tick(i + 1, calcLoadN())
 
         if ((i + 1) % 100 == 0) {
             loads.detectCycle()?.let { cycle ->

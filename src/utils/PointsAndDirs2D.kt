@@ -30,6 +30,9 @@ value class Point(private val hiRowLoCol: Long) {
             Dir.LEFT -> row x (col - steps)
             Dir.RIGHT -> row x (col + steps)
         }
+
+    operator fun plus(that: Point): Point =
+        (this.i + that.i) x (this.j + that.j)
 }
 
 infix fun Int.x(that: Int) = Point(this, that)
@@ -185,6 +188,9 @@ class Array2D<T>(private val data: Array<Array<T>>) {
     fun count(selector: (T) -> Boolean): Long =
         sumOf { if (selector(it)) 1 else 0 }
 
+    inline fun <reified R> map(transform: (T) -> R): Array2D<R> =
+        of(height, width) { i, j -> transform(get(i, j)) }
+
     companion object {
         fun fromLines(lines: List<String>): Array2D<Char> =
             Array2D(lines.map { it.toCharArray().toTypedArray() }.toTypedArray())
@@ -202,7 +208,10 @@ class Array2D<T>(private val data: Array<Array<T>>) {
             Array2D(Array(height) { Array(width) { init } })
 
         inline fun <reified T> of(height: Int, width: Int, init: () -> T): Array2D<T> =
-            Array2D(Array(height) { Array(width) { init() } })
+            of(height, width) { _, _ -> init() }
+
+        inline fun <reified T> of(height: Int, width: Int, init: (Int, Int) -> T): Array2D<T> =
+            Array2D(Array(height) { i -> Array(width) { j -> init(i, j) } })
     }
 }
 

@@ -17,7 +17,7 @@ private sealed class Module(val name: String, val outputNames: List<String>) {
 
     abstract fun process(inputs: List<Signal>): List<Pulse>
 
-    open fun stateTick(time: Long): Unit = Unit
+    open fun stateTick(time: Int): Unit = Unit
 
     open fun detectStateCycle(): Long? = 1
 
@@ -49,7 +49,7 @@ private sealed class Module(val name: String, val outputNames: List<String>) {
                 listOf(state.current)
             }
 
-        override fun stateTick(time: Long) =
+        override fun stateTick(time: Int) =
             state.tick(time)
 
         override fun detectStateCycle(): Long? =
@@ -73,7 +73,7 @@ private sealed class Module(val name: String, val outputNames: List<String>) {
                 !allHigh
             }
 
-        override fun stateTick(time: Long) =
+        override fun stateTick(time: Int) =
             state.values.tickAll(time)
 
         override fun detectStateCycle(): Long? =
@@ -187,11 +187,11 @@ private fun solve2(input: List<String>): Long {
     val modules = parseModules(input)
 
     if (false) println()
-    var times = 0L
+    var times = 1
     while (true) {
         modules.forEach { it.value.stateTick(times) }
 
-        if (times % 10000 == 0L) {
+        if (times % 10000 == 0) {
             val (cyclic, acyclic) = modules.values
                 .map { it.detectStateCycle() }
                 .partition { it != null }

@@ -191,4 +191,43 @@ class Tests {
             assertEquals(r x (c + 1), p.moveInDir(Dir.RIGHT))
         }
     }
+
+    @Test
+    fun testCyclicState() {
+        val s = CyclicState(0)
+        s.tick(1, 10)
+        s.tick(2, 20)
+        s.tick(3, 30)
+        s.tick(4, 10)
+        assertEquals(null, s.detectCycle())
+        s.tick(5, 20)
+        s.tick(6, 30)
+        s.tick(7, 10)
+        s.tick(8, 20)
+        assertEquals(3, s.detectCycle())
+        assertEquals(30, s.extrapolateUntil(9))
+        assertEquals(10, s.extrapolateUntil(10))
+        assertEquals(20, s.extrapolateUntil(11))
+        assertEquals(10, s.extrapolateUntil(1_000_000_000_000_000L))
+    }
+
+    @Test
+    fun testLinearCyclicState() {
+        val s = CyclicLinearGrowingState()
+        s.tick(1, 10)
+        s.tick(2, 15)
+        s.tick(3, 20)
+        s.tick(4, 30)
+        assertFalse(s.hasCycle())
+        s.tick(5, 35)
+        s.tick(6, 40)
+        s.tick(7, 50)
+        s.tick(8, 55)
+        s.tick(9, 60)
+        assertTrue(s.hasCycle())
+        assertEquals(70, s.extrapolateUntil(10))
+        assertEquals(75, s.extrapolateUntil(11))
+        assertEquals(80, s.extrapolateUntil(12))
+        assertEquals(6_666_666_666_666_670, s.extrapolateUntil(1_000_000_000_000_000L))
+    }
 }
