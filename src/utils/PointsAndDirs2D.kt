@@ -195,6 +195,9 @@ class Array2D<T>(private val data: Array<Array<T>>) {
         fun fromLines(lines: List<String>): Array2D<Char> =
             Array2D(lines.map { it.toCharArray().toTypedArray() }.toTypedArray())
 
+        inline fun <reified T> from(data: List<List<T>>): Array2D<T> =
+            Array2D(data.map { it.toTypedArray() }.toTypedArray())
+
         fun ofChars(height: Int, width: Int, init: Char): Array2D<Char> =
             ofChars(height, width) { _, _ -> init }
 

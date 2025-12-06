@@ -20,13 +20,13 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
 inline fun <T> Iterable<T>.productOf(selector: (T) -> Long): Long =
     fold(1) { acc, x -> acc * selector(x) }
 
-fun <T> List<T>.split(separator: T): Sequence<List<T>> = sequence {
+fun <T> List<T>.split(separatorPredicate: (T) -> Boolean): Sequence<List<T>> = sequence {
     val remaining = this@split.iterator()
     while (remaining.hasNext()) {
         yield(buildList {
             while (remaining.hasNext()) {
                 val elem = remaining.next()
-                if (elem == separator) {
+                if (separatorPredicate(elem)) {
                     break
                 }
                 add(elem)
@@ -35,13 +35,16 @@ fun <T> List<T>.split(separator: T): Sequence<List<T>> = sequence {
     }
 }
 
+fun <T> List<T>.split(separator: T): Sequence<List<T>> =
+    split { it == separator }
+
 fun List<String>.splitByEmptyLines(): Sequence<List<String>> =
-    split("")
+    split { it.isEmpty() }
 
 private val WORDS_REGEX = """\s+""".toRegex()
 
 fun String.words(): List<String> =
-    split(WORDS_REGEX)
+    split(WORDS_REGEX).filterNot { it.isEmpty() }
 
 // Treat '-' or '+' as a sign only when it does not immediately follow a digit to support ranges (e.g., 10-20).
 private val NUMBERS_REGEX = """(?<!\d)[+-]?\d+""".toRegex()
@@ -180,6 +183,17 @@ inline fun <T> List<T>.countLastWhile(predicate: (T) -> Boolean): Int {
 operator fun BitSet.contains(elem: Int): Boolean = get(elem)
 operator fun BitSet.plusAssign(elem: Int): Unit = set(elem)
 operator fun BitSet.minusAssign(elem: Int): Unit = clear(elem)
+
+fun arithOpByChar(ch: Char): (Long, Long) -> Long =
+    when (ch) {
+        '+' -> Math::addExact
+        '*' -> Math::multiplyExact
+        '-' -> Math::subtractExact
+        else -> error("unexpected op '$ch'")
+    }
+
+fun arithOpByChar(ch: String): (Long, Long) -> Long =
+    arithOpByChar(ch.single())
 
 fun shouldNotReachHere(): Nothing = error("should not reach here")
 

@@ -53,11 +53,7 @@ fun main() = runAoc {
 
                 val (lStr, opStr, rStr) = operationStr.words().takeLast(3)
                 check(lStr == "old")
-                val operationRaw: (Long, Long) -> Long = when (opStr) {
-                    "+" -> Math::addExact
-                    "*" -> Math::multiplyExact
-                    else -> error(opStr)
-                }
+                val operationRaw = arithOpByChar(opStr)
                 val operationArgOrOld = when (rStr) {
                     "old" -> null
                     else -> rStr.toLong()

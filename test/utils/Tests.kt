@@ -104,7 +104,7 @@ class Tests {
 
     @Test
     fun testParsingUtils() {
-        assertEquals(listOf("abc", "def"), "abc   def".words())
+        assertEquals(listOf("abc,", "def"), "  abc,   def\t".words())
 
         assertEquals(listOf(37L, -42L), "37   -42".numbers())
         assertEquals(listOf(37L, -42L), " 37   -42 ".numbers())
