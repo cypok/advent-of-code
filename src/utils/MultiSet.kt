@@ -25,6 +25,16 @@ class MultiSet<E>() {
 
     val grouped: Sequence<ElementGrouped<E>>
         get() = data.entries.asSequence().map { (e, c) -> ElementGrouped(e, c) }
+
+    fun <R> flatMap(transform: (E) -> Iterable<R>): MultiSet<R> {
+        return MultiSet<R>().also { res ->
+            data.forEach { (e, c) ->
+                transform(e).forEach { r ->
+                    res.add(r, c)
+                }
+            }
+        }
+    }
 }
 
 fun <E> multiSetOf(vararg elems: E): MultiSet<E> = MultiSet(elems.asList())

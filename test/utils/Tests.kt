@@ -126,13 +126,22 @@ class Tests {
         assertEquals(2, set[20])
         assertEquals(0, set[30])
 
-        assertEquals(setOf(10 to 1L, 20 to 2L), set.grouped.map { it.elem to it.count }.toSet())
+        fun <E> MultiSet<E>.toSetWithCounts(): Set<Pair<E, Int>> =
+            grouped.map { it.elem to it.count.toIntExact() }.toSet()
+
+        assertEquals(setOf(10 to 1, 20 to 2), set.toSetWithCounts())
 
         set.add(10, 100)
         assertEquals(101, set[10])
 
         set.add(30, 100)
         assertEquals(100, set[30])
+
+        assertEquals(
+            setOf("AA" to 6, "aa" to 12, "BB" to 3, "bb" to 6),
+            multiSetOf("aa", "aa", "aA", "Aa", "Aa", "Aa", "bB", "Bb", "Bb")
+                .flatMap { listOf(it.uppercase(), it.lowercase(), it.lowercase()) }
+                .toSetWithCounts())
     }
 
     @Test
