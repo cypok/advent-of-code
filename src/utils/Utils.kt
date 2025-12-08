@@ -78,9 +78,9 @@ fun <T> Collection<Iterable<T>>.cartesianProduct(): List<List<T>> {
  *
  * to
  *
- *     [(a,a), (a, b), (a, c),
- *      (b,a), (b, b), (b, c),
- *      (c,a), (c, b), (c, c)]
+ *     [(a, a), (a, b), (a, c),
+ *      (b, a), (b, b), (b, c),
+ *      (c, a), (c, b), (c, c)]
  */
 fun <T> Iterable<T>.cartesianSquare(): Sequence<Pair<T, T>> = sequence {
     this@cartesianSquare.forEach { a ->
