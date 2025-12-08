@@ -12,7 +12,7 @@ fun main() {
 
     val lookup = MethodHandles.lookup()
     val mainName = "main"
-    val mainMT = MethodType.methodType(Class.forPrimitiveName("void"))
+    val mainMT = MethodType.methodType(Void.TYPE)
 
     val today = LocalDate.now()
 
