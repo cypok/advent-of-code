@@ -245,4 +245,25 @@ class Tests {
         assertEquals(80, s.extrapolateUntil(12))
         assertEquals(6_666_666_666_666_670, s.extrapolateUntil(1_000_000_000_000_000L))
     }
+
+    @Test
+    fun testDisjointSet() {
+        val s = DisjointSet<Int>()
+        assertEquals(1, s.size(37))
+        assertEquals(37, s.find(37))
+
+        s.union(37, 42)
+        assertEquals(2, s.size(37))
+        assertEquals(2, s.size(42))
+        assertEquals(s.find(37), s.find(42))
+        assertNotEquals(s.find(37), s.find(99))
+
+        s.union(10, 20)
+        s.union(20, 30)
+        assertEquals(3, s.size(10))
+
+        s.union(42, 20)
+        assertEquals(5, s.size(37))
+        assertEquals(s.find(37), s.find(30))
+    }
 }
