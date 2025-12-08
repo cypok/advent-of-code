@@ -1,6 +1,7 @@
 package year2025
 
 import utils.*
+import java.util.PriorityQueue
 import kotlin.math.sqrt
 
 // Task description:
@@ -42,15 +43,16 @@ fun main() = runAoc {
         val pairs = boxes.cartesianSquare()
             .filter { (a, b) -> a < b }
             .map { (a, b) -> BoxPair(a, b) }
-            .toMutableList()
-        // sort of comparables works faster than sort with comparator
-        pairs.sort()
+            // sort of comparables works faster than sort with comparator
+            .let { PriorityQueue(it.toList()) }
 
         val djSet = DisjointSet<Point3>()
         if (isPart1) {
             val connNum = (exampleParam as? Int) ?: 1000
-            pairs.take(connNum)
-                .forEach { (a, b) -> djSet.union(a, b) }
+            repeat(connNum) {
+                val (a, b) = pairs.poll()
+                djSet.union(a, b)
+            }
             boxes.groupBy { djSet.find(it) }
                 .values
                 .map { it.size.toLong() }
@@ -59,13 +61,13 @@ fun main() = runAoc {
                 .productOf { it }
 
         } else {
-            pairs.forEach { (a, b) ->
+            while (true) {
+                val (a, b) = pairs.poll()!!
                 djSet.union(a, b)
                 if (djSet.size(a) == boxes.size) {
                     return@solution a.x * b.x
                 }
             }
-            shouldNotReachHere()
         }
     }
 }
