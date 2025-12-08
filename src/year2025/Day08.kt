@@ -123,8 +123,14 @@ private class DisjointSet<E> {
         val pa = findNode(a)
         val pb = findNode(b)
         if (pa != pb) {
-            pa.size += pb.size
-            pb.parent = pa
+            val size = pa.size + pb.size
+            if (pa.size < pb.size) {
+                pa.parent = pb
+                pb.size = size
+            } else {
+                pb.parent = pa
+                pa.size = size
+            }
         }
     }
 }
