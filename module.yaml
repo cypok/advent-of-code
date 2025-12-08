@@ -1,0 +1,19 @@
+product: jvm/app
+
+settings:
+  jvm:
+    release: 21 # TODO: 25
+    mainClass: AllKt
+  kotlin:
+    version: 2.2.21
+    optIns:
+      - kotlin.io.path.ExperimentalPathApi
+      - kotlinx.coroutines.ExperimentalCoroutinesApi
+      - kotlinx.coroutines.DelicateCoroutinesApi
+
+dependencies:
+  - org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2
+  - org.jgrapht:jgrapht-core:1.5.2
+  - io.arrow-kt:arrow-core:2.2.0
+
+# TODO: add /inputs to IDEA's excluded dirs
