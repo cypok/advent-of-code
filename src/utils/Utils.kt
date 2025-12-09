@@ -90,6 +90,23 @@ fun <T> Iterable<T>.cartesianSquare(): Sequence<Pair<T, T>> = sequence {
     }
 }
 
+/**
+ * Transform
+ *
+ *     [a,b,c]
+ *
+ * to
+ *
+ *     [(a, b), (a, c), (b, c)]
+ */
+fun <T> List<T>.combinations(): Sequence<Pair<T, T>> = sequence {
+    for (i in 0 ..< this@combinations.size) {
+        for (j in i+1 ..< this@combinations.size) {
+            yield(this@combinations[i] to this@combinations[j])
+        }
+    }
+}
+
 fun <T> Collection<T>.permutations(): Set<List<T>> {
     if (isEmpty()) return setOf(emptyList())
 
@@ -105,14 +122,6 @@ fun <T> Collection<T>.permutations(): Set<List<T>> {
 
 fun <T> Collection<T>.cycle(): Sequence<T> =
     generateSequence { this }.flatten()
-
-fun <T> List<T>.combinations(): List<Pair<T, T>> = buildList {
-    for (i in 0 ..< this@combinations.size) {
-        for (j in i+1 ..< this@combinations.size) {
-            add(this@combinations[i] to this@combinations[j])
-        }
-    }
-}
 
 fun gcd(x: Long, y: Long): Long {
     var a = max(x, y)

@@ -27,6 +27,16 @@ class Tests {
     }
 
     @Test
+    fun testCombinations() {
+        assertEquals(
+            listOf(
+                1 to 2, 1 to 3, 2 to 3,
+            ),
+            listOf(1, 2, 3).combinations().toList()
+        )
+    }
+
+    @Test
     fun testPermutations() {
         assertEquals(
             setOf(
