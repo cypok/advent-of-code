@@ -160,6 +160,10 @@ fun <T> Iterable<T>.disjointPairs(): List<Pair<T, T>> =
 fun <T> Iterable<T>.windowedPairs(): List<Pair<T, T>> =
     windowed(2, step = 1, partialWindows = false).map { it.pair() }
 
+/** Generate the list of windowed pairs from the given list. */
+fun <T> Sequence<T>.windowedPairs(): Sequence<Pair<T, T>> =
+    windowed(2, step = 1, partialWindows = false).map { it.pair() }
+
 operator fun <T> List<T>.component6() = get(5)
 
 fun <T> List<T>.middle(): T = this[this.size/2]
