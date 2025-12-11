@@ -8,10 +8,10 @@ class Tests {
 
     @Test
     fun testCartesianProduct() {
-        assertEquals(
-            listOf(listOf(1, 3, 4), listOf(1, 3, 5), listOf(2, 3, 4), listOf(2, 3, 5)),
-            listOf(listOf(1, 2), listOf(3), listOf(4, 5)).cartesianProduct()
-        )
+        val src = listOf(listOf(1, 2), listOf(3), listOf(4, 5))
+        val expected = listOf(listOf(1, 3, 4), listOf(1, 3, 5), listOf(2, 3, 4), listOf(2, 3, 5))
+        assertEquals(expected, src.cartesianProduct())
+        assertEquals(expected, src.cartesianProductLazy().toList())
     }
 
     @Test
@@ -53,14 +53,18 @@ class Tests {
 
     @Test
     fun testGcdLcm() {
-        assertEquals(5L, gcd(15, 10))
-        assertEquals(5L, gcd(10, 15))
+        assertEquals(5, gcd(15, 10))
+        assertEquals(5, gcd(10, 15))
         assertEquals(30L, lcm(15, 10))
         assertEquals(30L, lcm(10, 15))
-        assertEquals(1L, gcd(37, 1))
-        assertEquals(1L, gcd(1, 37))
+        assertEquals(1, gcd(37, 1))
+        assertEquals(1, gcd(1, 37))
         assertEquals(37L, lcm(37, 1))
         assertEquals(37L, lcm(1, 37))
+
+        assertEquals(2, gcd(2_000_000_000, 2))
+        assertEquals(5_000_000_000, gcd(15_000_000_000, 10_000_000_000))
+        assertEquals(3_000_000_000, lcm(1_000_000_000, 3))
     }
 
     @Test

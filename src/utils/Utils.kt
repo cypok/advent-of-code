@@ -5,6 +5,7 @@ package utils
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.BitSet
+import kotlin.collections.map
 import kotlin.math.max
 import kotlin.math.min
 
@@ -72,6 +73,16 @@ fun <T> Collection<Iterable<T>>.cartesianProduct(): List<List<T>> {
 }
 
 /**
+ * Just like [cartesianProduct] but produces a lazily generated sequence.
+ * Works slower but doesn't consume memory.
+ */
+fun <T> Collection<Iterable<T>>.cartesianProductLazy(): Sequence<List<T>> {
+    if (isEmpty()) return sequenceOf(emptyList())
+    val tails = drop(1).cartesianProduct()
+    return first().asSequence().flatMap { head -> tails.map { tail -> listOf(head) + tail } }
+}
+
+/**
  * Transform
  *
  *     [a,b,c]
@@ -124,6 +135,7 @@ fun <T> Collection<T>.cycle(): Sequence<T> =
     generateSequence { this }.flatten()
 
 fun gcd(x: Long, y: Long): Long {
+    require(x >= 1 && y >= 1)
     var a = max(x, y)
     var b = min(x, y)
     while (b > 0L) {
@@ -135,6 +147,8 @@ fun gcd(x: Long, y: Long): Long {
 }
 
 fun lcm(x: Long, y: Long) = x / gcd(x, y) * y
+
+fun gcd(x: Int, y: Int): Int = gcd(x.toLong(), y.toLong()).toInt()
 
 fun Long.toIntExact() = Math.toIntExact(this)
 
@@ -181,6 +195,7 @@ inline fun <T> Iterator<T>.countWhile(predicate: (T) -> Boolean): Int {
 
 inline fun <T> Iterable<T>.countWhile(predicate: (T) -> Boolean): Int = iterator().countWhile(predicate)
 inline fun <T> Sequence<T>.countWhile(predicate: (T) -> Boolean): Int = iterator().countWhile(predicate)
+inline fun <T> Array<T>.countWhile(predicate: (T) -> Boolean): Int = iterator().countWhile(predicate)
 
 inline fun <T> List<T>.countLastWhile(predicate: (T) -> Boolean): Int {
     var idx = size - 1
