@@ -280,4 +280,53 @@ class Tests {
         assertEquals(5, s.size(37))
         assertEquals(s.find(37), s.find(30))
     }
+
+    @Test
+    fun testRat() {
+        // construction & normalization
+        assertEquals(Rat(1, 2), Rat(2, 4))
+        assertEquals(Rat(-1, 2), Rat(2, -4))
+        assertEquals(Rat(-1, 2), Rat(-2, 4))
+        assertEquals(Rat(0, 1), Rat(0, 5))
+
+        // toString
+        assertEquals("3", Rat(3).toString())
+        assertEquals("-3", Rat(-3).toString())
+        assertEquals("1/2", Rat(2, 4).toString())
+
+        // equals/hashCode behavior
+        val set = hashSetOf(Rat(1, 2), Rat(2, 4), Rat(-3, -6))
+        assertEquals(1, set.size)
+
+        // unary ops
+        val a = Rat(1, 3)
+        assertEquals(a, +a)
+        assertEquals(Rat(-1, 3), -a)
+
+        // arithmetic Rat +/- Rat, * and / Rat, Int
+        val r1 = Rat(1, 2)
+        val r2 = Rat(1, 3)
+        assertEquals(Rat(5, 6), r1 + r2)
+        assertEquals(Rat(1, 6), r1 - r2)
+        assertEquals(Rat(1, 6), r1 * r2)
+        assertEquals(Rat(3, 2), r1 / r2)
+
+        assertEquals(Rat(3, 2), r1 * 3)
+        assertEquals(Rat(1, 6), r1 / 3)
+
+        // comparisons
+        val sorted = listOf(Rat(2, 3), Rat(1, 2), Rat(3, 4)).sorted()
+        assertEquals(listOf(Rat(1, 2), Rat(2, 3), Rat(3, 4)), sorted)
+        assertTrue(Rat(1, 2) < Rat(2, 3))
+        assertTrue(Rat(-1, 2) > Rat(-2, 3))
+        assertTrue(Rat(3, 4) > Rat(2, 3))
+
+        // predicates and conversion
+        assertTrue(Rat.ZERO.isZero)
+        assertFalse(Rat.ONE.isZero)
+        assertTrue(Rat(10, 2).isInteger)
+        assertFalse(Rat(5, 2).isInteger)
+        assertEquals(5, Rat(5).toIntExact())
+        assertThrows<IllegalArgumentException> { Rat(3, 2).toIntExact() }
+    }
 }
