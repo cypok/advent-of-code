@@ -17,6 +17,8 @@ interface AocContext {
 
     fun measureRunTime()
 
+    fun extraInput(path: String)
+
     fun example(description: String? = null, content: ExampleContext.() -> String)
 
     fun solution(name: String? = null, code: Solution)
@@ -79,6 +81,7 @@ fun runAoc(content: AocContext.() -> Unit) {
     val ctx = object : AocContext {
         var ignoreRealInput = false
         var measureRunTime = false
+        val extraInputPaths = mutableSetOf<Path>()
         val examples = mutableListOf<Example>()
         val solutions = mutableListOf<SolutionDesc>()
         val tests = mutableListOf<Test>()
@@ -88,6 +91,8 @@ fun runAoc(content: AocContext.() -> Unit) {
         override fun measureRunTime() { if (!IS_BATCH_RUN) measureRunTime = true }
 
         override fun test(code: Test) { if (!IS_BATCH_RUN) tests += code }
+
+        override fun extraInput(path: String) { if (!IS_BATCH_RUN) extraInputPaths.add(Path.of(path)) }
 
         override fun example(description: String?, content: ExampleContext.() -> String) {
             val codeLocation = findCallerFromMainFrame().let { "line ${it.lineNumber}" }
@@ -126,10 +131,6 @@ fun runAoc(content: AocContext.() -> Unit) {
         TOTAL_FAILS += (year to day)
     }
 
-    val realInputAndAnswers =
-        if (ctx.ignoreRealInput) null
-        else prepareRealInputAndAnswers(year, day).also { if (it == null) dayFailed() }
-
     val testResults = ctx.tests.map { runCatching { it() }}
     if (testResults.isNotEmpty()) {
         if (testResults.all { it.isSuccess }) {
@@ -142,6 +143,10 @@ fun runAoc(content: AocContext.() -> Unit) {
         }
     }
 
+    val realInputPathAndAnswers =
+        if (ctx.ignoreRealInput) null
+        else prepareRealInputAndAnswers(year, day).also { if (it == null) dayFailed() }
+
     var dayRealTime = Duration.ZERO
 
     for ((solutionName, partNum, solution) in ctx.solutions) {
@@ -150,6 +155,7 @@ fun runAoc(content: AocContext.() -> Unit) {
             runDesc: String,
             input: String,
             answerProvider: () -> Answers,
+            isMain: Boolean,
             isExample: Boolean,
             exampleParam: Any? = null,
         ) {
@@ -226,7 +232,7 @@ fun runAoc(content: AocContext.() -> Unit) {
                         }
                     })
                 }
-                if (expected.rightAnswer == null && !wrong) {
+                if (isMain && expected.rightAnswer == null && !wrong) {
                     // Try to submit the answer for the real input.
                     // Note that an example always has a non-null expected answer.
                     println()
@@ -285,18 +291,31 @@ fun runAoc(content: AocContext.() -> Unit) {
                 "example $desc",
                 input,
                 { Answers(answer, emptyList()) },
+                isMain = false,
                 isExample = true,
                 exampleParam = param,
             )
         }
 
-        realInputAndAnswers?.let { (realInput, realAnswers) ->
-            val input = realInput.readText()
-            val answer = { realAnswers(partNum) }
+        realInputPathAndAnswers?.let { (inputPath, answersForParts) ->
+            val input = inputPath.readText()
+            val answer = { answersForParts(partNum) }
             runOne(
                 "real",
                 input,
                 answer,
+                isMain = true,
+                isExample = false,
+            )
+        }
+
+        for (path in ctx.extraInputPaths) {
+            val input = path.readText()
+            runOne(
+                "extra (${path.fileName})",
+                input,
+                { Answers(null, emptyList()) },
+                isMain = false,
                 isExample = false,
             )
         }
