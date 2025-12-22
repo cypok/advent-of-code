@@ -8,6 +8,8 @@ import kotlin.math.sqrt
 //   https://adventofcode.com/2025/day/8
 
 fun main() = runAoc {
+    measureRunTime()
+
     example {
         answer1(40, param = 10)
         answer2(25272)
@@ -35,7 +37,11 @@ fun main() = runAoc {
         """
     }
 
-    solution {
+    fun SolutionContext.genericSolution(
+        union: (Point3, Point3) -> Unit,
+        allSets: (List<Point3>) -> Collection<Collection<Point3>>,
+        setSize: (List<Point3>) -> Int,
+    ): Long {
         val boxes = lines.map {
             val (x, y, z) = it.numbersAsInts()
             Point3(x, y, z)
@@ -45,15 +51,13 @@ fun main() = runAoc {
             // sort of comparables works faster than sort with comparator
             .let { PriorityQueue(it.toList()) }
 
-        val djSet = DisjointSet<Point3>()
         if (isPart1) {
             val connNum = (exampleParam as? Int) ?: 1000
             repeat(connNum) {
                 val (a, b) = pairs.poll()
-                djSet.union(a, b)
+                union(a, b)
             }
-            boxes.groupBy { djSet.find(it) }
-                .values
+            return allSets(boxes)
                 .map { it.size.toLong() }
                 .sortedDescending()
                 .take(3)
@@ -62,12 +66,52 @@ fun main() = runAoc {
         } else {
             while (true) {
                 val (a, b) = pairs.poll()!!
-                djSet.union(a, b)
-                if (djSet.size(a) == boxes.size) {
-                    return@solution a.x * b.x
+                union(a, b)
+                if (setSize(boxes) == boxes.size) {
+                    return 1L * a.x * b.x
                 }
             }
         }
+    }
+
+
+    solution("disjoint-set") {
+        val djSet = DisjointSet<Point3>()
+        genericSolution(
+            djSet::union,
+            { it.groupBy { djSet.find(it) }.values },
+            { djSet.size(it.first()) },
+        )
+    }
+
+    solution("straightforward sets") {
+        val sets = mutableListOf<MutableSet<Point3>>()
+
+        fun find(a: Point3): MutableSet<Point3>? =
+            sets.find { a in it }
+
+        fun union(a: Point3, b: Point3) {
+            val sa = find(a)
+            val sb = find(b)
+            if (sa != null && sb != null) {
+                if (sa != sb) {
+                    sa += sb
+                    sets -= sb
+                }
+            } else if (sa != null) {
+                sa += b
+            } else if (sb != null) {
+                sb += a
+            } else {
+                sets += mutableSetOf(a, b)
+            }
+        }
+
+        genericSolution(
+            ::union,
+            { sets },
+            { sets.first().size },
+        )
     }
 }
 
