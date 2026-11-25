@@ -48,7 +48,7 @@ fun main() = runAoc {
         """
     }
     solution1 {
-        val connections = buildMap<String, MutableSet<String>> {
+        val connections = buildMap {
             for (line in lines) {
                 val f = line.substringBefore('-')
                 val t = line.substringAfter('-')

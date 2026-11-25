@@ -63,7 +63,7 @@ private fun solve2(input: List<String>): Int {
                     if (geared != null) {
                         when (val prev = gears[geared]) {
                             null ->
-                                gears.put(geared, curNum)
+                                gears[geared] = curNum
                             else ->
                                 gearsSum += prev * curNum
                         }

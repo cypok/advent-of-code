@@ -86,8 +86,8 @@ fun main() = runAoc {
         }
 
         // TODO: performance, convert points to get rid of numerous conversion to indices?
-        val [height, idxToY, yToIdx] = remap { it.y }
-        val [width, idxToX, xToIdx] = remap { it.x }
+        val [height, _, yToIdx] = remap { it.y }
+        val [width, _, xToIdx] = remap { it.x }
 
         val map = Array2D.ofChars(height, width, '.')
 

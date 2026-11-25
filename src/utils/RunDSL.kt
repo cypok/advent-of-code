@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package utils
 
 import arrow.core.Either
@@ -185,7 +183,7 @@ fun runAoc(content: AocContext.() -> Unit) {
             val [result, time] = measureTimedValue { runCatching { solutionCtx.solution() } }
             if (result.isSuccess) {
                 // Heuristics around 100% or potentially wrong answer.
-                val trivialAnswers = setOf<String>("0", "-1", "1", "", Unit.toString())
+                val trivialAnswers = setOf("0", "-1", "1", "", Unit.toString())
                 val wrong: Boolean
 
                 val expected = answerProvider()
@@ -353,14 +351,14 @@ private fun prepareRealInputAndAnswers(year: Int, day: Int): Pair<Path, (Int) ->
         }
 
     // Download them only when it's necessary.
-    val availableWebAnswers = lazy { downloadAnswers(year, day) }
+    val availableWebAnswers by lazy { downloadAnswers(year, day) }
     fun answerProvider(partNum: Int): Answers {
         val path = getAnswerPath(year, day, partNum)
         if (path.exists()) {
             return Answers(path.readText(), emptyList())
         }
 
-        return availableWebAnswers.value.getOrNull(partNum - 1)
+        return availableWebAnswers.getOrNull(partNum - 1)
             ?.let { answer ->
                 path.createParentDirectories()
                 path.writeText(answer)

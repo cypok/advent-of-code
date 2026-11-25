@@ -164,8 +164,7 @@ private fun solve2BruteForce(input: List<String>): Int {
             wouldLoop(map, pos, originalGuardPos, originalGuardDir)) {
             1
         } else {
-            @Suppress("USELESS_CAST") // KT-46360
-            0 as Int
+            0
         }
     }
 }

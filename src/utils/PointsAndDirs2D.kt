@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package utils
 
 import kotlin.math.max

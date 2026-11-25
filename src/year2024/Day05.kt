@@ -63,7 +63,7 @@ fun main() = runAoc {
                 } else {
                     0
                 }
-            }.toLong()
+            }
         }
     }
 }

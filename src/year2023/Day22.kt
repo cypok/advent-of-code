@@ -1,7 +1,6 @@
 package year2023
 
 import utils.*
-import kotlin.math.min
 
 // Task description:
 //   https://adventofcode.com/2023/day/22

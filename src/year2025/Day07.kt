@@ -1,7 +1,6 @@
 package year2025
 
 import utils.*
-import utils.Dir.*
 
 // Task description:
 //   https://adventofcode.com/2025/day/7

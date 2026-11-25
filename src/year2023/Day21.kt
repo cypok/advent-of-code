@@ -110,7 +110,7 @@ fun main() = runAoc {
         val limitHitEvents = mutableListOf<Pair<Int, Long>>()
 
         iterate(enoughSteps, start, marks) { frontier, s ->
-            if (frontier.any() { it.j == leftLimitNext }) {
+            if (frontier.any { it.j == leftLimitNext }) {
                 leftLimitNext -= map.width
                 val count = countPlots(marks, s)
                 limitHitEvents += s to count

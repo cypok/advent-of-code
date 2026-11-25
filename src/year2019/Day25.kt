@@ -107,7 +107,6 @@ fun main() = runAoc {
                         else -> error(msg)
                     }
                 }
-                shouldNotReachHere()
             }
 
             tryVisitRoomAndNeighbors(null)

@@ -32,7 +32,7 @@ private data class HandInfo(
     companion object {
         private val comparator =
             Comparator.comparing<HandInfo, HandType> { it.type }
-                .thenComparing<Long> { it.labelsStrength }
+                .thenComparing { it.labelsStrength }
     }
 }
 

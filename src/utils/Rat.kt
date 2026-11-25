@@ -43,7 +43,7 @@ class Rat(numer: Int, denom: Int = 1) : Comparable<Rat> {
     operator fun div(that: Rat): Rat   = Rat(this.n * that.d                  , this.d * that.n)
     operator fun div(that: Int): Rat   = Rat(this.n                           , this.d * that  )
 
-    override operator fun compareTo(that: Rat): Int = (this.n * that.d) compareTo (that.n * this.d)
+    override operator fun compareTo(other: Rat): Int = (this.n * other.d) compareTo (other.n * this.d)
 
     companion object {
         val ZERO = Rat(0)

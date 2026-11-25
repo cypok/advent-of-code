@@ -80,8 +80,8 @@ fun main() = runAoc {
                     if (existingState == null || existingState.score > score) {
                         existingState?.let { it.discarded = true }
                         val newState = State(pos, dir, score)
-                        statesQueue.add(newState)
-                        statesMap.put(loc, newState)
+                        statesQueue += newState
+                        statesMap[loc] = newState
                         newState
                     } else if (existingState.score < score) {
                         return

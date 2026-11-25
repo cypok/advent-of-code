@@ -38,7 +38,7 @@ fun main() = runAoc {
             val usedRow = Array(m) { false }
             val mainRowForCol = Array(n) { -1 }
             for (j in 0..<n) {
-                val row = (0..<m).firstOrNull() { i -> !usedRow[i] && matrix[i][j].isNotZero }
+                val row = (0..<m).firstOrNull { i -> !usedRow[i] && matrix[i][j].isNotZero }
                 if (row == null) {
                     continue
                 }

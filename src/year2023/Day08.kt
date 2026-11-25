@@ -13,10 +13,10 @@ private val NODE_REGEX = Regex("""(.*) = \((.*), (.*)\)""")
 private fun parse(input: List<String>): Pair<String, Map<String, Pair<String, String>>> {
     return Pair(
         input[0],
-        input.asSequence().drop(2).map { line ->
+        input.asSequence().drop(2).associate { line ->
             val [src, left, right] = NODE_REGEX.matchEntire(line)!!.destructured
             src to Pair(left, right)
-        }.toMap()
+        }
     )
 }
 

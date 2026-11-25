@@ -29,7 +29,7 @@ fun main() = runAoc {
         val antennas = buildMap {
             for ([ch, pos] in map.valuesIndexed) {
                 if (ch.isLetterOrDigit()) {
-                    getOrPut(ch) { mutableListOf<Point>() } += pos
+                    getOrPut(ch) { mutableListOf() } += pos
                 }
             }
         }

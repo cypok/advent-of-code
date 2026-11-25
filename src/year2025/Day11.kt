@@ -68,8 +68,8 @@ fun main() = runAoc {
             val src = line.substringBefore(":")
             val nodes = line.substringAfter(":").words()
             nodes.forEach { dst ->
-                edges.getOrPut(src) { mutableListOf<String>() } += dst
-                edges.getOrPut(dst) { mutableListOf<String>() }
+                edges.getOrPut(src) { mutableListOf() } += dst
+                val _ = edges.getOrPut(dst) { mutableListOf() }
                 printGraph("  $src -> $dst;")
             }
         }
