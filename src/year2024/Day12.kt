@@ -72,7 +72,7 @@ fun main() = runAoc {
                     if (nextCh == ch) {
                         // same area
                         if (!visited[nextPos]) {
-                            val (a, p) = dfs(nextPos)
+                            val [a, p] = dfs(nextPos)
                             area += a
                             perimeter += p
                         }
@@ -104,7 +104,7 @@ fun main() = runAoc {
                 return area to perimeter
             }
 
-            val (area, perimeter) = dfs(pos)
+            val [area, perimeter] = dfs(pos)
             area * perimeter
         }
     }

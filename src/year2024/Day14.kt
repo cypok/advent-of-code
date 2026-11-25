@@ -28,7 +28,7 @@ fun main() = runAoc {
 
     solution {
         val robots = lines.map {
-            val (px, py, vx, vy) = it.numbersAsInts()
+            val [px, py, vx, vy] = it.numbersAsInts()
             Robot(px, py, vx, vy)
         }
         val width = 1 + robots.maxOf { it.px }

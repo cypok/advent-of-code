@@ -18,5 +18,5 @@ private fun solve(input: List<String>, shiftProvider: (Int) -> Int): Int {
     val digitsShifted = digits.toMutableList()
     Collections.rotate(digitsShifted, shift)
 
-    return digits.zip(digitsShifted).sumOf { (x, y) -> if (x == y) x else 0 }
+    return digits.zip(digitsShifted).sumOf { [x, y] -> if (x == y) x else 0 }
 }

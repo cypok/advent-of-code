@@ -53,7 +53,7 @@ fun main() = runAoc {
             }
 
             fun sendThePacket() {
-                val (x, y) = packet!!
+                val [x, y] = packet!!
                 debug("NAT", "IDLE!  #00: $x, $y")
                 if (y == lastY) {
                     result.trySend(y)
@@ -137,7 +137,7 @@ fun main() = runAoc {
 
                                 outputBuffer[outputPos++] = e
                                 if (outputPos == 3) {
-                                    val (d, x, y) = outputBuffer
+                                    val [d, x, y] = outputBuffer
                                     val destId = if (d == 255L) "NAT" else "#%02d".format(d)
                                     debug(addr, "output $destId: $x, $y")
                                     sendPacket(d.toIntExact(), x, y)

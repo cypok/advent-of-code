@@ -32,8 +32,8 @@ fun main() = runAoc {
 
         // 6 -> 1x2
         fun buildCoordsMapping(pad: String): Map<Char, Point> =
-            pad.trim().lines().withIndex().flatMap { (row, line) ->
-                line.split(' ').withIndex().map { (col, ch) ->
+            pad.trim().lines().withIndex().flatMap { [row, line] ->
+                line.split(' ').withIndex().map { [col, ch] ->
                     ch.single() to (row x col)
                 }
             }.toMap()

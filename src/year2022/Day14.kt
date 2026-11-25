@@ -24,14 +24,14 @@ fun main() = runAoc {
 
         val rockPaths = lines.map { it.numbersAsInts(). disjointPairs() }
 
-        val (maxX, maxY) = rockPaths.flatten().unzip().map { it.max() }
+        val [maxX, maxY] = rockPaths.flatten().unzip().map { it.max() }
         val height = maxY + 2 + 1
         check(maxX > maxY) // hope that no sand is going into the negative x part
         val width = maxX + maxY + 1
         val cave = Array2D.ofChars(height, width, EMPTY)
         for (path in rockPaths) {
-            for ((src, dst) in path.windowedPairs()) {
-                val (dx, dy) = (src.toList() zip dst.toList()).map { (it.second - it.first).sign }
+            for ([src, dst] in path.windowedPairs()) {
+                val [dx, dy] = (src.toList() zip dst.toList()).map { (it.second - it.first).sign }
                 check((dx != 0) != (dy != 0))
                 var x = src.first
                 var y = src.second
@@ -55,7 +55,7 @@ fun main() = runAoc {
             var y = -1
             while (true) {
                 if (isPart1 && y == maxY) break@overall
-                val (dx, dy) = moves.first { isEmpty(x + it.first, y + it.second) }
+                val [dx, dy] = moves.first { isEmpty(x + it.first, y + it.second) }
                 if (dy == 0 && dx == 0) {
                     sandUnitCount++
                     if (isPart2 && y == 0) break@overall

@@ -26,7 +26,7 @@ fun main() = runAoc {
             var curPos = startPos
             var curDir = startDir
             while (true) {
-                val (nextDir, turnCh) = listOf(curDir.left to "L", curDir.right to "R")
+                val [nextDir, turnCh] = listOf(curDir.left to "L", curDir.right to "R")
                     .filter { map.getOrNull(curPos.moveInDir(it.first)) == S }
                     .also { if (it.isEmpty()) break }
                     .single()
@@ -91,9 +91,9 @@ fun main() = runAoc {
                         val tailStart = tailEnd - tailSize
                         withFunction(tailStart, tailEnd) { tailFunction ->
 
-                            val midStart = 2 * remaining.asSequence().chunked(2).countWhile { (r, _) -> r !in "LR" }
+                            val midStart = 2 * remaining.asSequence().chunked(2).countWhile { [r, _] -> r !in "LR" }
                             val midSize =
-                                2 * remaining.asSequence().drop(midStart).chunked(2).countWhile { (r, _) -> r in "LR" }
+                                2 * remaining.asSequence().drop(midStart).chunked(2).countWhile { [r, _] -> r in "LR" }
                             val midEnd = midStart + midSize
                             withFunction(midStart, midEnd) { midFunction ->
 
@@ -131,10 +131,10 @@ fun main() = runAoc {
             }
         })
 
-        val (startPos, startDir) = findAndPatchStart(map)
+        val [startPos, startDir] = findAndPatchStart(map)
 
         if (isPart1) {
-            map.indices.sumOf { (i, j) ->
+            map.indices.sumOf { [i, j] ->
                 if (1 <= i && i < map.height - 1 && 1 <= j && j < map.width - 1 &&
                     map[i, j] == S &&
                     map[i - 1, j] == S && map[i + 1, j] == S &&
@@ -186,7 +186,7 @@ fun main() = runAoc {
                 ....#...#......
                 ....#####......
             """.trimIndent().lines())
-        val (pos, dir) = findAndPatchStart(map)
+        val [pos, dir] = findAndPatchStart(map)
         val rawPath = buildRawPath(map, pos, dir).joinWithCommas()
         check(rawPath == "R,8,R,8,R,4,R,4,R,8,L,6,L,2,R,4,R,4,R,8,R,8,R,8,L,6,L,2")
     }

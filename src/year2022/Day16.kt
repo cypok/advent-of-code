@@ -39,7 +39,7 @@ fun main() = runAoc {
             Triple(valve, rate, adjacentValves)
         }
         val valves: Map<String, Valve> =
-            input.associate { (v, r, _) ->
+            input.associate { [v, r, _] ->
                 if (false) printExtra("$v [label = \"$v ($r)\"];")
                 v to Valve(v, r)
             }
@@ -47,7 +47,7 @@ fun main() = runAoc {
         check(start.rate == 0)
 
         val adjacentValvesRaw: Map<Valve, List<Valve>> =
-            input.associate { (v, _, avs) ->
+            input.associate { [v, _, avs] ->
                 if (false) printExtra("$v -> ${avs.joinToString(", ")};")
                 valves[v]!! to avs.map { valves[it]!! }
             }
@@ -67,7 +67,7 @@ fun main() = runAoc {
 
             adjacentValvesRaw
                 .filterKeys { it.rate > 0 || it == start }
-                .mapValues { (v, avs) ->
+                .mapValues { [v, avs] ->
                     avs.mapNotNull { av ->
                         nextNonZero(v, av, 1)
                     }
@@ -82,11 +82,11 @@ fun main() = runAoc {
                         val queue = PriorityQueue<Pair<Valve, Int>>(Comparator.comparing { it.second })
                         queue.add(base to 0)
                         while (queue.isNotEmpty()) {
-                            val (cur, dist) = queue.poll()
+                            val [cur, dist] = queue.poll()
                             if (cur in dists) continue
                             if (cur != base) dists[cur] = dist
 
-                            adjacentValvesCompressed[cur]!!.forEach { (next, leg) ->
+                            adjacentValvesCompressed[cur]!!.forEach { [next, leg] ->
                                 if (next !in dists && next != base) {
                                     queue.add(next to (dist + leg))
                                 }
@@ -100,7 +100,7 @@ fun main() = runAoc {
 
         val goodValves = valves.values.filter { it.rate > 0 }.sortedBy { it.rate }
 
-        val valveId: Map<Valve, Int> = valves.toList().sortedBy { it.first }.withIndex().associate { (i, namedValve) -> namedValve.second to i }
+        val valveId: Map<Valve, Int> = valves.toList().sortedBy { it.first }.withIndex().associate { [i, namedValve] -> namedValve.second to i }
         val alreadyOpened = BitSet(valveId.size)
 
         @Suppress("LocalVariableName")

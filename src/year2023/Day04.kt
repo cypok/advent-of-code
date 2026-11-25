@@ -25,7 +25,7 @@ private fun solve1(input: List<String>): Int {
 
 private fun solve2(input: List<String>): Int {
     return input.fold(Pair(0, listOf<Int>())) { acc, line ->
-        val (total, bonuses) = acc
+        val [total, bonuses] = acc
         val wonPerCard = processOneCard(line)
         val cardsProcessed = 1 + bonuses.size
         val newTotal = total + cardsProcessed

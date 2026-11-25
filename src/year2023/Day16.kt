@@ -33,7 +33,7 @@ private fun calculateEnergy(map: Array2D<Char>, startPos: Point, startDir: Dir):
     val beams = Array2D.of(map.height, map.width) { mutableSetOf<Dir>() }
 
     tailrec fun traverse(pos: Point, dir: Dir) {
-        val (i, j) = pos
+        val [i, j] = pos
         if (map.getOrNull(i, j) == null) return
         if (dir in beams[i, j]) return
         beams[i, j] += dir

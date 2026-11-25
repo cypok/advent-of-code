@@ -25,7 +25,7 @@ private fun solve(input: List<String>, allowCorrection: Boolean): Int =
 
 private fun isSafe(xs: List<Long>): Boolean {
     var lastDelta: Long? = null
-    for ((x, y) in xs.windowed(2)) {
+    for ([x, y] in xs.windowed(2)) {
         val newDelta = y - x
         if (newDelta.absoluteValue !in 1..3) {
             return false

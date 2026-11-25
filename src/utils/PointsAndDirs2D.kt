@@ -177,7 +177,7 @@ class Array2D<T>(private val data: Array<Array<T>>) {
 
     fun find(predicate: (T) -> Boolean): Point =
         valuesIndexed
-            .mapNotNull { (ch, pos) -> pos.takeIf { predicate(ch) } }
+            .mapNotNull { [ch, pos] -> pos.takeIf { predicate(ch) } }
             .toList()
             .also { check(it.size == 1) { it } }
             .first()

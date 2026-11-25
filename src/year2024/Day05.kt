@@ -43,9 +43,9 @@ fun main() = runAoc {
     }
 
     solution {
-        val (rulesLines, updates) = lines.splitByEmptyLines().toList()
+        val [rulesLines, updates] = lines.splitByEmptyLines().toList()
         val rules = rulesLines.map {
-            it.numbers().let { (a, b) -> a to b }
+            it.numbers().let { [a, b] -> a to b }
         }.toSet()
 
         updates.sumOf { update ->
@@ -69,7 +69,7 @@ fun main() = runAoc {
 }
 
 private fun isRightOrder(pages: List<Long>, rules: Set<Pair<Long, Long>>): Boolean =
-    pages.combinations().all { (i, j) -> (j to i) !in rules }
+    pages.combinations().all { [i, j] -> (j to i) !in rules }
 
 private fun comparatorByRules(rules: Set<Pair<Long, Long>>) =
     Comparator<Long> { x, y ->

@@ -131,14 +131,14 @@ private class Graph<V> {
             { it.size })
 
     inline fun <T> withoutEdges(edges: Collection<Pair<V, V>>, action: () -> T): T {
-        for ((s, d) in edges) {
+        for ([s, d] in edges) {
             this.edges[s]!! -= d
             this.edges[d]!! -= s
         }
         try {
             return action()
         } finally {
-            for ((s, d) in edges) {
+            for ([s, d] in edges) {
                 this.edges[s]!! += d
                 this.edges[d]!! += s
             }

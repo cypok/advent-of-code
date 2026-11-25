@@ -50,7 +50,7 @@ fun main() = runAoc {
                 val dirs = possibleDirs(forkPos)
                 val edges = dirs.mapNotNull { dir -> buildEdge(forkPos.moveInDir(dir), dir, 1) }
                 res[forkPos] = edges
-                edges.forEach { (nextForkPos, _) -> buildGraph(nextForkPos) }
+                edges.forEach { [nextForkPos, _] -> buildGraph(nextForkPos) }
             }
             buildGraph(start)
         }
@@ -61,8 +61,8 @@ fun main() = runAoc {
                 .withIndex().associate { it.value to it.index }
             val start = forkPointNumbering[start]!!
             val finish = forkPointNumbering[finish]!!
-            val forkPointDirections = forkPointDirections.map { (k, v) ->
-                forkPointNumbering[k]!! to v.map { (p, l) ->
+            val forkPointDirections = forkPointDirections.map { [k, v] ->
+                forkPointNumbering[k]!! to v.map { [p, l] ->
                     forkPointNumbering[p]!! to l
                 }
             }.toMap()
@@ -76,7 +76,7 @@ fun main() = runAoc {
 
                 visited += forkPos
                 try {
-                    return nextEdges.maxOf { (nextPos, len) ->
+                    return nextEdges.maxOf { [nextPos, len] ->
                         findLongest(nextPos, curLen + len, visited)
                     }
                 } finally {

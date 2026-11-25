@@ -32,10 +32,10 @@ fun main() = runAoc {
 
     solution {
         lines.splitByEmptyLines().sumOf { machine ->
-            val (buttonADesc, buttonBDesc, prizeDesc) = machine
-            val (aX, aY) = buttonADesc.numbers()
-            val (bX, bY) = buttonBDesc.numbers()
-            val (pX, pY) = prizeDesc.numbers().map {
+            val [buttonADesc, buttonBDesc, prizeDesc] = machine
+            val [aX, aY] = buttonADesc.numbers()
+            val [bX, bY] = buttonBDesc.numbers()
+            val [pX, pY] = prizeDesc.numbers().map {
                 if (isPart2) it + 10_000_000_000_000 else it
             }
 

@@ -17,7 +17,7 @@ fun main() = runAoc {
     }
     solution {
         lines.sumOf { line ->
-            val (l, r) = line.split(" ")
+            val [l, r] = line.split(" ")
             val lValue = "ABC".indexOf(l.single())
             val rValue = "XYZ".indexOf(r.single())
             check(lValue >= 0 && rValue >= 0)

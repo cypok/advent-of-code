@@ -17,7 +17,7 @@ fun main() = runAoc {
     }
     solution {
         lines.count { line ->
-            val (pos1Str, pos2Str, chStr, pass) = line.split(""":? |-""".toRegex())
+            val [pos1Str, pos2Str, chStr, pass] = line.split(""":? |-""".toRegex())
             val pos1 = pos1Str.toInt()
             val pos2 = pos2Str.toInt()
             val ch = chStr.single()

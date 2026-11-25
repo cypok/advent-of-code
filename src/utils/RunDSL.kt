@@ -109,7 +109,7 @@ fun runAoc(content: AocContext.() -> Unit) {
         }
 
         private fun solutionImpl(name: String?, partNum: Int, code: SolutionContext.() -> Any) {
-            require(!solutions.any { (n, pn, _) -> n == name && pn == partNum }) {
+            require(!solutions.any { [n, pn, _] -> n == name && pn == partNum }) {
                 "solution duplication, you can use names to distinguish them"
             }
             solutions += SolutionDesc(name, partNum, code)
@@ -124,7 +124,7 @@ fun runAoc(content: AocContext.() -> Unit) {
 
     ctx.content()
 
-    val (year, day) = guessYearAndDay()
+    val [year, day] = guessYearAndDay()
     println(dayDesc(year, day))
 
     fun dayFailed() {
@@ -149,7 +149,7 @@ fun runAoc(content: AocContext.() -> Unit) {
 
     var dayRealTime = Duration.ZERO
 
-    for ((solutionName, partNum, solution) in ctx.solutions) {
+    for ([solutionName, partNum, solution] in ctx.solutions) {
         val solutionDesc = solutionName?.let { ", \"$it\"" } ?: ""
         fun runOne(
             runDesc: String,
@@ -182,7 +182,7 @@ fun runAoc(content: AocContext.() -> Unit) {
             }
             val solutionCtx = VerboseCtx()
             print("part$partNum$solutionDesc, $runDesc: ")
-            val (result, time) = measureTimedValue { runCatching { solutionCtx.solution() } }
+            val [result, time] = measureTimedValue { runCatching { solutionCtx.solution() } }
             if (result.isSuccess) {
                 // Heuristics around 100% or potentially wrong answer.
                 val trivialAnswers = setOf<String>("0", "-1", "1", "", Unit.toString())
@@ -262,7 +262,7 @@ fun runAoc(content: AocContext.() -> Unit) {
                                 if (totalTime.inWholeSeconds > maxTimeSec || stabilized) {
                                     return@measurements
                                 }
-                                val (newResult, newTime) = measureTimedValue { runCatching { SilentCtx().solution() } }
+                                val [newResult, newTime] = measureTimedValue { runCatching { SilentCtx().solution() } }
                                 check(newResult == result)
                                 print(", ${newTime.inWholeMilliseconds}")
                                 System.out.flush()
@@ -286,7 +286,7 @@ fun runAoc(content: AocContext.() -> Unit) {
         for (example in ctx.examples) {
             val desc = example.description ?: "at ${example.codeLocation}"
             val input = example.input
-            val (answer, param) = example.answers[partNum] ?: continue
+            val [answer, param] = example.answers[partNum] ?: continue
             runOne(
                 "example $desc",
                 input,
@@ -297,7 +297,7 @@ fun runAoc(content: AocContext.() -> Unit) {
             )
         }
 
-        realInputPathAndAnswers?.let { (inputPath, answersForParts) ->
+        realInputPathAndAnswers?.let { [inputPath, answersForParts] ->
             val input = inputPath.readText()
             val answer = { answersForParts(partNum) }
             runOne(
@@ -498,7 +498,7 @@ private fun previewRealInput(input: String) {
 private fun guessYearAndDay(): Pair<Int, Int> {
     val className = findCallerFromMainFrame().className.substringBeforeLast("Kt")
     val classNameRegex = """year(\d+).Day(\d+)""".toRegex()
-    val (year, day) = classNameRegex.matchEntire(className)!!
+    val [year, day] = classNameRegex.matchEntire(className)!!
         .groupValues.drop(1).map { it.toInt() }
     return year to day
 }

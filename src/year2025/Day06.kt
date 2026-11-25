@@ -42,7 +42,7 @@ fun main() = runAoc {
                     curOpAndRes = arithOpByChar(map[map.height - 1][curCol]) to arg
                 } else {
                     check(opCh == ' ')
-                    val (op, res) = curOpAndRes
+                    val [op, res] = curOpAndRes
                     curOpAndRes = op to op(res, arg)
                 }
             }

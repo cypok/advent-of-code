@@ -42,8 +42,8 @@ fun main() = runAoc {
 
     solution {
         val monkeys = run {
-            lines.splitByEmptyLines().withIndex().map { (i, monkeyDesc) ->
-                val (idStr, itemsStr, operationStr, test, thenIdStr, elseIdStr) = monkeyDesc
+            lines.splitByEmptyLines().withIndex().map { [i, monkeyDesc] ->
+                val [idStr, itemsStr, operationStr, test, thenIdStr, elseIdStr] = monkeyDesc
                 val id = idStr.numbersAsInts().single().also { check(it == i) }
                 val items = itemsStr.numbers()
                 val thenId = thenIdStr.numbersAsInts().single()
@@ -51,7 +51,7 @@ fun main() = runAoc {
                 check(thenId != id && elseId != id) // to make things easier
                 check(thenId != elseId) // otherwise we can optimize
 
-                val (lStr, opStr, rStr) = operationStr.words().takeLast(3)
+                val [lStr, opStr, rStr] = operationStr.words().takeLast(3)
                 check(lStr == "old")
                 val operationRaw = arithOpByChar(opStr)
                 val operationArgOrOld = when (rStr) {

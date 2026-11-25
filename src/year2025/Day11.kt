@@ -57,7 +57,7 @@ fun main() = runAoc {
             "green" to listOf(s1, s2),
             "blue" to listOf(mA, mB),
             "red" to listOf(f),
-        ).forEach { (c, ns) ->
+        ).forEach { [c, ns] ->
             ns.forEach { n ->
                 printGraph("  $n [color=$c,style=filled];")
             }
@@ -92,7 +92,7 @@ fun main() = runAoc {
             paths(s1, f)
         } else {
             listOf(listOf(s2, mA, mB, f), listOf(s2, mB, mA, f)).map { points ->
-                points.windowedPairs().productOf { (start, finish) -> paths(start, finish) }
+                points.windowedPairs().productOf { [start, finish] -> paths(start, finish) }
             }.single { it != 0L }
         }
     }

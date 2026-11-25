@@ -43,11 +43,11 @@ fun main() = runAoc {
         setSize: (List<Point3>) -> Int,
     ): Long {
         val boxes = lines.map {
-            val (x, y, z) = it.numbersAsInts()
+            val [x, y, z] = it.numbersAsInts()
             Point3(x, y, z)
         }
         val pairs = boxes.combinations()
-            .map { (a, b) -> BoxPair(a, b) }
+            .map { [a, b] -> BoxPair(a, b) }
             // sort of comparables works faster than sort with comparator
             .let { PriorityQueue(it.toList()) }
 

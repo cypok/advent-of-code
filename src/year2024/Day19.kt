@@ -43,7 +43,7 @@ fun main() = runAoc {
         """
     }
     solution {
-        val (availableTowelsStr, designs) = lines.splitByEmptyLines().toList()
+        val [availableTowelsStr, designs] = lines.splitByEmptyLines().toList()
         val allTowels = PrefixTree.make(availableTowelsStr.single().split(", ").toList())
 
         fun isPossible(design: String): Boolean {

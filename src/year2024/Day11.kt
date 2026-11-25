@@ -15,7 +15,7 @@ fun main() = runAoc {
         var stones = MultiSet(lines.first().numbers())
         repeat(if (isPart1) 25 else 75) {
             val newStones = MultiSet<Long>()
-            for ((stone, count) in stones.grouped) {
+            for ([stone, count] in stones.grouped) {
                 fun add(ns: Long) =
                     newStones.add(ns, count)
 

@@ -38,5 +38,5 @@ private fun countSmudges(row: List<Char>, colNum: Int): Int {
     // We might be able to check smudges overflow earlier, but it isn't required.
     val leftPart = row.slice(colNum - 1 downTo 0)
     val rightPart = row.slice(colNum until row.size)
-    return (leftPart zip rightPart).count { (l, r) -> l != r }
+    return (leftPart zip rightPart).count { [l, r] -> l != r }
 }

@@ -10,9 +10,9 @@ fun main() = test(
 
 private fun solve1(input: List<String>): Int {
     return input.sumOf { line ->
-        val (fst, lst) = line.fold(Pair(-1, -1)) { acc, ch ->
+        val [fst, lst] = line.fold(Pair(-1, -1)) { acc, ch ->
             if (ch.isDigit()) {
-                var (fst, _) = acc
+                var [fst, _] = acc
                 val lst = ch.digitToInt()
                 if (fst == -1) {
                     fst = lst

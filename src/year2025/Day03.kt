@@ -21,7 +21,7 @@ fun main() = runAoc {
         val len = if (isPart1) 2 else 12
         lines.sumOf { line ->
             check(line.length >= len)
-            (0 until len).fold(0L to 0) { (acc, nextIdx), i ->
+            (0 until len).fold(0L to 0) { [acc, nextIdx], i ->
                 val idx = (nextIdx .. line.length - len + i).maxBy { line[it] }
                 acc * 10 + line[idx].digitToInt() to idx + 1
             }.first

@@ -30,7 +30,7 @@ fun main() = runAoc {
         val visited = mutableSetOf(rope.last())
 
         for (line in lines) {
-            val (dirStr, stepsStr) = line.words()
+            val [dirStr, stepsStr] = line.words()
             val dir = Dir.fromChar(dirStr.single())
             val steps = stepsStr.toInt()
 

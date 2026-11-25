@@ -25,17 +25,17 @@ fun main() = runAoc {
 }
 
 private fun solve1(input: List<String>): Long {
-    val (xs, ys) = parse(input)
+    val [xs, ys] = parse(input)
     return xs.sorted().zip(ys.sorted())
-        .sumOf { (x, y) -> (x - y).absoluteValue.toLong() }
+        .sumOf { [x, y] -> (x - y).absoluteValue.toLong() }
 }
 
 private fun solve2(input: List<String>): Long {
-    val (xs, ys) = parse(input)
+    val [xs, ys] = parse(input)
     return xs.sumOf { x -> x.toLong() * ys.count { y -> x == y } }
 }
 
 private fun parse(input: List<String>) =
     input
-        .map { it.numbers().let { (a, b) -> a to b } }
+        .map { it.numbers().let { [a, b] -> a to b } }
         .unzip()

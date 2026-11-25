@@ -23,7 +23,7 @@ fun main() = runAoc {
 
     fun SolutionContext.parse(): List<Stone> {
         val stones = lines.map {
-            val (px, py, pz, vx, vy, vz) = it.numbers()
+            val [px, py, pz, vx, vy, vz] = it.numbers()
             Stone(px x py x pz, vx x vy x vz)
         }
         return stones
@@ -84,10 +84,10 @@ fun main() = runAoc {
             (i + 1 until stones.size).sumOf { j ->
                 val sj = stones[j]
 
-                val (xy, ti, tj) = intersectXY(si, sj) ?: return@sumOf 0L // don't count parallel
+                val [xy, ti, tj] = intersectXY(si, sj) ?: return@sumOf 0L // don't count parallel
                 if (ti < 0 || tj < 0) return@sumOf 0L // don't count past
 
-                val (x, y) = xy
+                val [x, y] = xy
                 if (x < min || x > max || y < min || y > max) return@sumOf 0L // don't count out of range
 
                 1L
@@ -101,7 +101,7 @@ fun main() = runAoc {
             printExtra(it)
             return@solution2 ignoredAnswer("python z3 unavailable")
         }
-        check.getOrThrow().let { (out, err) ->
+        check.getOrThrow().let { [out, err] ->
             if (out != "it works") {
                 if (out.isNotBlank()) printExtra("stdout:\n$out")
                 printExtra("stderr:\n$err")
@@ -118,7 +118,7 @@ fun main() = runAoc {
             yield("t1,t2,t3,t4 = Reals('t1 t2 t3 t4')")
             yield("s = Solver()")
             yield("s.add(")
-            for ((idx, s) in stones.take(4).withIndex()) {
+            for ([idx, s] in stones.take(4).withIndex()) {
                 val t = "t${idx + 1}"
                 yield("${s.p.x} + (${s.v.x}) * $t == px + vx * $t ,")
                 yield("${s.p.y} + (${s.v.y}) * $t == py + vy * $t ,")

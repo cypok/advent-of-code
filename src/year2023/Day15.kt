@@ -26,7 +26,7 @@ private fun solve2(input: List<String>): Long {
     val steps = parseSteps(input)
     val boxes = Array<MutableList<Pair<String, String>>>(N) { mutableListOf() }
     for (step in steps) {
-        val (label, op, focalLen) = STEP_REGEX.matchEntire(step)!!.destructured
+        val [label, op, focalLen] = STEP_REGEX.matchEntire(step)!!.destructured
         val boxIdx = hash(label)
         val lenses = boxes[boxIdx]
         when (op) {
@@ -43,8 +43,8 @@ private fun solve2(input: List<String>): Long {
             else -> error(step)
         }
     }
-    return boxes.withIndex().sumOf { (boxIdx, lenses) ->
-        lenses.withIndex().sumOf { (inBoxIdx, elem) ->
+    return boxes.withIndex().sumOf { [boxIdx, lenses] ->
+        lenses.withIndex().sumOf { [inBoxIdx, elem] ->
             (boxIdx + 1) * (inBoxIdx + 1) * elem.second.toLong()
         }
     }

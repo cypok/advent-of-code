@@ -12,7 +12,7 @@ fun main() = runAoc {
             lines.splitByEmptyLines()
                 .map { Array2D.fromLines(it) }
 
-        val (_, height) =
+        val [_, height] =
             locksAndKeys
                 .map { it.width to it.height }
                 .distinct()
@@ -24,8 +24,8 @@ fun main() = runAoc {
                 .values
                 .cartesianProduct()
 
-        pairs.count { (l, k) ->
-            (l.cols zip k.cols).all { (lc, kc) ->
+        pairs.count { [l, k] ->
+            (l.cols zip k.cols).all { [lc, kc] ->
                 lc.count { it == '#' } + kc.count { it == '#' } <= height
             }
         }

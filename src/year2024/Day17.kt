@@ -28,7 +28,7 @@ fun main() = runAoc {
         """
     }
     solution {
-        val (raOriginal, rbOriginal, rcOriginal) = lines.take(3).map { it.numbers().first() }
+        val [raOriginal, rbOriginal, rcOriginal] = lines.take(3).map { it.numbers().first() }
         val instructions = lines.drop(4).first().numbersAsInts()
 
         fun Long.asShiftArg(): Int {

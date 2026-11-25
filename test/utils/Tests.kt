@@ -210,7 +210,7 @@ class Tests {
 
     @Test
     fun testPoints() {
-        for ((r, c) in listOf(37 to 42, 0 to 0, -10 to -20)) {
+        for ([r, c] in listOf(37 to 42, 0 to 0, -10 to -20)) {
             val p = r x c
             assertEquals(r, p.row)
             assertEquals(c, p.col)

@@ -58,7 +58,7 @@ fun main() = runAoc {
         }
 
         val triplets = mutableSetOf<List<String>>()
-        for ((a, bs) in connections) {
+        for ([a, bs] in connections) {
             for (b in bs) {
                 for (c in connections[b]!!) {
                     if (c in bs) {

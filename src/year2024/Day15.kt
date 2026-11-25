@@ -50,14 +50,14 @@ fun main() = runAoc {
         """
     }
     solution {
-        val (mapLines, moveLines) = lines.splitByEmptyLines().toList()
+        val [mapLines, moveLines] = lines.splitByEmptyLines().toList()
 
         val widthMultiplier = if (isPart2) 2 else 1
 
         val originalMap = Array2D.fromLines(mapLines)
         val height = originalMap.height
         val width = originalMap.width * widthMultiplier
-        val initialPos = originalMap.find('@').let { (i, j) -> i x (j * widthMultiplier) }
+        val initialPos = originalMap.find('@').let { [i, j] -> i x (j * widthMultiplier) }
 
         val canvas =
             Array2D.ofChars(height, width) { i, j ->
@@ -96,7 +96,7 @@ fun main() = runAoc {
                         can
                     }
                     else -> {
-                        val (boxPosL, boxPosR) = when (ch) {
+                        val [boxPosL, boxPosR] = when (ch) {
                             '[' -> pos to pos.moveInDir(Dir.RIGHT)
                             ']' -> pos.moveInDir(Dir.LEFT) to pos
                             else -> error(ch)
@@ -126,8 +126,8 @@ fun main() = runAoc {
         }
 
         canvas.valuesIndexed
-            .filter { (ch, _) -> ch == 'O' || ch == '[' }
-            .sumOf { (_, pos) -> pos.i * 100L + pos.j }
+            .filter { [ch, _] -> ch == 'O' || ch == '[' }
+            .sumOf { [_, pos] -> pos.i * 100L + pos.j }
     }
 }
 

@@ -46,7 +46,7 @@ fun main() = runAoc {
                 secretNumbers(initialSecret)
                     .map { it.mod(10) }
                     .windowed(5)
-                    .map { (a, b, c, d, e) ->
+                    .map { [a, b, c, d, e] ->
                         DeltasSeq(b - a, c - b, d - c, e - d) to e
                     }
                     // ensure that only the first occurrence is used
@@ -54,7 +54,7 @@ fun main() = runAoc {
 
             buildMap {
                 for (s in buyerSecrets) {
-                    for ((ds, p) in generateDeltasSeqs(s)) {
+                    for ([ds, p] in generateDeltasSeqs(s)) {
                         put(ds, p + (get(ds) ?: 0))
                     }
                 }

@@ -16,7 +16,7 @@ private fun solve1(input: List<String>): Int =
 
 private fun solve2(input: List<String>): Int {
     var level = 0
-    for ((i, c) in input[0].withIndex()) {
+    for ([i, c] in input[0].withIndex()) {
         when (c) {
             '(' -> level += 1
             ')' -> level -= 1

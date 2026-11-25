@@ -57,7 +57,7 @@ fun main() = runAoc {
         content
             .takeWhile { it != -1 }
             .withIndex()
-            .sumOf { (idx, block) ->
+            .sumOf { [idx, block] ->
                 1L * idx * block
             }
     }
@@ -75,7 +75,7 @@ fun main() = runAoc {
             var nextFileIdx = 0
             for (digitCh in line) {
                 val size = digitCh.digitToInt()
-                val (id, list) =
+                val [id, list] =
                     if (nextIsFile) {
                         nextFileIdx.also { nextFileIdx++ } to fileList
                     } else {

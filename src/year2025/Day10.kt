@@ -32,8 +32,8 @@ fun main() = runAoc {
             val m = targetState.size
 
             val matrix = Array(m) { Array(n + 1) { ZERO } }
-            buttons.withIndex().forEach { (j, ss) -> ss.forEach { matrix[it][j] = ONE } }
-            targetState.withIndex().forEach { (i, sum) -> matrix[i][n] = Rat(sum, 1) }
+            buttons.withIndex().forEach { [j, ss] -> ss.forEach { matrix[it][j] = ONE } }
+            targetState.withIndex().forEach { [i, sum] -> matrix[i][n] = Rat(sum, 1) }
 
             val usedRow = Array(m) { false }
             val mainRowForCol = Array(n) { -1 }
@@ -105,7 +105,7 @@ fun main() = runAoc {
 
     // part 2 is too slow
     solution1("brute-force") {
-        lines.withIndex().toList().stream().parallel().map { (machineIdx, machineDesc) ->
+        lines.withIndex().toList().stream().parallel().map { [machineIdx, machineDesc] ->
             val buttons = machineDesc.substringAfter("] ").substringBefore(" {").split(" ").map { it.numbersAsInts() }
 
             if (isPart1) {
@@ -118,7 +118,7 @@ fun main() = runAoc {
                 }.toBooleanArray()
                 buttons.map { listOf(false, true) }.cartesianProduct().minOf { buttonPresses ->
                     val state = BooleanArray(targetState.size)
-                    (buttons zip buttonPresses).forEach { (b, p) ->
+                    (buttons zip buttonPresses).forEach { [b, p] ->
                         if (p) b.forEach { state[it] = !state[it] }
                     }
                     if (state contentEquals targetState) buttonPresses.count { it } else Int.MAX_VALUE

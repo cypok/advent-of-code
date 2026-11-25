@@ -34,7 +34,7 @@ fun main() = runAoc {
         """
     }
     solution {
-        map.valuesIndexed.sumOf { (ch, pos) ->
+        map.valuesIndexed.sumOf { [ch, pos] ->
             if (ch != '0') return@sumOf 0L
 
             if (isPart1) {

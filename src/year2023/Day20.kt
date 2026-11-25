@@ -82,7 +82,7 @@ private sealed class Module(val name: String, val outputNames: List<String>) {
         override fun extraToString(): String {
             val commonCycle = detectStateCycle()
             val internals = if (true) {
-                "/" + state.entries.joinToString { (src, state) -> "$src: ${state.toPulseString()}" }
+                "/" + state.entries.joinToString { [src, state] -> "$src: ${state.toPulseString()}" }
             } else {
                 ""
             }
@@ -145,7 +145,7 @@ private fun modulesToGraphviz(modules: Map<String, Module>): String =
     }
 
 private fun sendSignals(modules: Map<String, Module>, signals: List<Signal>): List<Signal> =
-    signals.groupBy { it.dst }.flatMap { (dst, ss) ->
+    signals.groupBy { it.dst }.flatMap { [dst, ss] ->
         val module = modules[dst]!!
         val newPulses = module.process(ss)
         newPulses.flatMap { newPulse ->
@@ -175,7 +175,7 @@ private fun solve1(input: List<String>): Long {
     var totalLow = 0L
     var totalHigh = 0L
     repeat(1000) {
-        val (lows, highs, _) = pressButtonAndWait(modules)
+        val [lows, highs, _] = pressButtonAndWait(modules)
         totalLow += lows
         totalHigh += highs
     }
@@ -192,7 +192,7 @@ private fun solve2(input: List<String>): Long {
         modules.forEach { it.value.stateTick(times) }
 
         if (times % 10000 == 0) {
-            val (cyclic, acyclic) = modules.values
+            val [cyclic, acyclic] = modules.values
                 .map { it.detectStateCycle() }
                 .partition { it != null }
             val commonCycle =
@@ -214,7 +214,7 @@ private fun solve2(input: List<String>): Long {
         }
 
         times++
-        val (_, _, finish) = pressButtonAndWait(modules)
+        val [_, _, finish] = pressButtonAndWait(modules)
         assert(!finish) { "universe collapsed?!" }
     }
 }

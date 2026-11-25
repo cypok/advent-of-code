@@ -37,9 +37,9 @@ fun main() = runAoc {
     }
 
     solution {
-        val (freshRangesStr, availableIdsStr) = lines.splitByEmptyLines().toList()
+        val [freshRangesStr, availableIdsStr] = lines.splitByEmptyLines().toList()
         val freshRanges = freshRangesStr.map {
-            val (l, r) = it.numbers()
+            val [l, r] = it.numbers()
             l..r
         }
 
@@ -53,7 +53,7 @@ fun main() = runAoc {
             // Start from the biggest to not have problems when next range covers multiple small ranges.
             val ranges = freshRanges.sortedByDescending { it.size }
 
-            ranges.withIndex().sumOf { (i, ri) ->
+            ranges.withIndex().sumOf { [i, ri] ->
                 var l = ri.left
                 var r = ri.right
                 for (rj in ranges.asSequence().take(i)) {

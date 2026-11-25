@@ -14,7 +14,7 @@ private fun solve(input: List<String>, expansion: Int): Long {
     val emptyCols = collectEmptyLines(map.cols)
     val emptyRows = collectEmptyLines(map.rows)
 
-    val points = map.rows.withIndex().flatMap { (row, line) ->
+    val points = map.rows.withIndex().flatMap { [row, line] ->
         line.withIndex().filter { it.value == '#' }.map { Pair(row, it.index) }
     }.toList()
 

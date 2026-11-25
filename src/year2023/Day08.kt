@@ -14,7 +14,7 @@ private fun parse(input: List<String>): Pair<String, Map<String, Pair<String, St
     return Pair(
         input[0],
         input.asSequence().drop(2).map { line ->
-            val (src, left, right) = NODE_REGEX.matchEntire(line)!!.destructured
+            val [src, left, right] = NODE_REGEX.matchEntire(line)!!.destructured
             src to Pair(left, right)
         }.toMap()
     )
@@ -36,7 +36,7 @@ private fun applyInstructions(
 }
 
 private fun part1(input: List<String>): Long {
-    val (instructions, network) = parse(input)
+    val [instructions, network] = parse(input)
 
     var current = "AAA"
     var steps = 0L
@@ -49,7 +49,7 @@ private fun part1(input: List<String>): Long {
 }
 
 private fun part2(input: List<String>): Long {
-    val (instructions, network) = parse(input)
+    val [instructions, network] = parse(input)
 
     // I noticed that inputs are small and paths are really long.
     // So there are cycles.

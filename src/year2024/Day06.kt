@@ -159,7 +159,7 @@ private fun solve2BruteForce(input: List<String>): Int {
     val originalGuardPos = map.find('^')
     val originalGuardDir = Dir.UP
 
-    return map.valuesIndexed.sumOf { (field, pos) ->
+    return map.valuesIndexed.sumOf { [field, pos] ->
         if (field != '#' && field != '^' &&
             wouldLoop(map, pos, originalGuardPos, originalGuardDir)) {
             1

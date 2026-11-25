@@ -10,7 +10,7 @@ fun main() = test(
 
 private val ds = listOf(-1, 0, 1)
 private val neighbors = ds.flatMap { d1 -> ds.map { d2 -> Pair(d1, d2) } }
-    .filter { (d1, d2) -> d1 != 0 || d2 != 0}
+    .filter { [d1, d2] -> d1 != 0 || d2 != 0}
 
 private fun solve1(input: List<String>): Int {
     var sum = 0

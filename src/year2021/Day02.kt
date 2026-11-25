@@ -21,7 +21,7 @@ fun main() = runAoc {
     }
     solution1 {
         lines.fold(0 x 0) { pos, line ->
-            val (cmd, argStr) = line.split(' ')
+            val [cmd, argStr] = line.split(' ')
             val arg = argStr.toInt()
             val dir = when (cmd) {
                 "forward" -> Dir.RIGHT
@@ -35,8 +35,8 @@ fun main() = runAoc {
         }
     }
     solution2 {
-        lines.fold(Triple(0, 0, 0)) { (pos, depth, aim), line ->
-            val (cmd, argStr) = line.split(' ')
+        lines.fold(Triple(0, 0, 0)) { [pos, depth, aim], line ->
+            val [cmd, argStr] = line.split(' ')
             val arg = argStr.toInt()
             when (cmd) {
                 "forward" -> Triple(pos + arg, depth + aim * arg, aim)
@@ -44,7 +44,7 @@ fun main() = runAoc {
                 "up" -> Triple(pos, depth, aim - arg)
                 else -> error(cmd)
             }
-        }.let { (pos, depth, _) ->
+        }.let { [pos, depth, _] ->
             pos * depth
         }
     }

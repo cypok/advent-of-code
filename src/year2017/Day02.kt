@@ -22,8 +22,8 @@ fun main() = runAoc {
                 nums.max() - nums.min()
             } else {
                 nums.cartesianSquare()
-                    .filter { (a, b) -> a > b && a % b == 0 }
-                    .map { (a, b) -> a / b }
+                    .filter { [a, b] -> a > b && a % b == 0 }
+                    .map { [a, b] -> a / b }
                     .single()
             }
         }

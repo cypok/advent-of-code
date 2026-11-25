@@ -60,18 +60,18 @@ fun main() {
 
     val threshold = 1.seconds
     val slowDays = BATCH_TIMES
-        .filter { (_, _, t) -> t >= threshold }
-        .sortedBy { (_, _, t) -> t }
+        .filter { [_, _, t] -> t >= threshold }
+        .sortedBy { [_, _, t] -> t }
         .take(5)
     if (slowDays.isNotEmpty()) {
         println("Slowest days exceeding $threshold:")
-        slowDays.forEach { (y, d, t) -> println("  ${dayDesc(y, d)} took ${t.inWholeMilliseconds} ms") }
+        slowDays.forEach { [y, d, t] -> println("  ${dayDesc(y, d)} took ${t.inWholeMilliseconds} ms") }
         println()
     }
 
     if (TOTAL_FAILS.isNotEmpty()) {
         println("Failed days:")
-        TOTAL_FAILS.forEach { (y, d) -> println("  ${dayDesc(y, d)}") }
+        TOTAL_FAILS.forEach { [y, d] -> println("  ${dayDesc(y, d)}") }
         println()
     }
 

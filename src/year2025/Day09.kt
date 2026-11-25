@@ -65,10 +65,10 @@ fun main() = runAoc {
         """
     }
 
-    fun SolutionContext.parsePoints() = lines.map { it.numbers().let { (x, y) -> P(x, y) } }
+    fun SolutionContext.parsePoints() = lines.map { it.numbers().let { [x, y] -> P(x, y) } }
 
     solution1 {
-        parsePoints().combinations().maxOf { (a, b) -> area(a, b) }
+        parsePoints().combinations().maxOf { [a, b] -> area(a, b) }
     }
 
     solution2 {
@@ -86,8 +86,8 @@ fun main() = runAoc {
         }
 
         // TODO: performance, convert points to get rid of numerous conversion to indices?
-        val (height, idxToY, yToIdx) = remap { it.y }
-        val (width, idxToX, xToIdx) = remap { it.x }
+        val [height, idxToY, yToIdx] = remap { it.y }
+        val [width, idxToX, xToIdx] = remap { it.x }
 
         val map = Array2D.ofChars(height, width, '.')
 
@@ -98,7 +98,7 @@ fun main() = runAoc {
                 map[yIdx, xIdx] = ch
             }
 
-            for ((a, b) in (points.asSequence() + points.first()).windowedPairs()) {
+            for ([a, b] in (points.asSequence() + points.first()).windowedPairs()) {
                 val aYIdx = yToIdx(a.y)
                 val aXIdx = xToIdx(a.x)
 
@@ -116,7 +116,7 @@ fun main() = runAoc {
                 }
             }
 
-            for ((a, b, c) in (points.asSequence() + points.take(2)).windowed(3)) {
+            for ([a, b, c] in (points.asSequence() + points.take(2)).windowed(3)) {
                 check(a.y == b.y || b.y == c.y)
                 check(a.x == b.x || b.x == c.x)
                 val dY = (if (a.y == b.y) c.y - b.y else a.y - b.y).sign
@@ -171,7 +171,7 @@ fun main() = runAoc {
         }
 
         points.combinations()
-            .maxOf { (a, b) ->
+            .maxOf { [a, b] ->
                 val ar = yToIdx(a.y)
                 val br = yToIdx(b.y)
                 val ac = xToIdx(a.x)

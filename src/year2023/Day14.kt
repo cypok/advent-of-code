@@ -10,10 +10,10 @@ fun main() = runAoc {
 
 private fun SolutionContext.solve1(): Long {
     return Array2D.fromLines(lines).cols.sumOf { col ->
-        col.withIndex().fold(Pair(0, 0L)) { acc, (i, ch) ->
+        col.withIndex().fold(Pair(0, 0L)) { acc, [i, ch] ->
             if (ch != 'O') return@fold acc
 
-            val (nextEmpty, weight) = acc
+            val [nextEmpty, weight] = acc
 
             val emptySpot = 1 + ((i downTo nextEmpty)
                 .firstOrNull { col[it] == '#' }

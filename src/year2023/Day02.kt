@@ -22,7 +22,7 @@ private fun solve1(input: List<String>): Int {
         val sets = match.groupValues[2]
         val isPossible = sets.splitToSequence("; ").all { set ->
             set.splitToSequence(", ").all { group ->
-                val (numStr, colorStr) = group.words()
+                val [numStr, colorStr] = group.words()
                 val num = numStr.toInt()
                 when (colorStr) {
                     "red" -> num <= 12
@@ -41,7 +41,7 @@ private fun solve2(input: List<String>): Int {
         val sets = line.substringAfter(": ")
         val res = sets.splitToSequence("; ").fold(RGB(0, 0, 0)) { acc, set ->
             set.splitToSequence(", ").fold(acc) { acc, group ->
-                val (numStr, colorStr) = group.words()
+                val [numStr, colorStr] = group.words()
                 val num = numStr.toInt()
                 when (colorStr) {
                     "red"   -> acc.copy(red   = max(acc.red,   num))

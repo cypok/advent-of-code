@@ -12,7 +12,7 @@ fun main() = test(
 
 private fun solve(input: List<String>): Pair<Long, Long> {
     val map = Array2D.fromLines(input)
-    map.find('S').let { (i, j) ->
+    map.find('S').let { [i, j] ->
         return startAt(map, i, j)
     }
 }
@@ -32,7 +32,7 @@ private fun parsePipe(ch: Char): Set<Dir> =
 private fun startAt(map: Array2D<Char>, startRow: Int, startCol: Int): Pair<Long, Long> {
     val borderMap = Array2D.ofBooleans(map.height, map.width, false)
     for (dir in Dir.entries) {
-        followPipes(map, borderMap, startRow, startCol, dir, 0, allowInvalid = true)?.let { (length, returnDir) ->
+        followPipes(map, borderMap, startRow, startCol, dir, 0, allowInvalid = true)?.let { [length, returnDir] ->
             val maxDist = (length + 1) / 2
             val startDirs = setOf(dir, returnDir.opposite)
             val startPipe = pipes.entries.find { it.value == startDirs }!!.key
@@ -53,7 +53,7 @@ private tailrec fun followPipes(
     length: Long,
     allowInvalid: Boolean = false
 ): Pair<Long, Dir>? {
-    val (nextRow, nextCol) = (row x col).moveInDir(dir)
+    val [nextRow, nextCol] = (row x col).moveInDir(dir)
 
     val cell = map.getOrNull(nextRow, nextCol)
     if (cell == null) {

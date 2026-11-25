@@ -27,7 +27,7 @@ fun main() = runAoc {
 
     solution {
         val antennas = buildMap {
-            for ((ch, pos) in map.valuesIndexed) {
+            for ([ch, pos] in map.valuesIndexed) {
                 if (ch.isLetterOrDigit()) {
                     getOrPut(ch) { mutableListOf<Point>() } += pos
                 }
@@ -35,7 +35,7 @@ fun main() = runAoc {
         }
 
         antennas.values.flatMap { locs ->
-            locs.combinations().flatMap { (p1, p2) ->
+            locs.combinations().flatMap { [p1, p2] ->
                 antinodesLocations(isPart2, map, p1, p2)
             }
         }.toSet().size
@@ -43,7 +43,7 @@ fun main() = runAoc {
 }
 
 private fun antinodesLocations(advanced: Boolean, map: Array2D<Char>, p1: Point, p2: Point) = buildList {
-    for ((start, diff) in listOf(1 to 1, 0 to -1)) {
+    for ([start, diff] in listOf(1 to 1, 0 to -1)) {
         val indices =
             if (advanced) generateSequence(start) { it + diff }
             else sequenceOf(start + diff)

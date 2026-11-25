@@ -100,7 +100,7 @@ fun main() = runAoc {
         val multiplier = 1 + 3 * enoughSteps / min(map.width, map.height)
         val marks = Array2D.ofInts(map.height * multiplier, map.width * multiplier, UNVISITED)
 
-        val start = map.find('S').let { (i, j) ->
+        val start = map.find('S').let { [i, j] ->
             (i + multiplier / 2 * map.height) x (j + multiplier / 2 * map.width)
         }
 

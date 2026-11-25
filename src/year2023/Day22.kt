@@ -32,7 +32,7 @@ private class Brick(val name: String, val p1: P, val p2: P) {
 
 private fun settleAndFindSupports(input: List<String>): Pair<MutableList<Brick>, Map<Brick, List<Brick>>> {
     val bricks = input.mapIndexed { idx, line ->
-        val (x1, y1, z1, x2, y2, z2) = line.numbersAsInts()
+        val [x1, y1, z1, x2, y2, z2] = line.numbersAsInts()
         check(x1 <= x2 && y1 <= y2 && z1 <= z2)
         Brick(('A' + idx).toString(), P(x1, y1, z1), P(x2, y2, z2))
     }.sortedBy { it.bottom }
@@ -53,7 +53,7 @@ private fun settleAndFindSupports(input: List<String>): Pair<MutableList<Brick>,
         val supports = mutableSetOf<Brick>()
         (b.p1.x .. b.p2.x).forEach { x ->
             (b.p1.y .. b.p2.y).forEach { y ->
-                val (sHeight, sBrick) = map[x, y]
+                val [sHeight, sBrick] = map[x, y]
                 if (sHeight == supportHeight && sBrick != null) {
                     supports += sBrick
                 }
@@ -85,7 +85,7 @@ fun main() = runAoc {
     }
 
     solution1 {
-        val (bricks, supportedBy) = settleAndFindSupports(lines)
+        val [bricks, supportedBy] = settleAndFindSupports(lines)
         val criticalBricks = supportedBy
             .filterValues { it.size == 1 }
             .values
@@ -95,7 +95,7 @@ fun main() = runAoc {
     }
 
     solution2 {
-        val (bricks, supportedBy) = settleAndFindSupports(lines)
+        val [bricks, supportedBy] = settleAndFindSupports(lines)
         bricks.sumOf { b ->
             val disintegrated = mutableSetOf(b)
             while (true) {

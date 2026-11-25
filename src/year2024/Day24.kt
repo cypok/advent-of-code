@@ -8,10 +8,10 @@ import java.io.File
 
 fun main() = runAoc {
     solution {
-        val (inputDescs, gateDescs) = lines.splitByEmptyLines().toList()
+        val [inputDescs, gateDescs] = lines.splitByEmptyLines().toList()
 
         val inputValues = inputDescs.associate { line ->
-            val (name, value) = line.split(": ")
+            val [name, value] = line.split(": ")
             name to (value != "0")
         }
         val inputWires = inputValues.keys
@@ -20,7 +20,7 @@ fun main() = runAoc {
 
         val gateRegex = """(.*) (AND|OR|XOR) (.*) -> (.*)""".toRegex()
         val gates = gateDescs.associate { line ->
-            val (l, op, r, res) = gateRegex.find(line)!!.groupValues.drop(1)
+            val [l, op, r, res] = gateRegex.find(line)!!.groupValues.drop(1)
             res to Gate(l, r, res, op)
         }
 
@@ -76,14 +76,14 @@ fun main() = runAoc {
                 gates[swaps[name] ?: name]
             fun gateName(gate: Gate): String = swaps[gate.res] ?: gate.res
 
-            outer@for ((i, zWire) in zWires.withIndex()) {
+            outer@for ([i, zWire] in zWires.withIndex()) {
                 fun check(): Boolean {
                     fun decToBin(v: Int) = (v and 1 != 0) to (v and 2 != 0)
 
                     for (x in 0 until 4) {
-                        val (x0, x1) = decToBin(x)
+                        val [x0, x1] = decToBin(x)
                         for (y in 0 until 4) {
-                            val (y0, y1) = decToBin(y)
+                            val [y0, y1] = decToBin(y)
 
                             // No need to check carry.
                             if (i == 0 && (x0 || y0)) continue
@@ -110,7 +110,7 @@ fun main() = runAoc {
                                     performOp(gate.op, l, r)
                                 }
 
-                            val (z0, z1) = decToBin(x + y)
+                            val [z0, z1] = decToBin(x + y)
 
                             if (i > 0 && calcValue(zWires[i - 1]) != z0) return false
                             if (calcValue(zWires[i]) != z1) return false
@@ -157,7 +157,7 @@ fun main() = runAoc {
                     }
                 }
 
-                for ((u, a) in listOf(usedNewGates, availableNewGates).cartesianProduct()) {
+                for ([u, a] in listOf(usedNewGates, availableNewGates).cartesianProduct()) {
                     check(u !in swaps && a !in swaps)
                     swaps[u] = a
                     swaps[a] = u

@@ -48,7 +48,7 @@ fun main() = runAoc {
     solution1 {
         val boxSize = 3
         val shapesAndAreas = lines.splitByEmptyLines().toList()
-        val shapes = shapesAndAreas.dropLast(1).withIndex().map { (i, desc) ->
+        val shapes = shapesAndAreas.dropLast(1).withIndex().map { [i, desc] ->
             check(i == desc[0].numbersAsInts().single())
             val shapeMap = Array2D.fromLines(desc.drop(1))
             check(shapeMap.width == boxSize && shapeMap.height == boxSize)
@@ -63,7 +63,7 @@ fun main() = runAoc {
             if (shapeCounts.sum() <= (width/boxSize) * (height/boxSize)) {
                 // Just put them next to each other in independent 3x3 boxes.
                 true
-            } else if ((shapeCounts zip shapes).sumOf { (c, s) -> c * s } > width * height) {
+            } else if ((shapeCounts zip shapes).sumOf { [c, s] -> c * s } > width * height) {
                 // Not enough space ever for perfect placement.
                 false
             } else {

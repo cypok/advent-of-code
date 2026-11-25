@@ -55,7 +55,7 @@ fun main() = runAoc {
                 Room(name, neighbors)
             }
 
-            val (items, msg) = when (val r = scanLine()) {
+            val [items, msg] = when (val r = scanLine()) {
                 "Items here:" -> {
                     val items = scanLinesWhile { it.isNotEmpty() }
                         .map { it.substringAfter("- ") }
@@ -73,9 +73,9 @@ fun main() = runAoc {
         isolatedRun {
             fun tryVisitRoomAndNeighbors(prev: Pair<Room, Dir>?): Boolean {
                 while (true) {
-                    val (room, items, msg) = tryEnterRoom()
+                    val [room, items, msg] = tryEnterRoom()
                     if (prev != null) {
-                        val (prevRoom, prevDir) = prev
+                        val [prevRoom, prevDir] = prev
 
                         fun <K, V> MutableMap<K, V>.putOrCheckTheTheSame(key: K, value: V) {
                             val old = this[key]
@@ -118,11 +118,11 @@ fun main() = runAoc {
             queue += rooms.values.first() to emptyList()
 
             while (queue.isNotEmpty()) {
-                val (cur, dirs) = queue.removeFirst()
+                val [cur, dirs] = queue.removeFirst()
                 if (cur !in this) {
                     this[cur] = dirs
 
-                    cur.neighbors.forEach { (d, r) ->
+                    cur.neighbors.forEach { [d, r] ->
                         queue += r!! to (dirs + d)
                     }
                 } // else already visited
@@ -157,7 +157,7 @@ fun main() = runAoc {
             expectNoError(scanLine())
         }
 
-        val goodItemLocations = itemLocations.filter { (item, room) ->
+        val goodItemLocations = itemLocations.filter { [item, room] ->
             logging("")
             logging("Trying to take the $item at ${room.name}.")
             val failureMsg = isolatedRun {
@@ -193,7 +193,7 @@ fun main() = runAoc {
         isolatedRun {
             expectRoom()
 
-            goodItemLocations.forEach { (item, room) ->
+            goodItemLocations.forEach { [item, room] ->
                 val there = routeToRoom[room]!!
                 goRoute(there)
 
@@ -214,7 +214,7 @@ fun main() = runAoc {
 
             val inventory = allItems.map { true }.toMutableList()
             List(allItems.size) { listOf(true, false) }.cartesianProduct().forEach { itemIdsToTry ->
-                itemIdsToTry.withIndex().forEach { (idx, take) ->
+                itemIdsToTry.withIndex().forEach { [idx, take] ->
                     val item = allItems[idx]
                     if (take != inventory[idx]) {
                         takeOrDropItem(item, take)
@@ -242,7 +242,7 @@ fun main() = runAoc {
 
                     WEIGHING_SUCCESS in msg -> {
                         val passingItems = inventory.withIndex()
-                            .mapNotNull { (i, take) -> allItems[i].takeIf { take } }
+                            .mapNotNull { [i, take] -> allItems[i].takeIf { take } }
                             .joinToString(", ")
                         logging("We've passed the weighing check with $passingItems.")
                         return@isolatedRun scanLinesUntilEnd().last().numbers().single()
@@ -266,7 +266,7 @@ private val doorByDir = mapOf(
     Dir.RIGHT to "east",
 )
 private val dirByDoor = doorByDir.entries
-    .associate { (dir, door) -> door to dir }
+    .associate { [dir, door] -> door to dir }
 
 fun Dir.asDoor() = doorByDir[this]!!
 fun String.asDir() = dirByDoor[this]!!

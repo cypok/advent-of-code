@@ -27,13 +27,13 @@ fun main() = runAoc {
 
     solution {
         val adjs = listOf(-1, 0, 1).cartesianSquare()
-            .filter { (di, dj) -> di != 0 || dj != 0 }.toList()
+            .filter { [di, dj] -> di != 0 || dj != 0 }.toList()
         assert(adjs.size == 8)
 
         val ROLL = '@'
 
         fun isRemovable(p: Point) =
-            (map[p] == ROLL && adjs.count { (di, dj) -> map.getOrNull(p.i + di, p.j + dj) == ROLL } < 4)
+            (map[p] == ROLL && adjs.count { [di, dj] -> map.getOrNull(p.i + di, p.j + dj) == ROLL } < 4)
 
         if (isPart1) {
             map.indices.count { isRemovable(it) }
@@ -44,7 +44,7 @@ fun main() = runAoc {
                 isRemovable(p).also {
                     if (it) {
                         map[p] = '.'
-                        adjs.forEach { (di, dj) ->
+                        adjs.forEach { [di, dj] ->
                             val ap = (p.i + di) x (p.j + dj)
                             if (map.getOrNull(ap) == ROLL) {
                                 workList += ap

@@ -82,10 +82,10 @@ private fun process(input: List<String>, withJoker: Boolean): Long {
     }
 
     return input.map {
-        val (hand, score) = it.words()
+        val [hand, score] = it.words()
         HandInfo(hand, detectType(hand), labelsStrength(hand), score.toLong())
     }
         .sorted()
         .withIndex()
-        .sumOf { (idx, handInfo) -> handInfo.score * (idx + 1) }
+        .sumOf { [idx, handInfo] -> handInfo.score * (idx + 1) }
 }

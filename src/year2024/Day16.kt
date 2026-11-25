@@ -102,7 +102,7 @@ fun main() = runAoc {
                     continue
                 }
 
-                val (p, d, s) = state
+                val [p, d, s] = state
                 if (map[p] == 'E') {
                     return state
                 }

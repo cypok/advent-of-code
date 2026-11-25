@@ -49,7 +49,7 @@ private sealed class Command {
                 '>' -> listOf(IntRange(value + 1, MAX_VALUE), IntRange(MIN_VALUE, value))
                 else -> error(this)
             }
-            val (pos, neg) = posAndNeg.map { filtered ->
+            val [pos, neg] = posAndNeg.map { filtered ->
                 (p + (checkedComponent to (filtered intersect actualRange))).validOrNull
             }
             return Pair(pos, neg)
@@ -77,7 +77,7 @@ private const val MAX_VALUE = 4000
 private val WHOLE_RANGE = IntRange(MIN_VALUE, MAX_VALUE)
 
 private fun solve1(input: List<String>): Long {
-    val (rules, parts: List<Part>) = parse(input)
+    val [rules, parts: List<Part>] = parse(input)
 
     tailrec fun applyRule(part: Part, rule: String): Boolean =
         when (rule) {
@@ -90,7 +90,7 @@ private fun solve1(input: List<String>): Long {
 }
 
 private fun solve2(input: List<String>): Long {
-    val (rules, _) = parse(input)
+    val [rules, _] = parse(input)
 
     val acceptedParts = mutableListOf<PartRange>()
 
@@ -101,7 +101,7 @@ private fun solve2(input: List<String>): Long {
             else -> {
                 fun applyCmds(p: PartRange, cmds: List<Command>) {
                     val cmd = cmds.first()
-                    val (pos, neg) = cmd.partition(p)
+                    val [pos, neg] = cmd.partition(p)
                     pos?.let { applyRule(it, cmd.nextRuleName) }
                     neg?.let { applyCmds(it, cmds.drop(1)) }
                 }
@@ -118,12 +118,12 @@ private fun solve2(input: List<String>): Long {
 }
 
 private fun parse(input: List<String>): Pair<Map<String, Rule>, List<Part>> {
-    val (ruleStrs, partStrs) = input.splitByEmptyLines().map { it.toList() }.toList()
+    val [ruleStrs, partStrs] = input.splitByEmptyLines().map { it.toList() }.toList()
 
     val ruleRegex = """(.+)\{(.+)}""".toRegex()
     val condCmdRegex = """(.)([<>])(\d+):(.+)""".toRegex()
     val rules = ruleStrs.associate { ruleStr ->
-        val (name, cmdStrs) = ruleRegex.matchEntire(ruleStr)!!.destructured
+        val [name, cmdStrs] = ruleRegex.matchEntire(ruleStr)!!.destructured
         val cmds = cmdStrs.split(',').map { cmdStr ->
             when (val m = condCmdRegex.matchEntire(cmdStr)) {
                 null -> Command.Unconditional(cmdStr)
@@ -140,7 +140,7 @@ private fun parse(input: List<String>): Pair<Map<String, Rule>, List<Part>> {
     val partComponentRegex = """(.)=(\d+)""".toRegex()
     val parts: List<Part> = partStrs.map { partStr ->
         partRegex.matchEntire(partStr)!!.groupValues[1].split(",").associate { compStr ->
-            val (name, value) = partComponentRegex.matchEntire(compStr)!!.destructured
+            val [name, value] = partComponentRegex.matchEntire(compStr)!!.destructured
             name[0] to value.toInt()
         }
     }

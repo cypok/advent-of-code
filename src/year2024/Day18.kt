@@ -39,7 +39,7 @@ fun main() = runAoc {
     }
     solution {
         val bytes = lines.map { line ->
-            val (x, y) = line.numbersAsInts()
+            val [x, y] = line.numbersAsInts()
             Point(y, x)
         }
         val height = 1 + bytes.maxOf { it.i }
@@ -50,7 +50,7 @@ fun main() = runAoc {
             val nextSteps = ArrayDeque(listOf((0 x 0) to 0))
 
             while (nextSteps.isNotEmpty() && visited[height - 1][width - 1] == Int.MAX_VALUE) {
-                val (curPos, curSteps) = nextSteps.removeFirst()
+                val [curPos, curSteps] = nextSteps.removeFirst()
                 if (canvas.getOrNull(curPos) != '.') continue
                 if (visited[curPos] <= curSteps) continue
 

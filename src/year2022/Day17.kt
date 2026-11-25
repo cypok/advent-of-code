@@ -67,7 +67,7 @@ fun main() = runAoc {
 
             fun tryMove(dir: Dir): Boolean {
                 val movedPos = pos.moveInDir(dir)
-                val canMove = rock.valuesIndexed.all { (rc, rp) ->
+                val canMove = rock.valuesIndexed.all { [rc, rp] ->
                     !rc || chamber.getOrNull(movedPos + rp) == false
                 }
                 if (canMove) pos = movedPos
@@ -79,7 +79,7 @@ fun main() = runAoc {
                 if (!tryMove(Dir.UP)) break
             }
 
-            rock.valuesIndexed.forEach { (rc, rp) ->
+            rock.valuesIndexed.forEach { [rc, rp] ->
                 if (rc) {
                     assert(!chamber[pos + rp])
                     chamber[pos + rp] = true

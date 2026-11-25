@@ -33,11 +33,11 @@ fun main() = runAoc {
             intCodeComputer().run()
                 .map { it.toIntExact() }
                 .chunked(3)
-                .forEach { (x, y, id) ->
+                .forEach { [x, y, id] ->
                     canvas[y, x] = cellsById[id]
                 }
             printExtra(canvas.toAsciiArt(EMPTY))
-            canvas.valuesIndexed.count { (ch, _) -> ch == BLOCK }
+            canvas.valuesIndexed.count { [ch, _] -> ch == BLOCK }
 
         } else runBlocking {
             val info = object {
@@ -53,7 +53,7 @@ fun main() = runAoc {
                 }
 
                 fun draw(line: Int, text: String) {
-                    text.withIndex().forEach { (idx, ch) ->
+                    text.withIndex().forEach { [idx, ch] ->
                         canvas[line, fieldWidth() + 1 + idx] = ch
                     }
                 }
