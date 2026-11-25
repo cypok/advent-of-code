@@ -1,13 +1,14 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "2.2.21"
+    kotlin("jvm") version "2.5.0-RC2"
     id("application")
     id("idea")
+    id("io.github.ben-manes.versions") version "0.67.0" // dependencyUpdates task
 }
 
 kotlin {
-    jvmToolchain(23)
+    jvmToolchain(27)
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.compilerOptions {
@@ -26,19 +27,13 @@ sourceSets {
     }
 }
 
-tasks {
-    wrapper {
-        gradleVersion = "8.11.1"
-    }
-}
-
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
-    implementation("org.jgrapht:jgrapht-core:1.5.2")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
+    implementation("org.jgrapht:jgrapht-core:1.5.3")
+    testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    implementation("io.arrow-kt:arrow-core:2.2.0")
-    implementation("io.arrow-kt:arrow-fx-coroutines:2.2.0")
+    implementation("io.arrow-kt:arrow-core:2.3.0.1")
+    implementation("io.arrow-kt:arrow-fx-coroutines:2.3.0.1")
 }
 
 application {
