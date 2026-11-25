@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     kotlin("jvm") version "2.5.0-RC2"
     id("application")
@@ -9,13 +7,12 @@ plugins {
 
 kotlin {
     jvmToolchain(27)
-}
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.compilerOptions {
-    freeCompilerArgs.add("-opt-in=kotlin.contracts.ExperimentalContracts")
-    freeCompilerArgs.add("-opt-in=kotlin.io.path.ExperimentalPathApi")
-    freeCompilerArgs.add("-opt-in=kotlinx.coroutines.DelicateCoroutinesApi")
-    freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
+    compilerOptions {
+        optIn.add("kotlin.contracts.ExperimentalContracts")
+        optIn.add("kotlin.io.path.ExperimentalPathApi")
+        optIn.add("kotlinx.coroutines.DelicateCoroutinesApi")
+        optIn.add("kotlinx.coroutines.ExperimentalCoroutinesApi")
+    }
 }
 
 sourceSets {
@@ -25,6 +22,10 @@ sourceSets {
     test {
         kotlin.srcDir("test")
     }
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
