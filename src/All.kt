@@ -20,7 +20,8 @@ fun main() {
     var lastWasShort = false
     val totalTime = measureTime {
         years@for (year in 2015..Year.now().value) {
-            for (day in 1..25) {
+            val days = if (year < 2025) 25 else 12
+            for (day in 1..days) {
                 val dayDate = LocalDate.of(year, Month.DECEMBER, day)
                 if (dayDate > today) break@years
 
