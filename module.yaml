@@ -1,0 +1,20 @@
+product: jvm/app
+
+dependencies:
+  - org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0
+  - org.jgrapht:jgrapht-core:1.5.3
+  - io.arrow-kt:arrow-core:2.3.0.1
+  - io.arrow-kt:arrow-fx-coroutines:2.3.0.1
+
+settings:
+  kotlin:
+    version: 2.5.0-RC2
+    optIns:
+      - kotlin.contracts.ExperimentalContracts
+      - kotlin.io.path.ExperimentalPathApi
+      - kotlinx.coroutines.DelicateCoroutinesApi
+      - kotlinx.coroutines.ExperimentalCoroutinesApi
+  jvm:
+    jdk:
+      version: 27
+    mainClass: AllKt
